@@ -1,6 +1,1 @@
-[submodule "vendor/filedialog"]
-	path = vendor/filedialog
-	url = https://github.com/kasperhbo/ImGui-FIleDialog.git
-[submodule "vendor/ImGuiColorTextEdit"]
-	path = vendor/ImGuiColorTextEdit
-	url = https://github.com/kasperhbo/ImGuiColorTextEdit.git
+
