@@ -200,7 +200,6 @@ extern IMGUI_API ImGuiContext* GImGui;  // Current implicit context pointer
 
 namespace ImStb
 {
-
 #undef IMSTB_TEXTEDIT_STRING
 #undef IMSTB_TEXTEDIT_CHARTYPE
 #define IMSTB_TEXTEDIT_STRING             ImGuiInputTextState
@@ -209,7 +208,6 @@ namespace ImStb
 #define IMSTB_TEXTEDIT_UNDOSTATECOUNT     99
 #define IMSTB_TEXTEDIT_UNDOCHARCOUNT      999
 #include "imstb_textedit.h"
-
 } // namespace ImStb
 
 //-----------------------------------------------------------------------------
