@@ -5818,18 +5818,13 @@ static void ShowDemoWindowTables()
             // Show data
             // FIXME-TABLE FIXME-NAV: How we can get decent up/down even though we have the buttons here?
             ImGui::PushButtonRepeat(true);
-#if 1
+
             // Demonstrate using clipper for large vertical lists
             ImGuiListClipper clipper;
             clipper.Begin(items.Size);
             while (clipper.Step())
             {
                 for (int row_n = clipper.DisplayStart; row_n < clipper.DisplayEnd; row_n++)
-#else
-            // Without clipper
-            {
-                for (int row_n = 0; row_n < items.Size; row_n++)
-#endif
                 {
                     MyItem* item = &items[row_n];
                     //if (!filter.PassFilter(item->Name))
@@ -5843,33 +5838,24 @@ static void ShowDemoWindowTables()
                     ImGui::TableSetColumnIndex(0);
                     char label[32];
                     sprintf(label, "%04d", item->ID);
-                    if (contents_type == CT_Text)
-                        ImGui::TextUnformatted(label);
-                    else if (contents_type == CT_Button)
-                        ImGui::Button(label);
-                    else if (contents_type == CT_SmallButton)
-                        ImGui::SmallButton(label);
-                    else if (contents_type == CT_FillButton)
-                        ImGui::Button(label, ImVec2(-FLT_MIN, 0.0f));
-                    else if (contents_type == CT_Selectable || contents_type == CT_SelectableSpanRow)
+
+                    ImGuiSelectableFlags selectable_flags = (contents_type == CT_SelectableSpanRow) ? ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap : ImGuiSelectableFlags_None;
+                    if (ImGui::Selectable(label, item_is_selected, selectable_flags, ImVec2(0, row_min_height)))
                     {
-                        ImGuiSelectableFlags selectable_flags = (contents_type == CT_SelectableSpanRow) ? ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap : ImGuiSelectableFlags_None;
-                        if (ImGui::Selectable(label, item_is_selected, selectable_flags, ImVec2(0, row_min_height)))
+                        if (ImGui::GetIO().KeyCtrl)
                         {
-                            if (ImGui::GetIO().KeyCtrl)
-                            {
-                                if (item_is_selected)
-                                    selection.find_erase_unsorted(item->ID);
-                                else
-                                    selection.push_back(item->ID);
-                            }
+                            if (item_is_selected)
+                                selection.find_erase_unsorted(item->ID);
                             else
-                            {
-                                selection.clear();
                                 selection.push_back(item->ID);
-                            }
+                        }
+                        else
+                        {
+                            selection.clear();
+                            selection.push_back(item->ID);
                         }
                     }
+                    
 
                     if (ImGui::TableSetColumnIndex(1))
                         ImGui::TextUnformatted(item->Name);

@@ -1,0 +1,39 @@
+USEFULL LINKS: https://github.com/ocornut/imgui/wiki/Useful-Extensions#cness
+
+TODO: add combo box with filter
+    https://github.com/ocornut/imgui/issues/1658
+
+#include <vector>
+
+static const char* item_getter(const std::vector<std::string>& items, int index) {
+   if (index >= 0 && index < (int)items.size()) {
+       return items[index].c_str();
+   }
+   return "N/A";
+}
+
+static std::vector<std::string> items{ "instruction", "Chemistry", "Beating Around the Bush", "Instantaneous Combustion", "Level 999999", "nasal problems", "On cloud nine", "break the iceberg", "lacircificane" };
+static char inputbuf[128];
+static int selected_item = -1;
+if (ImGui::ComboAutoSelect("std::vector combo", inputbuf, 128, selected_item, items, item_getter, ImGuiComboFlags_HeightSmall)) {
+   /* Selection made */
+}
+
+
+TODO: add splitters
+    https://github.com/ocornut/imgui/issues/319
+
+e.g. "Demo->Examples->Simple Layout" now does:
+
+ImGui::BeginChild("left pane", ImVec2(150, 0), ImGuiChildFlags_Border | ImGuiChildFlags_ResizeX);
+for (int i = 0; i < 100; i++)
+{
+   char label[128];
+   sprintf(label, "MyObject %d", i);
+   if (ImGui::Selectable(label, selected == i))
+       selected = i;
+}
+ImGui::EndChild();
+ImGui::SameLine();
+....
+ImGui::BeginChild("item view", ....);
