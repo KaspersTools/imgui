@@ -24,51 +24,7 @@
 /*
 Outside any ImGui::Window:
 
-        {
-            static ImGui::Toolbar toolbar("myFirstToolbar##foo");
-            if (toolbar.getNumButtons()==0)  {
-                char tmp[1024];ImVec2 uv0(0,0),uv1(0,0);
-                for (int i=0;i<9;i++) {
-                    strcpy(tmp,"toolbutton ");
-                    sprintf(&tmp[strlen(tmp)],"%d",i+1);
-                    uv0 = ImVec2((float)(i%3)/3.f,(float)(i/3)/3.f);
-                    uv1 = ImVec2(uv0.x+1.f/3.f,uv0.y+1.f/3.f);
-
-                    toolbar.addButton(ImGui::Toolbutton(tmp,(void*)myImageTextureId2,uv0,uv1));
-                }
-                toolbar.addSeparator(16);
-                toolbar.addButton(ImGui::Toolbutton("toolbutton 11",(void*)myImageTextureId2,uv0,uv1,ImVec2(32,32),true,false,ImVec4(0.8,0.8,1.0,1)));  // Note that separator "eats" one toolbutton index as if it was a real button
-                toolbar.addButton(ImGui::Toolbutton("toolbutton 12",(void*)myImageTextureId2,uv0,uv1,ImVec2(48,24),true,false,ImVec4(1.0,0.8,0.8,1)));  // Note that separator "eats" one toolbutton index as if it was a real button
-
-                toolbar.setProperties(false,false,true,ImVec2(0.5f,0.f));
-            }
-            const int pressed = toolbar.render();
-            if (pressed>=0) fprintf(stderr,"Toolbar1: pressed:%d\n",pressed);
-        }
-        {
-            static ImGui::Toolbar toolbar("myFirstToolbar2##foo");
-            if (toolbar.getNumButtons()==0)  {
-                char tmp[1024];ImVec2 uv0(0,0),uv1(0,0);
-                for (int i=8;i>=0;i--) {
-                    strcpy(tmp,"toolbutton ");
-                    sprintf(&tmp[strlen(tmp)],"%d",8-i+1);
-                    uv0=ImVec2((float)(i%3)/3.f,(float)(i/3)/3.f);
-                    uv1=ImVec2(uv0.x+1.f/3.f,uv0.y+1.f/3.f);
-
-                    toolbar.addButton(ImGui::Toolbutton(tmp,(void*)myImageTextureId2,uv0,uv1,ImVec2(24,48)));
-                }
-                toolbar.addSeparator(16);
-                toolbar.addButton(ImGui::Toolbutton("toolbutton 11",(void*)myImageTextureId2,uv0,uv1,ImVec2(24,32),true,false,ImVec4(0.8,0.8,1.0,1)));  // Note that separator "eats" one toolbutton index as if it was a real button
-                toolbar.addButton(ImGui::Toolbutton("toolbutton 12",(void*)myImageTextureId2,uv0,uv1,ImVec2(24,32),true,false,ImVec4(1.0,0.8,0.8,1)));  // Note that separator "eats" one toolbutton index as if it was a real button
-
-                toolbar.setProperties(true,true,false,ImVec2(0.0f,0.0f),ImVec2(0.25f,0.9f),ImVec4(0.85,0.85,1,1));
-
-                //toolbar.setScaling(2.0f,1.1f);
-            }
-            const int pressed = toolbar.render();
-            if (pressed>=0) fprintf(stderr,"Toolbar2: pressed:%d\n",pressed);
-        }
-
+        ffmyImageTextureId2``
 
 Inside a ImGui::Window:
 

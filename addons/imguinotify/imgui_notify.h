@@ -193,6 +193,10 @@ class ImGuiToast {
 
   public:
   // Constructors
+  ImGuiToast(ImGuiToastType type, std::string title, std::string content, int dismiss_time = NOTIFY_DEFAULT_DISMISS) : ImGuiToast(type, dismiss_time) {
+    this->set_title(title.c_str());
+    this->set_content(content.c_str());
+  }
 
   ImGuiToast(ImGuiToastType type, int dismiss_time = NOTIFY_DEFAULT_DISMISS) {
     IM_ASSERT(type < ImGuiToastType_COUNT);
