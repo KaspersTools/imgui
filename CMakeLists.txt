@@ -36,8 +36,8 @@ set(IMGUI_SOURCES
         backends/imgui_impl_opengl3_loader.h
         backends/imgui_impl_opengl3.cpp
         backends/imgui_impl_opengl3.h
-        backends/imgui_impl_sdl2.cpp
-        backends/imgui_impl_sdl2.h
+        backends/imgui_impl_glfw.cpp
+        backends/imgui_impl_glfw.h
 
 
         #misc
@@ -53,7 +53,7 @@ set(IMGUI_SOURCES
         addons/imguitoolbar/imguitoolbar.h
 )
 
-add_library(imgui STATIC
+add_library(KDB_IMGUI-STATIC STATIC
         ${IMGUI_SOURCES}
 )
 
@@ -65,16 +65,19 @@ include_directories(
         addons/imguinotify
 )
 
-#sdl
-find_package(SDL2 REQUIRED)
-if(SDL2_FOUND)
-    message("SDL2 found")
-    include_directories(${SDL2_INCLUDE_DIRS})
-    target_link_libraries(imgui ${SDL2_LIBRARIES})
+if(KDB_IMGUI_GLFW)
+    target_include_directories(KDB_IMGUI-STATIC PRIVATE ${KDB_IMGUI_GLFWINCLUDEDIR})
+endif()
+
+
+find_package(OpenGL REQUIRED)
+if(OPENGL_FOUND)
+    message("OpenGL found")
+    include_directories(${OPENGL_INCLUDE_DIRS})
+    #    target_link_libraries(imgui_example ${OPENGL_LIBRARIES})
 endif ()
 
-
-if(IMGUI_BUILD_EXAMPLES)
+if(KDB_IMGUI_BUILD_EXAMPLES)
     set(IMGUI_EXAMPLE_SOURCE
             example/main.cpp
             example/MainWindow.cpp
@@ -86,13 +89,6 @@ if(IMGUI_BUILD_EXAMPLES)
     )
 
     target_link_libraries(imgui_example imgui)
-
-    find_package(OpenGL REQUIRED)
-    if(OPENGL_FOUND)
-        message("OpenGL found")
-        include_directories(${OPENGL_INCLUDE_DIRS})
-        target_link_libraries(imgui_example ${OPENGL_LIBRARIES})
-    endif ()
 endif ()
 
 #copy folder
