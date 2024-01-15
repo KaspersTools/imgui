@@ -51,6 +51,9 @@ set(IMGUI_SOURCES
         #addons
         addons/imguinotify/imgui_notify.h
         addons/imguitoolbar/imguitoolbar.h
+
+        addons/imguidatechooser/imguidatechooser.h
+        addons/imguidatechooser/imguidatechooser.cpp
 )
 
 add_library(KDB_IMGUI-STATIC STATIC
