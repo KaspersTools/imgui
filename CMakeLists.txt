@@ -51,10 +51,6 @@ set(IMGUI_SOURCES
         #addons
         addons/imguinotify/imgui_notify.h
         addons/imguitoolbar/imguitoolbar.h
-
-        #extension
-        extension/imgui_extension.h
-        extension/imgui_extension.cpp
 )
 
 add_library(KDB_IMGUI-STATIC STATIC
