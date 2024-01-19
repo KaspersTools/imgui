@@ -9,7 +9,19 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif ()
 
-option(IMGUI_BUILD_EXAMPLES "Build examples" OFF)
+option(KDB_IMGUI_BUILD_EXAMPLES "Build examples" ON)
+
+
+#display info
+message("Project: ${PROJECT_NAME}")
+message("Current source dir: ${CMAKE_CURRENT_SOURCE_DIR}")
+message("Current binary dir: ${CMAKE_CURRENT_BINARY_DIR}"
+        " (where the executable will be placed)"
+        " (and where the assets will be copied to)"
+        " (if you are using an IDE, this is where you should set the working directory)"
+        )
+message("Build type: ${CMAKE_BUILD_TYPE}")
+message("Build examples: ${KDB_IMGUI_BUILD_EXAMPLES}")
 
 #imgui
 set(IMGUI_SOURCES
@@ -33,11 +45,11 @@ set(IMGUI_SOURCES
         imgui_demo.cpp
 
         #backends
-        backends/imgui_impl_opengl3_loader.h
-        backends/imgui_impl_opengl3.cpp
-        backends/imgui_impl_opengl3.h
+
         backends/imgui_impl_glfw.cpp
         backends/imgui_impl_glfw.h
+        backends/imgui_impl_vulkan.cpp
+        backends/imgui_impl_vulkan.h
 
 
         #misc
@@ -60,39 +72,51 @@ add_library(KDB_IMGUI-STATIC STATIC
         ${IMGUI_SOURCES}
 )
 
-#include imgui
-include_directories(
-        .
-        backends
-        misc/cpp
-        addons/imguinotify
+#glfw
+set(GLFW_DIR vendor/glfw)
+option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
+option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
+option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
+option(GLFW_INSTALL "Generate installation target" OFF)
+option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
+add_subdirectory(${GLFW_DIR} binary_dir EXCLUDE_FROM_ALL)
+
+#vulkan
+find_package(Vulkan REQUIRED)
+
+set(LIBRARIES "glfw;Vulkan::Vulkan")
+set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+
+#link libraries
+target_link_libraries(KDB_IMGUI-STATIC
+        ${LIBRARIES}
 )
 
-if(KDB_IMGUI_GLFW)
-    target_include_directories(KDB_IMGUI-STATIC PRIVATE ${KDB_IMGUI_GLFWINCLUDEDIR})
-endif()
+set(IMGUI_DIR .)
+target_include_directories(KDB_IMGUI-STATIC PUBLIC ${IMGUI_DIR} ${IMGUI_DIR}/backends ..)
 
+include_directories(KDB_IMGUI-STATIC PRIVATE ${GLFW_DIR}/include)
+include_directories(KDB_IMGUI-STATIC PRIVATE ${GLFW_DIR}/deps)
+include_directories(KDB_IMGUI-STATIC PRIVATE ${Vulkan_INCLUDE_DIRS})
 
-find_package(OpenGL REQUIRED)
-if(OPENGL_FOUND)
-    message("OpenGL found")
-    include_directories(${OPENGL_INCLUDE_DIRS})
-    #    target_link_libraries(imgui_example ${OPENGL_LIBRARIES})
-endif ()
-
+#example
 if(KDB_IMGUI_BUILD_EXAMPLES)
     set(IMGUI_EXAMPLE_SOURCE
             example/main.cpp
-            example/MainWindow.cpp
-            example/MainWindow.h
     )
 
     add_executable(imgui_example
             ${IMGUI_EXAMPLE_SOURCE}
     )
 
-    target_link_libraries(imgui_example imgui)
+    target_link_libraries(imgui_example
+            KDB_IMGUI-STATIC
+            ${LIBRARIES}
+    )
 endif ()
+
+#compile definitions
+target_compile_definitions(KDB_IMGUI-STATIC PUBLIC -DImTextureID=ImU64)
 
 #copy folder
 file(COPY misc/fonts DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Assets)
