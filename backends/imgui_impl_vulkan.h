@@ -46,8 +46,15 @@
 #if defined(IMGUI_IMPL_VULKAN_NO_PROTOTYPES) && !defined(VK_NO_PROTOTYPES)
 #define VK_NO_PROTOTYPES
 #endif
+
+
+#include <stdio.h>          // printf, fprintf
+#include <stdlib.h>         // abort
+#define GLFW_INCLUDE_NONE
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
-#include <Vulkan/vulkan.h>
+
 
 // Initialization data, for ImGui_ImplVulkan_Init()
 // [Please zero-clear before use!]
@@ -167,5 +174,38 @@ struct ImGui_ImplVulkanH_Window
         ClearEnable = true;
     }
 };
+
+
+//#define IMGUI_UNLIMITED_FRAME_RATE
+#ifdef _DEBUG
+#define IMGUI_VULKAN_DEBUG_REPORT
+#endif
+
+static void glfw_error_callback(int error, const char* description)
+{
+    fprintf(stderr, "GLFW Error %d: %s\n", error, description);
+}
+
+#ifdef IMGUI_VULKAN_DEBUG_REPORT
+static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char* pLayerPrefix, const char* pMessage, void* pUserData)
+{
+    (void)flags; (void)object; (void)location; (void)messageCode; (void)pUserData; (void)pLayerPrefix; // Unused arguments
+    fprintf(stderr, "[vulkan] Debug report from ObjectType: %i\nMessage: %s\n\n", objectType, pMessage);
+    return VK_FALSE;
+}
+#endif // IMGUI_VULKAN_DEBUG_REPORT
+
+IMGUI_IMPL_API void check_vk_result(VkResult err);
+
+IMGUI_IMPL_API bool IsExtensionAvailable(const ImVector<VkExtensionProperties>& properties, const char* extension);
+IMGUI_IMPL_API VkPhysicalDevice SetupVulkan_SelectPhysicalDevice();
+IMGUI_IMPL_API void SetupVulkan(ImVector<const char*> instance_extensions);
+IMGUI_IMPL_API void SetupVulkanWindow(ImGui_ImplVulkanH_Window* wd, VkSurfaceKHR surface, int width, int height);
+IMGUI_IMPL_API void CleanupVulkan();
+IMGUI_IMPL_API void CleanupVulkanWindow();
+IMGUI_IMPL_API void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data);
+IMGUI_IMPL_API void FramePresent(ImGui_ImplVulkanH_Window* wd);
+
+
 
 #endif // #ifndef IMGUI_DISABLE

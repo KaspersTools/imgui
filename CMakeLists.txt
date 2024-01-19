@@ -23,49 +23,52 @@ message("Current binary dir: ${CMAKE_CURRENT_BINARY_DIR}"
 message("Build type: ${CMAKE_BUILD_TYPE}")
 message("Build examples: ${KDB_IMGUI_BUILD_EXAMPLES}")
 
+set(IMGUI_DIR  ${CMAKE_CURRENT_SOURCE_DIR})
+
 #imgui
 set(IMGUI_SOURCES
         #imgui
-        imgui.cpp
-        imgui.h
-        imconfig.h
+        ${IMGUI_DIR}/imgui.cpp
+        ${IMGUI_DIR}/imgui.h
+        ${IMGUI_DIR}/imconfig.h
 
         #imgui widgets
-        imgui_draw.cpp
-        imgui_internal.h
-        imgui_tables.cpp
-        imgui_widgets.cpp
+        ${IMGUI_DIR}/imgui_draw.cpp
+        ${IMGUI_DIR}/imgui_internal.h
+        ${IMGUI_DIR}/imgui_tables.cpp
+        ${IMGUI_DIR}/imgui_widgets.cpp
 
         #imstb
-        imstb_textedit.h
-        imstb_rectpack.h
-        imstb_textedit.h
+        ${IMGUI_DIR}/imstb_textedit.h
+        ${IMGUI_DIR}/imstb_rectpack.h
+        ${IMGUI_DIR}/imstb_textedit.h
 
         #imgui demos
-        imgui_demo.cpp
+        ${IMGUI_DIR}/imgui_demo.cpp
 
         #backends
-
-        backends/imgui_impl_glfw.cpp
-        backends/imgui_impl_glfw.h
-        backends/imgui_impl_vulkan.cpp
-        backends/imgui_impl_vulkan.h
+        ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_glfw.h
+        ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_vulkan.h
+        ${IMGUI_DIR}/backends/imgui_impl_glfw_vulkan_window.h
+        ${IMGUI_DIR}/backends/imgui_impl_glfw_vulkan_window.cpp
 
 
         #misc
-        misc/cpp/imgui_stdlib.cpp
-        misc/cpp/imgui_stdlib.h
+        ${IMGUI_DIR}/misc/cpp/imgui_stdlib.cpp
+        ${IMGUI_DIR}/misc/cpp/imgui_stdlib.h
 
         #fonts
-        addons/imguinotify/font_awesome_5.h
-        addons/imguinotify/fa_solid_900.h
+        ${IMGUI_DIR}/addons/imguinotify/font_awesome_5.h
+        ${IMGUI_DIR}/addons/imguinotify/fa_solid_900.h
 
         #addons
-        addons/imguinotify/imgui_notify.h
-        addons/imguitoolbar/imguitoolbar.h
+        ${IMGUI_DIR}/addons/imguinotify/imgui_notify.h
+        ${IMGUI_DIR}/addons/imguitoolbar/imguitoolbar.h
 
-        addons/imguidatechooser/imguidatechooser.cpp
-        addons/imguidatechooser/imguidatechooser.h
+        ${IMGUI_DIR}/addons/imguidatechooser/imguidatechooser.cpp
+        ${IMGUI_DIR}/addons/imguidatechooser/imguidatechooser.h
 )
 
 add_library(KDB_IMGUI-STATIC STATIC
@@ -73,7 +76,7 @@ add_library(KDB_IMGUI-STATIC STATIC
 )
 
 #glfw
-set(GLFW_DIR vendor/glfw)
+set(GLFW_DIR ${CMAKE_CURRENT_SOURCE_DIR}/vendor/glfw)
 option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
 option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
 option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
@@ -93,7 +96,7 @@ target_link_libraries(KDB_IMGUI-STATIC
 )
 
 set(IMGUI_DIR .)
-target_include_directories(KDB_IMGUI-STATIC PUBLIC ${IMGUI_DIR} ${IMGUI_DIR}/backends ..)
+target_include_directories(KDB_IMGUI-STATIC PUBLIC ${IMGUI_DIR} ${IMGUI_DIR}/backends)
 
 include_directories(KDB_IMGUI-STATIC PRIVATE ${GLFW_DIR}/include)
 include_directories(KDB_IMGUI-STATIC PRIVATE ${GLFW_DIR}/deps)
@@ -103,6 +106,8 @@ include_directories(KDB_IMGUI-STATIC PRIVATE ${Vulkan_INCLUDE_DIRS})
 if(KDB_IMGUI_BUILD_EXAMPLES)
     set(IMGUI_EXAMPLE_SOURCE
             example/main.cpp
+            example/MainWindow.cpp
+            example/MainWindow.h
     )
 
     add_executable(imgui_example
