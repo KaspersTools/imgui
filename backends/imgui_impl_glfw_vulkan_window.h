@@ -13,20 +13,38 @@
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_beta.h>
 
 namespace ImGui::GLFWVULKANIMPL {
-  struct ApplicationSpecification {
-    std::string Name = "Walnut App";
+  struct ApplicationTitleBarSettings{
+    bool WindowNoDefaultTitleBar = false;
+
+    float TitleBarHeight = 0.0f;
+    float TitleBarPadding = 0.0f;
+    float TitleBarIconSize = 0.0f;
+    float TitleBarIconPadding = 0.0f;
+
+    float TitleBarOffsetX = 60.0f;
+    float TitleBarOffsetY = 0.0f;
+  };
+
+  struct WindowSettings{
     uint32_t Width = 1600;
     uint32_t Height = 900;
-    std::filesystem::path IconPath;
 
     bool WindowResizeable = true;
     bool WindowDecorated = true;
-
-    bool CustomTitlebar = false;
-
     bool CenterWindow = false;
+  };
+
+  struct ApplicationSpecification {
+    std::string Name = "Walnut App";
+
+    std::filesystem::path IconPath;
+    WindowSettings WindowSettings;
+
+    ApplicationTitleBarSettings TitleBarSettings;
   };
 
   struct RenderStats {
@@ -71,8 +89,23 @@ namespace ImGui::GLFWVULKANIMPL {
 
   IMGUI_IMPL_API GLFWwindow *getMainWindowHandle();
 
-  IMGUI_IMPL_API float getTime();
+  IMGUI_IMPL_API const float getTime();
 
   IMGUI_IMPL_API RenderStats &getRenderStats();
+
+  //LOGGING
+  IMGUI_IMPL_API void setImplErrorCallback(std::function<void(int error, const char *description)> &&func);
+
+  IMGUI_IMPL_API ApplicationSpecification &getApplicationSpecification();
+  IMGUI_IMPL_API const ApplicationTitleBarSettings &getTitleBarSpecification();
+  IMGUI_IMPL_API const WindowSettings &getWindowSettings();
+  IMGUI_IMPL_API const bool isWindowMaximized();
+
+  IMGUI_IMPL_API VkInstance getInstance();
+  IMGUI_IMPL_API VkPhysicalDevice getPhysicalDevice();
+  IMGUI_IMPL_API VkDevice getDevice();
+  IMGUI_IMPL_API VkCommandBuffer getCommandBuffer(bool begin);
+  IMGUI_IMPL_API void flushCommandBuffer(VkCommandBuffer commandBuffer);
+  IMGUI_IMPL_API void submitResourceFree(std::function<void()> &&func);
 }// namespace ImGui::GLFWVULKANIMPL
 #endif//IMGUI_IMGUI_IMPL_GLFW_VULKAN_WINDOW_H

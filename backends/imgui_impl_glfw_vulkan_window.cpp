@@ -9,6 +9,7 @@
 #include "backends/imgui_impl_vulkan.h"
 
 #include <functional>
+#include <math.h>
 #include <memory>
 #include <mutex>
 #include <queue>
@@ -17,11 +18,8 @@
 #include <thread>
 #include <unordered_map>
 #include <vector>
-#include <math.h>
 
 #include <iostream>
-
-#include <vulkan/vulkan.h>
 
 namespace ImGui::GLFWVULKANIMPL {
   // Emedded font
@@ -64,6 +62,11 @@ namespace ImGui::GLFWVULKANIMPL {
   static ImVec4 g_ClearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
   static RenderStats s_RenderStats = {};
+  static ApplicationSpecification m_Specification;
+
+  static std::function<void(int error, const char *description)> m_ImplErrorCallback = [](int error, const char *description) {
+    fprintf(stderr, "GLFW Error %d: %s\n", error, description);
+  };
 
   void check_vk_result(VkResult err) {
     if (err == 0)
@@ -207,6 +210,8 @@ namespace ImGui::GLFWVULKANIMPL {
       create_info.pQueueCreateInfos = queue_info;
       create_info.enabledExtensionCount = device_extension_count;
       create_info.ppEnabledExtensionNames = device_extensions;
+
+
       err = vkCreateDevice(g_PhysicalDevice, &create_info, g_Allocator, &g_Device);
       ImGui::GLFWVULKANIMPL::check_vk_result(err);
       vkGetDeviceQueue(g_Device, g_QueueFamily, 0, &g_Queue);
@@ -389,26 +394,28 @@ namespace ImGui::GLFWVULKANIMPL {
     wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->ImageCount;// Now we can use the next set of semaphores
   }
 
-  static void glfw_error_callback(int error, const char *description) {
-    fprintf(stderr, "Glfw Error %d: %s\n", error, description);
-  }
+  void init(ApplicationSpecification specification) {
+    m_ImplErrorCallback(1, "callback test!");
 
-  void init(ApplicationSpecification m_Specification) {
+    m_Specification = specification;
     // Setup GLFW window
-    glfwSetErrorCallback(glfw_error_callback);
+    glfwSetErrorCallback([](int error, const char *description) {
+      m_ImplErrorCallback(error, description);
+    });
+
     if (!glfwInit()) {
-      std::cerr << "Could not initalize GLFW!\n";
+      m_ImplErrorCallback(100, "GLFW: Failed to initialize GLFW");
       return;
     }
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-    if (m_Specification.CustomTitlebar) {
-      //todo:implement
-      //    glfwWindowHint(GLFW_TITLEBAR, false);
+    if (m_Specification.TitleBarSettings.WindowNoDefaultTitleBar) {
+      //TODO: fixme in glfw submodule not working yet
+      //      glfwWindowHint(GLFW_TITLEBAR, false);
     }
 
-    if(!m_Specification.WindowDecorated) {
+    if (!getWindowSettings().WindowDecorated) {
       glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
     }
 
@@ -420,22 +427,23 @@ namespace ImGui::GLFWVULKANIMPL {
 
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
-    m_WindowHandle = glfwCreateWindow(m_Specification.Width, m_Specification.Height, m_Specification.Name.c_str(), NULL, NULL);
+    m_WindowHandle = glfwCreateWindow(getWindowSettings().Width, getWindowSettings().Height, m_Specification.Name.c_str(), NULL, NULL);
 
-    if (m_Specification.CenterWindow) {
+    if (getWindowSettings().CenterWindow) {
       glfwSetWindowPos(m_WindowHandle,
-                       monitorX + (videoMode->width - m_Specification.Width) / 2,
-                       monitorY + (videoMode->height - m_Specification.Height) / 2);
+                       monitorX + (videoMode->width - getWindowSettings().Width) / 2,
+                       monitorY + (videoMode->height - getWindowSettings().Height) / 2);
 
-      glfwSetWindowAttrib(m_WindowHandle, GLFW_RESIZABLE, m_Specification.WindowResizeable ? GLFW_TRUE : GLFW_FALSE);
+      glfwSetWindowAttrib(m_WindowHandle, GLFW_RESIZABLE, getWindowSettings().WindowResizeable ? GLFW_TRUE : GLFW_FALSE);
     }
 
     glfwShowWindow(m_WindowHandle);
 
     // Setup Vulkan
     if (!glfwVulkanSupported()) {
-      std::cerr << "GLFW: Vulkan not supported!\n";
+      m_ImplErrorCallback(200, "GLFW: Vulkan Not Supported");
       return;
+    } else {
     }
 
     // Set icon
@@ -448,12 +456,9 @@ namespace ImGui::GLFWVULKANIMPL {
     //    glfwSetWindowIcon(m_WindowHandle, 1, &icon);
     //    stbi_image_free(icon.pixels);
     //  }
-    //
-    //  glfwSetWindowUserPointer(m_WindowHandle, this);
-    //  glfwSetTitlebarHitTestCallback(m_WindowHandle, [](GLFWwindow *window, int x, int y, int *hit) {
-    //    Application *app = (Application *) glfwGetWindowUserPointer(window);
-    //    *hit = app->IsTitleBarHovered();
-    //  });
+
+    //TODO: remove me when glfw set hint in submodule is fixed
+    glfwSetWindowAttrib(m_WindowHandle, GLFW_TITLEBAR, !m_Specification.TitleBarSettings.WindowNoDefaultTitleBar);
 
 
     ImVector<const char *> extensions;
@@ -545,7 +550,7 @@ namespace ImGui::GLFWVULKANIMPL {
       err = vkBeginCommandBuffer(command_buffer, &begin_info);
       ImGui::GLFWVULKANIMPL::check_vk_result(err);
 
-//      ImGui_ImplVulkan_CreateFontsTexture();
+      //      ImGui_ImplVulkan_CreateFontsTexture();
 
       VkSubmitInfo end_info = {};
       end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -564,9 +569,8 @@ namespace ImGui::GLFWVULKANIMPL {
     // Load images
   }
 
-  void startRender(){
+  void startRender() {
     glfwPollEvents();
-
     {
       std::scoped_lock<std::mutex> lock(m_EventQueueMutex);
 
@@ -658,13 +662,39 @@ namespace ImGui::GLFWVULKANIMPL {
     return m_WindowHandle;
   }
 
-  RenderStats& getRenderStats(){
+  RenderStats &getRenderStats() {
     return s_RenderStats;
   }
 
-  float getTime() {
+  const float getTime() {
     return (float) glfwGetTime();
   }
+
+  //SPECIFICATIONS
+  ApplicationSpecification &getApplicationSpecification() {
+    return m_Specification;
+  }
+
+  const ApplicationTitleBarSettings &getTitleBarSpecification() {
+    return m_Specification.TitleBarSettings;
+  }
+
+  const WindowSettings &getWindowSettings(){
+    return m_Specification.WindowSettings;
+  }
+
+  //LOGGING
+  void setImplErrorCallback(std::function<void(int error, const char *description)> &&func) {
+    m_ImplErrorCallback = func;
+  }
+
+  //WINDOW
+  const bool isWindowMaximized() {
+    return glfwGetWindowAttrib(m_WindowHandle, GLFW_MAXIMIZED);
+  }
+
+
+  //VULKAN
   VkInstance getInstance() {
     return g_Instance;
   }
