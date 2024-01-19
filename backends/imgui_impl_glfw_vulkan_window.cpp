@@ -65,13 +65,13 @@ namespace ImGui::GLFWVULKANIMPL {
   static ApplicationSpecification m_Specification;
 
   static std::function<void(int error, const char *description)> m_ImplErrorCallback = [](int error, const char *description) {
-    fprintf(stderr, "GLFW Error %d: %s\n", error, description);
+    fprintf(stderr, "[ImGui Glfw Vulkan Impl] [Error] %d: %s\n", error, description);
   };
 
   void check_vk_result(VkResult err) {
     if (err == 0)
       return;
-    fprintf(stderr, "[vulkan] Error: VkResult = %d\n", err);
+    fprintf(stderr, "[vulkan] [Error]: VkResult = %d\n", err);
     if (err < 0)
       abort();
   }
