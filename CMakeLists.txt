@@ -123,5 +123,14 @@ endif ()
 #compile definitions
 target_compile_definitions(KDB_IMGUI-STATIC PUBLIC -DImTextureID=ImU64)
 
+#set debug, release, etc. flags
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message("Debug build")
+    target_compile_definitions(KDB_IMGUI-STATIC PUBLIC -DDEBUG)
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+    message("Release build")
+    target_compile_definitions(KDB_IMGUI-STATIC PUBLIC -DNDEBUG)
+endif()
+
 #copy folder
 file(COPY misc/fonts DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/Assets)

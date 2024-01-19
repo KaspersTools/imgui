@@ -8,15 +8,20 @@
 class MainWindow {
 public:
     MainWindow(){
-        run();
+      init();
     }
     ~MainWindow(){
-
+      shutdown();
     }
     bool run();
 private:
     void init();
     void render();
+    void shutdown();
+
+private:
+    bool m_demoWindow = false;
+    bool m_showRenderStats = false;
 };
 
 
