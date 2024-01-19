@@ -10,10 +10,11 @@ void MainWindow::init() {
   m_Specification.Name = "Imgui Vulkan Example";
   m_Specification.Width = 800;
   m_Specification.Height = 600;
+
   m_Specification.WindowResizeable = true;
   m_Specification.WindowDecorated = true;
   m_Specification.CenterWindow = true;
-  m_Specification.CustomTitlebar = false;
+  m_Specification.CustomTitlebar = true;
 
   ImGui::GLFWVULKANIMPL::init(m_Specification);
   run();

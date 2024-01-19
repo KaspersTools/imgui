@@ -95,13 +95,13 @@ namespace ImGui::GLFWVULKANIMPL {
   static VkPhysicalDevice SetupVulkan_SelectPhysicalDevice() {
     uint32_t gpu_count;
     VkResult err = vkEnumeratePhysicalDevices(g_Instance, &gpu_count, nullptr);
-    check_vk_result(err);
+    ImGui::GLFWVULKANIMPL::check_vk_result(err);
     IM_ASSERT(gpu_count > 0);
 
     ImVector<VkPhysicalDevice> gpus;
     gpus.resize(gpu_count);
     err = vkEnumeratePhysicalDevices(g_Instance, &gpu_count, gpus.Data);
-    check_vk_result(err);
+    ImGui::GLFWVULKANIMPL::check_vk_result(err);
 
     // If a number >1 of GPUs got reported, find discrete GPU if present, or use first one available. This covers
     // most common cases (multi-gpu/integrated+dedicated graphics). Handling more complicated setups (multiple
@@ -134,13 +134,13 @@ namespace ImGui::GLFWVULKANIMPL {
       vkEnumerateInstanceExtensionProperties(nullptr, &properties_count, nullptr);
       properties.resize(properties_count);
       err = vkEnumerateInstanceExtensionProperties(nullptr, &properties_count, properties.Data);
-      check_vk_result(err);
+      ImGui::GLFWVULKANIMPL::check_vk_result(err);
 
       // Enable required extensions
-      if (IsExtensionAvailable(properties, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME))
+      if (ImGui::GLFWVULKANIMPL::IsExtensionAvailable(properties, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME))
         instance_extensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
 #ifdef VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
-      if (IsExtensionAvailable(properties, VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME)) {
+      if (ImGui::GLFWVULKANIMPL::IsExtensionAvailable(properties, VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME)) {
         instance_extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
         create_info.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
       }
@@ -158,7 +158,7 @@ namespace ImGui::GLFWVULKANIMPL {
       create_info.enabledExtensionCount = (uint32_t) instance_extensions.Size;
       create_info.ppEnabledExtensionNames = instance_extensions.Data;
       err = vkCreateInstance(&create_info, g_Allocator, &g_Instance);
-      check_vk_result(err);
+      ImGui::GLFWVULKANIMPL::check_vk_result(err);
 
       // Setup the debug report callback
 #ifdef IMGUI_VULKAN_DEBUG_REPORT
@@ -170,7 +170,7 @@ namespace ImGui::GLFWVULKANIMPL {
       debug_report_ci.pfnCallback = debug_report;
       debug_report_ci.pUserData = nullptr;
       err = vkCreateDebugReportCallbackEXT(g_Instance, &debug_report_ci, g_Allocator, &g_DebugReport);
-      check_vk_result(err);
+      ImGui::GLFWVULKANIMPL::check_vk_result(err);
 #endif
     }
     // Select Physical Device (GPU)
@@ -208,7 +208,7 @@ namespace ImGui::GLFWVULKANIMPL {
       create_info.enabledExtensionCount = device_extension_count;
       create_info.ppEnabledExtensionNames = device_extensions;
       err = vkCreateDevice(g_PhysicalDevice, &create_info, g_Allocator, &g_Device);
-      check_vk_result(err);
+      ImGui::GLFWVULKANIMPL::check_vk_result(err);
       vkGetDeviceQueue(g_Device, g_QueueFamily, 0, &g_Queue);
     }
 
@@ -234,7 +234,7 @@ namespace ImGui::GLFWVULKANIMPL {
       pool_info.poolSizeCount = (uint32_t) IM_ARRAYSIZE(pool_sizes);
       pool_info.pPoolSizes = pool_sizes;
       err = vkCreateDescriptorPool(g_Device, &pool_info, g_Allocator, &g_DescriptorPool);
-      check_vk_result(err);
+      ImGui::GLFWVULKANIMPL::check_vk_result(err);
     }
   }
 
@@ -297,17 +297,17 @@ namespace ImGui::GLFWVULKANIMPL {
       g_SwapChainRebuild = true;
       return;
     }
-    check_vk_result(err);
+    ImGui::GLFWVULKANIMPL::check_vk_result(err);
 
     s_CurrentFrameIndex = (s_CurrentFrameIndex + 1) % g_MainWindowData.ImageCount;
 
     ImGui_ImplVulkanH_Frame *fd = &wd->Frames[wd->FrameIndex];
     {
       err = vkWaitForFences(g_Device, 1, &fd->Fence, VK_TRUE, UINT64_MAX);// wait indefinitely instead of periodically checking
-      check_vk_result(err);
+      ImGui::GLFWVULKANIMPL::check_vk_result(err);
 
       err = vkResetFences(g_Device, 1, &fd->Fence);
-      check_vk_result(err);
+      ImGui::GLFWVULKANIMPL::check_vk_result(err);
     }
 
     {
@@ -326,12 +326,12 @@ namespace ImGui::GLFWVULKANIMPL {
       }
 
       err = vkResetCommandPool(g_Device, fd->CommandPool, 0);
-      check_vk_result(err);
+      ImGui::GLFWVULKANIMPL::check_vk_result(err);
       VkCommandBufferBeginInfo info = {};
       info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
       info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
       err = vkBeginCommandBuffer(fd->CommandBuffer, &info);
-      check_vk_result(err);
+      ImGui::GLFWVULKANIMPL::check_vk_result(err);
     }
     {
       VkRenderPassBeginInfo info = {};
@@ -363,9 +363,9 @@ namespace ImGui::GLFWVULKANIMPL {
       info.pSignalSemaphores = &render_complete_semaphore;
 
       err = vkEndCommandBuffer(fd->CommandBuffer);
-      check_vk_result(err);
+      ImGui::GLFWVULKANIMPL::check_vk_result(err);
       err = vkQueueSubmit(g_Queue, 1, &info, fd->Fence);
-      check_vk_result(err);
+      ImGui::GLFWVULKANIMPL::check_vk_result(err);
     }
   }
 
@@ -385,7 +385,7 @@ namespace ImGui::GLFWVULKANIMPL {
       g_SwapChainRebuild = true;
       return;
     }
-    check_vk_result(err);
+    ImGui::GLFWVULKANIMPL::check_vk_result(err);
     wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->ImageCount;// Now we can use the next set of semaphores
   }
 
@@ -461,19 +461,19 @@ namespace ImGui::GLFWVULKANIMPL {
     const char **glfw_extensions = glfwGetRequiredInstanceExtensions(&extensions_count);
     for (uint32_t i = 0; i < extensions_count; i++)
       extensions.push_back(glfw_extensions[i]);
-    SetupVulkan(extensions);
+    ImGui::GLFWVULKANIMPL::SetupVulkan(extensions);
 
 
     // Create Window Surface
     VkSurfaceKHR surface;
     VkResult err = glfwCreateWindowSurface(g_Instance, m_WindowHandle, g_Allocator, &surface);
-    check_vk_result(err);
+    ImGui::GLFWVULKANIMPL::check_vk_result(err);
 
     // Create Framebuffers
     int w, h;
     glfwGetFramebufferSize(m_WindowHandle, &w, &h);
     g_wd = &g_MainWindowData;
-    SetupVulkanWindow(g_wd, surface, w, h);
+    ImGui::GLFWVULKANIMPL::SetupVulkanWindow(g_wd, surface, w, h);
 
     s_AllocatedCommandBuffers.resize(g_wd->ImageCount);
     s_ResourceFreeQueue.resize(g_wd->ImageCount);
@@ -524,7 +524,7 @@ namespace ImGui::GLFWVULKANIMPL {
     init_info.ImageCount = g_wd->ImageCount;
     init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
     init_info.Allocator = g_Allocator;
-    init_info.CheckVkResultFn = check_vk_result;
+    init_info.CheckVkResultFn = ImGui::GLFWVULKANIMPL::check_vk_result;
     ImGui_ImplVulkan_Init(&init_info, g_wd->RenderPass);
 
     // Load default font
@@ -538,27 +538,26 @@ namespace ImGui::GLFWVULKANIMPL {
       VkCommandBuffer command_buffer = g_wd->Frames[g_wd->FrameIndex].CommandBuffer;
 
       err = vkResetCommandPool(g_Device, command_pool, 0);
-      check_vk_result(err);
+      ImGui::GLFWVULKANIMPL::check_vk_result(err);
       VkCommandBufferBeginInfo begin_info = {};
       begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
       begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
       err = vkBeginCommandBuffer(command_buffer, &begin_info);
-      check_vk_result(err);
+      ImGui::GLFWVULKANIMPL::check_vk_result(err);
 
-      ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
+//      ImGui_ImplVulkan_CreateFontsTexture();
 
       VkSubmitInfo end_info = {};
       end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
       end_info.commandBufferCount = 1;
       end_info.pCommandBuffers = &command_buffer;
       err = vkEndCommandBuffer(command_buffer);
-      check_vk_result(err);
+      ImGui::GLFWVULKANIMPL::check_vk_result(err);
       err = vkQueueSubmit(g_Queue, 1, &end_info, VK_NULL_HANDLE);
-      check_vk_result(err);
+      ImGui::GLFWVULKANIMPL::check_vk_result(err);
 
       err = vkDeviceWaitIdle(g_Device);
-      check_vk_result(err);
-      ImGui_ImplVulkan_DestroyFontUploadObjects();
+      ImGui::GLFWVULKANIMPL::check_vk_result(err);
     }
 
     //todo:implement
@@ -622,7 +621,7 @@ namespace ImGui::GLFWVULKANIMPL {
 
     // Present Main Platform Window
     if (!main_is_minimized)
-      FramePresent(g_wd);
+      ImGui::GLFWVULKANIMPL::FramePresent(g_wd);
     else
       std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
@@ -635,7 +634,7 @@ namespace ImGui::GLFWVULKANIMPL {
   void shutdown() {
     // Cleanup
     VkResult err = vkDeviceWaitIdle(g_Device);
-    check_vk_result(err);
+    ImGui::GLFWVULKANIMPL::check_vk_result(err);
 
     // Free resources in queue
     for (auto &queue: s_ResourceFreeQueue) {
@@ -694,7 +693,7 @@ namespace ImGui::GLFWVULKANIMPL {
     begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
     err = vkBeginCommandBuffer(command_buffer, &begin_info);
-    check_vk_result(err);
+    ImGui::GLFWVULKANIMPL::check_vk_result(err);
 
     return command_buffer;
   }
@@ -706,7 +705,7 @@ namespace ImGui::GLFWVULKANIMPL {
     end_info.commandBufferCount = 1;
     end_info.pCommandBuffers = &commandBuffer;
     auto err = vkEndCommandBuffer(commandBuffer);
-    check_vk_result(err);
+    ImGui::GLFWVULKANIMPL::check_vk_result(err);
 
     // Create fence to ensure that the command buffer has finished executing
     VkFenceCreateInfo fenceCreateInfo = {};
@@ -714,13 +713,13 @@ namespace ImGui::GLFWVULKANIMPL {
     fenceCreateInfo.flags = 0;
     VkFence fence;
     err = vkCreateFence(g_Device, &fenceCreateInfo, nullptr, &fence);
-    check_vk_result(err);
+    ImGui::GLFWVULKANIMPL::check_vk_result(err);
 
     err = vkQueueSubmit(g_Queue, 1, &end_info, fence);
-    check_vk_result(err);
+    ImGui::GLFWVULKANIMPL::check_vk_result(err);
 
     err = vkWaitForFences(g_Device, 1, &fence, VK_TRUE, DEFAULT_FENCE_TIMEOUT);
-    check_vk_result(err);
+    ImGui::GLFWVULKANIMPL::check_vk_result(err);
 
     vkDestroyFence(g_Device, fence, nullptr);
   }
