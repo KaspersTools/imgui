@@ -2,23 +2,21 @@
 // Created by Kasper de Bruin on 19/01/2024.
 //
 
-#include <filesystem>
+#pragma once
+
+#include "backends/imgui_impl_vulkan_image.h"
+
+#include <string>
+#include <vector>
+#include <memory>
 #include <functional>
 #include <iostream>
 #include <map>
-#include <string>
 
-#ifndef IMGUI_IMGUI_IMPL_GLFW_VULKAN_WINDOW_H
-#define IMGUI_IMGUI_IMPL_GLFW_VULKAN_WINDOW_H
 #include <imgui.h>
-
-#define GLFW_INCLUDE_NONE
-#define GLFW_INCLUDE_VULKAN
-#include "imgui_internal.h"
+#include <imgui_internal.h>
+#include "vulkan/vulkan.h"
 #include <GLFW/glfw3.h>
-#include <vulkan/vulkan.h>
-#include <vulkan/vulkan_beta.h>
-
 
 struct ApplicationTitleBarSettings {
   bool CustomTitleBar = false;
@@ -28,36 +26,16 @@ struct ApplicationTitleBarSettings {
   ImVec4 StartMaximized = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
   ImVec4 StartWindowed = ImVec4(64.0f, 0.0f, 0.0f, 0.0f);
 
-  ImVec2 LogoSize = ImVec2(32.0f, 32.0f);
+  bool   HasLogo = false;
+  ImVec2 LogoDrawSize = ImVec2(50.0f, 45.0f);
+  std::shared_ptr<Image> Logo = nullptr;
+  std::filesystem::path LogoPath = "";
+  float ImageZoom = 1.5f;
 
+  bool DrawTitleCentered = false;
 
   ///DONT CALL BEGIN MAIN MENU BAR IN YOUR CODE
   std::function<void()> *MainMenuBarCallback = nullptr;
-
-  ImVec2 CurrentSize;
-  ImVec2 CurrentMinScreen;
-  ImVec2 CurrentMaxScreen;
-
-  ImVec2 CurrentMinWindow;
-  ImVec2 CurrentMaxWindow;
-
-  void DrawDebug() {
-    ImGui::Text("TitleBar");
-    ImGui::Separator();
-    ImGui::DragFloat4("Height", &Height, 0.0f, 100.0f);
-    ImGui::SliderFloat4("StartMaximized", &StartMaximized.x, 0.0f, 100.0f);
-    ImGui::SliderFloat4("StartWindowed", &StartWindowed.x, 0.0f, 100.0f);
-    ImGui::Text("MainMenuBarCallback: %s", MainMenuBarCallback == nullptr ? "nullptr" : MainMenuBarCallback->target_type().name());
-    ImGui::Separator();
-    ImGui::Text("CurrentSize: %.2f, %.2f", CurrentSize.x, CurrentSize.y);
-    ImGui::Text("CurrentMinScreen: %.2f, %.2f", CurrentMinScreen.x, CurrentMinScreen.y);
-    ImGui::Text("CurrentMaxScreen: %.2f, %.2f", CurrentMaxScreen.x, CurrentMaxScreen.y);
-    ImGui::Text("CurrentMinWindow: %.2f, %.2f", CurrentMinWindow.x, CurrentMinWindow.y);
-    ImGui::Text("CurrentMaxWindow: %.2f, %.2f", CurrentMaxWindow.x, CurrentMaxWindow.y);
-
-
-    ImGui::Separator();
-  }
 };
 
 struct ApplicationWindowSettings {
@@ -70,29 +48,13 @@ struct ApplicationWindowSettings {
 
   bool CreateDefaultDockSpace = true;
 
-  void DrawDebug() {
-    ImGui::Text("Window");
-    ImGui::Separator();
-    ImGui::Text("Width: %d", Width);
-    ImGui::Text("Height: %d", Height);
-
-    ImGui::BeginDisabled();
-    ImGui::Checkbox("WindowResizeable", &WindowResizeable);
-    ImGui::Checkbox("WindowDecorated", &WindowDecorated);
-    ImGui::Checkbox("CenterWindow", &CenterWindow);
-    ImGui::EndDisabled();
-
-    ImGui::Checkbox("CreateDefaultDockSpace", &CreateDefaultDockSpace);
-    ImGui::Separator();
-  }
 };
 
 struct ApplicationSpecification {
   std::string Name = "Walnut App";
-  std::filesystem::path IconPath;
-
   ApplicationWindowSettings WindowSettings;
   ApplicationTitleBarSettings TitleBarSettings;
+  bool DrawDebugOutlines = false;
 };
 
 struct RenderStats {
@@ -127,7 +89,6 @@ struct RenderStats {
   }
 };
 
-
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_init(ApplicationSpecification m_Specification);
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_startRender();
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_endRender();
@@ -140,6 +101,7 @@ IMGUI_IMPL_API RenderStats &ImGui_ImplVKGlfw_getRenderStats();
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_setImplErrorCallback(const std::function<void(int error, const char *description)> &func);
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_addLog(const std::string &logMsg, const std::string &logType);
 IMGUI_IMPL_API const std::map<std::string, std::string> ImGui_ImplVKGlfw_getLog();
+IMGUI_IMPL_API void ImGui_ImplVKGlfw_check_vk_result(VkResult err);
 
 //APPLICATION
 IMGUI_IMPL_API ApplicationSpecification &ImGui_ImplVKGlfw_getApplicationSpecification();
@@ -183,7 +145,6 @@ IMGUI_IMPL_API float ImGui_ImplVKGlfw_getMonitorHeight();
 IMGUI_IMPL_API ImVec2 ImGui_ImplVKGlfw_getWindowFrameSize();
 IMGUI_IMPL_API ImVec2 ImGui_ImplVKGlfw_getWindowSize();
 
-
 //TitleBar
 
 namespace KDB_IMGUI_EXTENSION {
@@ -195,16 +156,6 @@ namespace KDB_IMGUI_EXTENSION {
     inline static ImColor invalidPrefab = ImColor(255, 1, 1, 255);
     inline static ImColor invalidLogo = ImColor(255, 0, 255, 255);
     inline static ImColor mainMenuBarOutLine = ImColor(0, 255, 0, 255);
-
-    inline static void DrawDebug() {
-      ImGui::Text("Theme");
-      ImGui::Separator();
-      ImGui::ColorEdit4("Titlebar", &titlebar.Value.x);
-      ImGui::ColorEdit4("Text", &text.Value.x);
-      ImGui::ColorEdit4("InvalidPrefab", &invalidPrefab.Value.x);
-      ImGui::ColorEdit4("InvalidLogo", &invalidLogo.Value.x);
-      ImGui::Separator();
-    }
   }// namespace Colors::Theme
 
   namespace Colors {
@@ -237,8 +188,10 @@ namespace KDB_IMGUI_EXTENSION {
   bool BeginMenubar(const ImRect &barRectangle);
   void EndMenubar();
 
-  bool BeginMenu(const char* label, bool enabled = true);
+  bool BeginMenu(const char *label, bool enabled = true);
   void EndMenu();
+
+
 
   inline static ImVec2 screenToWindowSpace(ImVec2 screenPos) {
     ImVec2 currentPos = ImGui::GetCursorScreenPos();
@@ -256,6 +209,3 @@ namespace KDB_IMGUI_EXTENSION {
     return screenPos;
   }
 }// namespace KDB_IMGUI_EXTENSION
-
-
-#endif//IMGUI_IMGUI_IMPL_GLFW_VULKAN_WINDOW_H

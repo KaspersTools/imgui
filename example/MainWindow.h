@@ -5,9 +5,6 @@
 #ifndef IMGUI_MAINWINDOW_H
 #define IMGUI_MAINWINDOW_H
 
-#include <imgui_impl_glfw_vulkan_window.h>
-#include <functional>
-
 class MainWindow {
 public:
     MainWindow(){
@@ -23,6 +20,7 @@ private:
     void shutdown();
 
 private:
+    bool showDebugWindow = false;
 };
 
 

@@ -3,23 +3,22 @@
 //
 
 #include "imgui_impl_glfw_vulkan_window.h"
-#include "imgui_internal.h"
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_vulkan.h"
+#include <misc/stb_image/stb_image.h>
 
-#include <functional>
-#include <math.h>
-#include <memory>
-#include <mutex>
-#include <queue>
-#include <stdio.h> // printf, fprintf
-#include <stdlib.h>// abort
-#include <thread>
-#include <unordered_map>
-#include <vector>
+#include <stdio.h>          // printf, fprintf
+#include <stdlib.h>         // abort
+#define GLFW_INCLUDE_NONE
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
 
 #include <iostream>
+#include <queue>
+#include <mutex>
+#include <thread>
 
 
 // Emedded font
@@ -27,21 +26,6 @@ GLFWwindow *m_WindowHandle = NULL;
 
 std::mutex m_EventQueueMutex;
 std::queue<std::function<void()>> m_EventQueue;
-
-// [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
-// To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
-// Your own project should not be affected, as you are likely to link with a newer binary of GLFW that is adequate for your version of Visual Studio.
-#if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
-#pragma comment(lib, "legacy_stdio_definitions")
-#endif
-
-//#define IMGUI_UNLIMITED_FRAME_RATE
-#ifdef DEBUG
-#define IMGUI_VULKAN_DEBUG_REPORT
-#endif
-
-#include <iostream>
-#include <map>
 
 static VkAllocationCallbacks *g_Allocator = NULL;
 static VkInstance g_Instance = VK_NULL_HANDLE;
@@ -702,6 +686,7 @@ namespace KDB_IMGUI_EXTENSION {
       if (resize_rect.Min.y > resize_rect.Max.y) ImSwap(resize_rect.Min.y, resize_rect.Max.y);
       ImGuiID resize_grip_id = window->GetID(resize_grip_n);// == GetWindowResizeCornerID()
       ImGui::ButtonBehavior(resize_rect, resize_grip_id, &hovered, &held, ImGuiButtonFlags_FlattenChildren | ImGuiButtonFlags_NoNavFocus);
+
       //GetForegroundDrawList(window)->AddRect(resize_rect.Min, resize_rect.Max, IM_COL32(255, 255, 0, 255));
       if (hovered || held)
         g.MouseCursor = (resize_grip_n & 1) ? ImGuiMouseCursor_ResizeNESW : ImGuiMouseCursor_ResizeNWSE;
@@ -956,7 +941,7 @@ namespace KDB_IMGUI_EXTENSION {
                   y1 + ImGui::GetFrameHeight());
   }
 
-  bool BeginMenubar(ImVec2 windowScreenPos, float menuBarWidth, float menuBarHeight) {
+  bool BeginMenubar(ImVec2 windowScreenPos, float menuBarWidth, float menuBarHeight, bool drawDebug) {
     ImGuiWindow *window = ImGui::GetCurrentWindow();
 
     if (window->SkipItems)
@@ -981,11 +966,12 @@ namespace KDB_IMGUI_EXTENSION {
             IM_ROUND(ImMax(bar_rect.Min.x, bar_rect.Max.x - ImMax(window->WindowRounding, window->WindowBorderSize))),
             IM_ROUND(bar_rect.Max.y));
 
+    if(drawDebug){
     ImGui::GetForegroundDrawList()->AddRect(
-            clip_rect.Min,
-            clip_rect.Max,
-            ImColor(155, 155, 0, 255));
-
+    clip_rect.Min,
+    clip_rect.Max,
+    ImColor(155, 155, 0, 255));
+    }
     KDB_IMGUI_EXTENSION::CurrentMenuXScreenStart = clip_rect.Min.x;
     KDB_IMGUI_EXTENSION::CurrentMenuXScreenEnd = clip_rect.Max.x;
 
@@ -1063,7 +1049,7 @@ static void renderMainMenuBar(ImVec2 startScreen, float width, float height) {
       const ImVec2 screenSpaceEnd = KDB_IMGUI_EXTENSION::windowToScreenSpace(ImVec2(cursPos.x + width, cursPos.y + height));
       ImGui::BeginGroup();
 
-      if (KDB_IMGUI_EXTENSION::BeginMenubar(screenSpaceStart, width, height)) {
+      if (KDB_IMGUI_EXTENSION::BeginMenubar(screenSpaceStart, width, height, appSpec.DrawDebugOutlines)) {
         (*titleBarSettings.MainMenuBarCallback)();
       }
 
@@ -1104,7 +1090,9 @@ static void renderTitleBar(float &outHeight) {
   auto *fgDrawList = ImGui::GetForegroundDrawList();
 
   bgDrawList->AddRectFilled(titlebarMin, titlebarMax, KDB_IMGUI_EXTENSION::Colors::Theme::titlebar);
-  fgDrawList->AddRect(titlebarMin, titlebarMax, KDB_IMGUI_EXTENSION::Colors::Theme::titlebar);
+
+  if(appSpec.DrawDebugOutlines)
+  { fgDrawList->AddRect(titlebarMin, titlebarMax, KDB_IMGUI_EXTENSION::Colors::Theme::titlebar);}
 
   //set cursor to the start of the titlebar
   ImGui::SetCursorPos(ImVec2(titlebarHorizontalOffset, titlebarVerticalOffset));
@@ -1115,56 +1103,75 @@ static void renderTitleBar(float &outHeight) {
   ImVec2 titleBarStartWindow = KDB_IMGUI_EXTENSION::screenToWindowSpace(titleBarStartScreen);
   ImVec2 defaultSpacing = ImGui::GetStyle().ItemSpacing;
 
+  ImVec2 currentTitleBarPosScreen = titleBarStartScreen;
+
   //draw logo
-  ImVec2 logoStartScreen = {
-          titleBarStartScreen.x + defaultSpacing.x,
-          titleBarStartScreen.y + defaultSpacing.y};
-  ImVec2 logoStartWindow = KDB_IMGUI_EXTENSION::screenToWindowSpace(logoStartScreen);
+  if (titleBarSettings.HasLogo) {
+    ImVec2 logoStartScreen = {
+            titleBarStartScreen.x + defaultSpacing.x,
+            titleBarStartScreen.y + defaultSpacing.y};
+    ImVec2 logoStartWindow = KDB_IMGUI_EXTENSION::screenToWindowSpace(logoStartScreen);
 
-  ImVec2 logoEndScreen = {
-          logoStartScreen.x + titleBarSettings.LogoSize.x,
-          logoStartScreen.y + titleBarSettings.LogoSize.y};
-  ImVec2 logoEndWindow = KDB_IMGUI_EXTENSION::screenToWindowSpace(logoEndScreen);
-  fgDrawList->AddRect(logoStartScreen, logoEndScreen, KDB_IMGUI_EXTENSION::Colors::Theme::invalidLogo);
+    ImVec2 logoEndScreen = {
+            logoStartScreen.x + titleBarSettings.LogoDrawSize.x,
+            logoStartScreen.y + titleBarSettings.LogoDrawSize.y};
+    ImVec2 logoEndWindow = KDB_IMGUI_EXTENSION::screenToWindowSpace(logoEndScreen);
 
-  //centered draw title
-  ImVec2 titleStartScreen;
-  ImVec2 titleStartWindow;
-  {
-    float windowHalfSize = ImGui::GetWindowWidth() * 0.5f;
-    float textHalfSize = ImGui::CalcTextSize(appSpec.Name.c_str()).x * 0.5f;
-    float startX = windowHalfSize - textHalfSize;
-    float startY = ImGui::CalcTextSize(appSpec.Name.c_str()).y * 0.5f;
-    titleStartScreen = {
-            ImGui::GetWindowPos().x + startX,
-            ImGui::GetWindowPos().y + startY};
-    titleStartWindow = KDB_IMGUI_EXTENSION::screenToWindowSpace(titleStartScreen);
+    //Zoom in to image
+    fgDrawList->AddImage((ImTextureID) titleBarSettings.Logo->GetDescriptorSet(), logoStartScreen, logoEndScreen);
+    currentTitleBarPosScreen = logoEndScreen;
   }
 
-  fgDrawList->AddText(titleStartScreen,
-                      KDB_IMGUI_EXTENSION::Colors::Theme::text, appSpec.Name.c_str());
+  //draw centered text
+  ImVec2 titleStartScreen = {};
+  if (titleBarSettings.DrawTitleCentered && !appSpec.Name.empty()) {
+    const ImVec2 titleSize = ImGui::CalcTextSize(appSpec.Name.c_str());
+    const float windowCenter = ImGui::GetWindowWidth() / 2.0f;
+    const float windowPos = ImGui::GetWindowPos().x;
+    const float titleCenter = windowCenter - (titleSize.x / 2.0f);
+    const float titleStart = windowPos + titleCenter;
+    titleStartScreen = {
+            titleStart,
+            titleBarStartScreen.y + defaultSpacing.y};
 
+    fgDrawList->AddText(titleStartScreen, KDB_IMGUI_EXTENSION::Colors::Theme::text, appSpec.Name.c_str());
+  }
 
-  ImVec2 menuBarStartScreen;
-  ImVec2 menuBarStartWindow;
-  ImVec2 menuBarEndScreen;
-  ImVec2 menuBarEndWindow;
-  //draw menu bar between centered text and logo
+  //draw menu bar
   {
-    const float width = titleStartScreen.x - logoEndScreen.x;
-    const float height = titlebarHeight;
-    menuBarStartScreen = {
-            logoEndScreen.x + defaultSpacing.x,
-            titleBarStartScreen.y};
-    menuBarStartWindow = KDB_IMGUI_EXTENSION::screenToWindowSpace(menuBarStartScreen);
-    menuBarEndScreen = {
-            menuBarStartScreen.x + width,
-            menuBarStartScreen.y + height};
-    menuBarEndWindow = KDB_IMGUI_EXTENSION::screenToWindowSpace(menuBarEndScreen);
+    ImVec2 menuBarStartScreen;
+    ImVec2 menuBarStartWindow;
+    ImVec2 menuBarEndScreen;
+    ImVec2 menuBarEndWindow;
 
-    //debug draw
-    fgDrawList->AddRect(menuBarStartScreen, menuBarEndScreen, KDB_IMGUI_EXTENSION::Colors::Theme::mainMenuBarOutLine);
-    renderMainMenuBar(menuBarStartScreen, width, height);
+    float width = ImGui::GetWindowWidth();
+    if(titleBarSettings.DrawTitleCentered)
+    {
+        width = (titleStartScreen.x - currentTitleBarPosScreen.x) - defaultSpacing.x;
+    }
+
+
+    //draw menu bar between centered text and logo
+    {
+      const float height = titlebarHeight;
+      menuBarStartScreen = {
+              currentTitleBarPosScreen.x + defaultSpacing.x,
+              titleBarStartScreen.y};
+      menuBarStartWindow = KDB_IMGUI_EXTENSION::screenToWindowSpace(menuBarStartScreen);
+      menuBarEndScreen = {
+              menuBarStartScreen.x + width,
+              menuBarStartScreen.y + height};
+      menuBarEndWindow = KDB_IMGUI_EXTENSION::screenToWindowSpace(menuBarEndScreen);
+
+      //debug draw
+      if(appSpec.DrawDebugOutlines)
+      {
+        fgDrawList->AddRect(menuBarStartScreen, menuBarEndScreen, KDB_IMGUI_EXTENSION::Colors::Theme::mainMenuBarOutLine);
+      }
+
+      ImGui::CalcItemWidth();
+      renderMainMenuBar(menuBarStartScreen, width, height);
+    }
   }
 }
 
@@ -1288,17 +1295,6 @@ void ImGui_ImplVKGlfw_init(ApplicationSpecification specification) {
   } else {
   }
 
-  // Set icon
-  //todo: implement
-  //  GLFWimage icon;
-  //  int channels;
-  //  if (!m_Specification.IconPath.empty()) {
-  //    std::string iconPathStr = m_Specification.IconPath.string();
-  //    icon.pixels = stbi_load(iconPathStr.c_str(), &icon.width, &icon.height, &channels, 4);
-  //    glfwSetWindowIcon(m_WindowHandle, 1, &icon);
-  //    stbi_image_free(icon.pixels);
-  //  }
-
   //TODO: remove me when glfw set hint in submodule is fixed
   glfwSetWindowAttrib(m_WindowHandle, GLFW_TITLEBAR, !m_Specification.TitleBarSettings.CustomTitleBar);
 
@@ -1311,10 +1307,10 @@ void ImGui_ImplVKGlfw_init(ApplicationSpecification specification) {
 
   SetupVulkan(extensions);
 
-
   // Create Window Surface
   VkSurfaceKHR surface;
   VkResult err = glfwCreateWindowSurface(g_Instance, m_WindowHandle, g_Allocator, &surface);
+
   check_vk_result(err);
 
   // Create Framebuffers
@@ -1377,8 +1373,28 @@ void ImGui_ImplVKGlfw_init(ApplicationSpecification specification) {
 
   // Load default font
   //todo: implement
+  // Set icon
+  ApplicationTitleBarSettings& titleBarSpecs = ImGui_ImplVKGlfw_getApplicationSpecification().TitleBarSettings;
 
 
+  if (titleBarSpecs.HasLogo) {
+      std::string iconPathStr = titleBarSpecs.LogoPath.string();
+      int channels;
+      GLFWimage icon = {};
+      icon.pixels = stbi_load(iconPathStr.c_str(), &icon.width, &icon.height, &channels, 4);
+      titleBarSpecs.Logo = std::make_shared<Image>(icon.width, icon.height, ImageFormat::RGBA, icon.pixels);
+      stbi_image_free(icon.pixels);
+  }
+   // titleBarSpecs.Logo = std::make_shared<Image>();
+
+//
+//    if(!titleBarSpecs.Logo->LoadImageFromPath(titleBarSpecs.LogoPath.string())){
+//      (*g_GlfwErrorCallback)(900, "GLFW: Failed to load logo");
+//      titleBarSpecs.Logo.reset();
+//    }else{
+//      titleBarSpecs.Logo->Resize(titleBarSpecs.LogoDrawSize.x, titleBarSpecs.LogoDrawSize.y);
+//    }
+  //}
   // Upload Fonts
   {
     // Use any command queue
@@ -1407,6 +1423,8 @@ void ImGui_ImplVKGlfw_init(ApplicationSpecification specification) {
     err = vkDeviceWaitIdle(g_Device);
     check_vk_result(err);
   }
+
+
 }
 
 void ImGui_ImplVKGlfw_startRender() {
@@ -1440,6 +1458,9 @@ void ImGui_ImplVKGlfw_startRender() {
       // Clear allocated command buffers from here since entire pool is destroyed
       s_AllocatedCommandBuffers.clear();
       s_AllocatedCommandBuffers.resize(g_MainWindowData.ImageCount);
+
+      m_Specification.WindowSettings.Width = width;
+      m_Specification.WindowSettings.Height = height;
 
       g_SwapChainRebuild = false;
     }
@@ -1514,6 +1535,11 @@ void ImGui_ImplVKGlfw_shutdown() {
   }
   s_ResourceFreeQueue.clear();
 
+  auto titleBarSpecs = ImGui_ImplVKGlfw_getTitleBarSpecification();
+  if (titleBarSpecs.HasLogo) {
+    titleBarSpecs.Logo.reset();
+  }
+
   ImGui_ImplVulkan_Shutdown();
   ImGui_ImplGlfw_Shutdown();
   ImGui::DestroyContext();
@@ -1522,6 +1548,10 @@ void ImGui_ImplVKGlfw_shutdown() {
   {
     delete g_GlfwErrorCallback;
     delete m_Specification.TitleBarSettings.MainMenuBarCallback;
+  }
+
+  if(m_Specification.TitleBarSettings.HasLogo){
+
   }
 
   CleanupVulkanWindow();
@@ -1561,6 +1591,10 @@ const std::map<std::string, std::string> ImGui_ImplVKGlfw_getLog() {
 
 void ImGui_ImplVKGlfw_addLog(const std::string &logMsg, const std::string &logType) {
   g_debugStats[logType] = logMsg;
+}
+
+void ImGui_ImplVKGlfw_check_vk_result(VkResult err) {
+  check_vk_result(err);
 }
 
 //VULKAN
@@ -1621,7 +1655,8 @@ void ImGui_ImplVKGlfw_flushCommandBuffer(VkCommandBuffer commandBuffer) {
 
   vkDestroyFence(g_Device, fence, nullptr);
 }
-void submitResourceFree(std::function<void()> &&func) {
+
+void ImGui_ImplVKGlfw_submitResourceFree(std::function<void()> &&func) {
   s_ResourceFreeQueue[s_CurrentFrameIndex].emplace_back(func);
 }
 

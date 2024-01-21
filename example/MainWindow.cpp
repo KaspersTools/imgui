@@ -2,13 +2,16 @@
 // Created by Kasper de Bruin on 19/01/2024.
 //
 
+
 #include "MainWindow.h"
+#include <backends/imgui_impl_glfw_vulkan_window.h>
+#include <backends/debug/imgui_impl_glfw_vulkan_debug.h>
 
 void MainWindow::init() {
 
   ApplicationSpecification m_Specification;
+  //App settings
   m_Specification.Name = "Imgui Vulkan Example";
-
   m_Specification.WindowSettings.Width = 800;
   m_Specification.WindowSettings.Height = 600;
   m_Specification.WindowSettings.WindowResizeable = true;
@@ -16,7 +19,11 @@ void MainWindow::init() {
   m_Specification.WindowSettings.CenterWindow = true;
   m_Specification.WindowSettings.CreateDefaultDockSpace = true;
 
+  //Titlebar settings
   m_Specification.TitleBarSettings.CustomTitleBar = true;
+  m_Specification.TitleBarSettings.HasLogo = true;
+  m_Specification.TitleBarSettings.LogoPath = "Assets/Icons/logo.png";
+  m_Specification.TitleBarSettings.DrawTitleCentered = true;
 
   m_Specification.TitleBarSettings.MainMenuBarCallback = new std::function<void()>([&]() {
     if (KDB_IMGUI_EXTENSION::BeginMenu("File")) {
@@ -37,6 +44,13 @@ void MainWindow::init() {
     }
 
     if (KDB_IMGUI_EXTENSION::BeginMenu("View")) {
+    if (ImGui::MenuItem("ImGui About Window"))
+        ImGui::ShowAboutWindow();
+
+    if(ImGui::MenuItem("Imgui Vulkan Glfw Debug"))
+        showDebugWindow = !showDebugWindow;
+
+
       if (ImGui::MenuItem("ImGui Demo Window")) {
         ImGui::ShowDemoWindow();
       }
@@ -108,7 +122,6 @@ void MainWindow::init() {
   std::cout << "----------Application Specification---------------------------------------------------------------------" << std::endl;
   std::cout << "GLFWVULKANIMPL::init() finished" << std::endl;
   std::cout << "GLFWVULKANIMPL::getApplicationSpecification().Name: " << ImGui_ImplVKGlfw_getApplicationSpecification().Name << std::endl;
-  std::cout << "GLFWVULKANIMPL::getApplicationSpecification().IconPath: " << ImGui_ImplVKGlfw_getApplicationSpecification().IconPath << std::endl;
   std::cout << "----------Window Specification--------------------------------------------------------------------------" << std::endl;
   std::cout << "GLFWVULKANIMPL::getApplicationSpecification().Width: " << ImGui_ImplVKGlfw_getWindowSettings().Width << std::endl;
   std::cout << "GLFWVULKANIMPL::getApplicationSpecification().Height: " << ImGui_ImplVKGlfw_getWindowSettings().Height << std::endl;
@@ -131,16 +144,7 @@ void MainWindow::render() {
   ImGui_ImplVKGlfw_startRender();
 
   ImGui::ShowDemoWindow();
-
-  ImGui::Begin("Titlebar settings");
-  ImGui_ImplVKGlfw_getApplicationSpecification().WindowSettings.DrawDebug();
-  ImGui::Separator();
-  ImGui_ImplVKGlfw_getApplicationSpecification().TitleBarSettings.DrawDebug();
-  ImGui::Separator();
-  KDB_IMGUI_EXTENSION::Colors::Theme::DrawDebug();
-  ImGui::Separator();
-
-  ImGui::End();
+  ImguiGlfwVulkanDebugger::render();
   ImGui_ImplVKGlfw_endRender();
 }
 
