@@ -6,28 +6,34 @@
 
 #include "backends/imgui_impl_vulkan_image.h"
 
-#include <string>
-#include <vector>
-#include <memory>
 #include <functional>
 #include <iostream>
 #include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
-#include <imgui.h>
-#include <imgui_internal.h>
 #include "vulkan/vulkan.h"
 #include <GLFW/glfw3.h>
+#include <imgui.h>
+#include <imgui_internal.h>
+
+struct ApplicationTitleBarDebugInfo {
+//Title bar
+  ImVec2 TitleBarLastScreenPos = ImVec2(0.0f, 0.0f);
+  ImVec2 TitleBarLastSize = ImVec2(0.0f, 0.0f);
+};
 
 struct ApplicationTitleBarSettings {
   bool CustomTitleBar = false;
 
-  float Height = 58.0f;
+  float Height = 65.806f;
 
   ImVec4 StartMaximized = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
   ImVec4 StartWindowed = ImVec4(64.0f, 0.0f, 0.0f, 0.0f);
 
-  bool   HasLogo = false;
-  ImVec2 LogoDrawSize = ImVec2(50.0f, 45.0f);
+  bool HasLogo = false;
+  ImVec2 LogoDrawSize = ImVec2(45.021f, 39.628f);
   std::shared_ptr<Image> Logo = nullptr;
   std::filesystem::path LogoPath = "";
   float ImageZoom = 1.5f;
@@ -36,6 +42,8 @@ struct ApplicationTitleBarSettings {
 
   ///DONT CALL BEGIN MAIN MENU BAR IN YOUR CODE
   std::function<void()> *MainMenuBarCallback = nullptr;
+
+  ApplicationTitleBarDebugInfo DebugInfo;
 };
 
 struct ApplicationWindowSettings {
@@ -47,13 +55,22 @@ struct ApplicationWindowSettings {
   bool CenterWindow = false;
 
   bool CreateDefaultDockSpace = true;
-
 };
 
 struct ApplicationSpecification {
   std::string Name = "Walnut App";
   ApplicationWindowSettings WindowSettings;
   ApplicationTitleBarSettings TitleBarSettings;
+
+  ImVec2 MenuBarStartWindow;
+  ImVec2 CurrentResetWindowPos;
+
+  ImVec2 CenteredTitleStartScreenPos;
+  ImVec2 CenteredTitleEndScreenPos;
+
+  float MenuBarWidth;
+  float MenuBarHeight;
+
   bool DrawDebugOutlines = false;
 };
 
@@ -146,6 +163,9 @@ IMGUI_IMPL_API ImVec2 ImGui_ImplVKGlfw_getWindowFrameSize();
 IMGUI_IMPL_API ImVec2 ImGui_ImplVKGlfw_getWindowSize();
 
 //TitleBar
+IMGUI_IMPL_API float ImGui_ImplVKGlfw_getMaxMainMenuBarEndLocation();
+//IMGUI_IMPL_API float ImGui_ImplVKGlfw_getLogoEndLocation();
+IMGUI_IMPL_API float ImGui_ImplVKGlfw_getMaxMainMenuBarSize();
 
 namespace KDB_IMGUI_EXTENSION {
   // To experiment with editor theme live you can change these constexpr into static
@@ -170,9 +190,6 @@ namespace KDB_IMGUI_EXTENSION {
     }
   }// namespace Colors
 
-  inline static float CurrentMenuXScreenStart = 0;
-  inline static float CurrentMenuXScreenEnd = 0;
-
   void ShiftCursorY(float distance);
 
   ImRect GetItemRect();
@@ -184,28 +201,13 @@ namespace KDB_IMGUI_EXTENSION {
   void RenderWindowOuterBorders(ImGuiWindow *window);
   bool UpdateWindowManualResize(ImGuiWindow *window, ImVec2 &newSize, ImVec2 &newPosition);
 
+  ImVec2 screenToWindowSpace(const ImVec2 &screenPos);
+  ImVec2 windowToScreenSpace(const ImVec2 &windowPos);
+
   // Menubar with custom rectangle
   bool BeginMenubar(const ImRect &barRectangle);
   void EndMenubar();
 
   bool BeginMenu(const char *label, bool enabled = true);
   void EndMenu();
-
-
-
-  inline static ImVec2 screenToWindowSpace(ImVec2 screenPos) {
-    ImVec2 currentPos = ImGui::GetCursorScreenPos();
-    ImGui::SetCursorScreenPos(screenPos);
-    ImVec2 windowPos = ImGui::GetCursorPos();
-    ImGui::SetCursorScreenPos(currentPos);
-    return windowPos;
-  }
-
-  inline static ImVec2 windowToScreenSpace(ImVec2 windowPos) {
-    ImVec2 currentPos = ImGui::GetCursorPos();
-    ImGui::SetCursorPos(windowPos);
-    ImVec2 screenPos = ImGui::GetCursorScreenPos();
-    ImGui::SetCursorPos(currentPos);
-    return screenPos;
-  }
 }// namespace KDB_IMGUI_EXTENSION

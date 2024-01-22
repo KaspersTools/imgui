@@ -8,16 +8,16 @@
 #include "backends/imgui_impl_vulkan.h"
 #include <misc/stb_image/stb_image.h>
 
-#include <stdio.h>          // printf, fprintf
-#include <stdlib.h>         // abort
+#include <stdio.h> // printf, fprintf
+#include <stdlib.h>// abort
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 
 #include <iostream>
-#include <queue>
 #include <mutex>
+#include <queue>
 #include <thread>
 
 
@@ -378,6 +378,13 @@ static void FramePresent(ImGui_ImplVulkanH_Window *wd) {
 }
 
 namespace KDB_IMGUI_EXTENSION {
+  ImRect MenuBarRect(ImVec2 windowScreenPos, float menuBarWidth, float menuBarHeight) {
+    float y1 = windowScreenPos.y;
+    return ImRect(windowScreenPos.x,
+                  y1,
+                  windowScreenPos.x + menuBarWidth,
+                  y1 + ImGui::GetFrameHeight());
+  }
 
   void ShiftCursorY(float distance) {
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + distance);
@@ -687,7 +694,6 @@ namespace KDB_IMGUI_EXTENSION {
       ImGuiID resize_grip_id = window->GetID(resize_grip_n);// == GetWindowResizeCornerID()
       ImGui::ButtonBehavior(resize_rect, resize_grip_id, &hovered, &held, ImGuiButtonFlags_FlattenChildren | ImGuiButtonFlags_NoNavFocus);
 
-      //GetForegroundDrawList(window)->AddRect(resize_rect.Min, resize_rect.Max, IM_COL32(255, 255, 0, 255));
       if (hovered || held)
         g.MouseCursor = (resize_grip_n & 1) ? ImGuiMouseCursor_ResizeNESW : ImGuiMouseCursor_ResizeNWSE;
 
@@ -723,7 +729,7 @@ namespace KDB_IMGUI_EXTENSION {
       ImRect border_rect = GetResizeBorderRect(window, border_n, grip_hover_inner_size, WINDOWS_HOVER_PADDING);
       ImGuiID border_id = window->GetID(border_n + 4);// == GetWindowResizeBorderID()
       ImGui::ButtonBehavior(border_rect, border_id, &hovered, &held, ImGuiButtonFlags_FlattenChildren);
-      //GetForegroundDrawLists(window)->AddRect(border_rect.Min, border_rect.Max, IM_COL32(255, 255, 0, 255));
+
       if ((hovered && g.HoveredIdTimer > WINDOWS_RESIZE_FROM_EDGES_FEEDBACK_TIMER) || held) {
         g.MouseCursor = (axis == ImGuiAxis_X) ? ImGuiMouseCursor_ResizeEW : ImGuiMouseCursor_ResizeNS;
         if (held)
@@ -785,20 +791,125 @@ namespace KDB_IMGUI_EXTENSION {
     return upper_popup->Window && (upper_popup->Window->Flags & ImGuiWindowFlags_ChildMenu) && ImGui::IsWindowChildOf(upper_popup->Window, window, true, false);
   }
 
-
-  bool BeginMenuEx(const char *label, const char *icon, bool enabled) {
+  bool BeginMenubar(ImVec2 screenPos, float menuBarWidth, float menuBarHeight, bool drawDebug) {
     ImGuiWindow *window = ImGui::GetCurrentWindow();
 
     if (window->SkipItems)
       return false;
-    // The reference position stored in popup_pos will be used by Begin() to find a suitable position for the child menu,
-    // However the final position is going to be different! It is chosen by FindBestWindowPosForPopup().
-    // e.g. Menus tend to overlap each other horizontally to amplify relative Z-ordering.
-    //    if (window->DC.CursorPos.x > KDB_IMGUI_EXTENSION::CurrentMenuXScreenEnd) {
-    //      //to new line
-    //      window->DC.CursorPos.x = KDB_IMGUI_EXTENSION::CurrentMenuXScreenStart;
-    //      window->DC.CursorPos.y += window->DC.CurrLineSize.y;
-    //    }
+
+    IM_ASSERT(!window->DC.MenuBarAppending);
+    ImGui::BeginGroup();// Backup position on layer 0 // FIXME: Misleading to use a group for that backup/restore
+    ImGui::PushID("##menubar");
+
+    // We don't clip with current window clipping rectangle as it is already set to the area below. However we clip with window full rect.
+    // We remove 1 worth of rounding to Max.x to that text in long menus and small windows don't tend to display over the lower-right rounded area, which looks particularly glitchy.
+    ImRect MenuBarRect = KDB_IMGUI_EXTENSION::MenuBarRect(screenPos, menuBarWidth, menuBarHeight);
+
+    ImRect bar_rect = MenuBarRect;
+    ImRect clip_rect(
+            IM_ROUND(bar_rect.Min.x + window->WindowBorderSize),
+            IM_ROUND(bar_rect.Min.y + window->WindowBorderSize),
+            IM_ROUND(ImMax(bar_rect.Min.x, bar_rect.Max.x - ImMax(window->WindowRounding, window->WindowBorderSize))),
+            IM_ROUND(bar_rect.Max.y));
+
+    clip_rect.ClipWith(window->OuterRectClipped);
+    ImGui::PushClipRect(clip_rect.Min, clip_rect.Max, false);
+
+    // We overwrite CursorMaxPos because BeginGroup sets it to CursorPos (essentially the .EmitItem hack in EndMenuBar() would need something analogous here, maybe a BeginGroupEx() with flags).
+    window->DC.CursorPos = window->DC.CursorMaxPos =
+            ImVec2(bar_rect.Min.x + window->DC.MenuBarOffset.x,
+                   bar_rect.Min.y + window->DC.MenuBarOffset.y);
+
+    window->DC.LayoutType = ImGuiLayoutType_Horizontal;
+    window->DC.NavLayerCurrent = ImGuiNavLayer_Menu;
+    window->DC.MenuBarAppending = true;
+    ImGui::AlignTextToFramePadding();
+
+    if (drawDebug) {
+      ImGui::GetForegroundDrawList()->AddRect(
+              bar_rect.Min,
+              bar_rect.Max,
+              ImColor(255, 0, 0, 255));
+    }
+    return true;
+  }// namespace KDB_IMGUI_EXTENSION
+
+  static void renderMainMenuBar() {
+    m_Specification.CurrentResetWindowPos = ImGui::GetCursorPos();
+    ImGui::SetCursorPos(m_Specification.MenuBarStartWindow);
+
+    if (m_Specification.TitleBarSettings.CustomTitleBar) {
+      if (m_Specification.TitleBarSettings.MainMenuBarCallback != nullptr) {
+        const ImVec2 screenStart = KDB_IMGUI_EXTENSION::windowToScreenSpace(m_Specification.MenuBarStartWindow);
+
+        ImGui::BeginGroup();
+        if (KDB_IMGUI_EXTENSION::BeginMenubar(screenStart, m_Specification.MenuBarWidth, m_Specification.MenuBarHeight,
+                                              m_Specification.DrawDebugOutlines)) {
+          (*m_Specification.TitleBarSettings.MainMenuBarCallback)();
+        }
+
+        KDB_IMGUI_EXTENSION::EndMenubar();
+        ImGui::EndGroup();
+      }
+    }
+
+    ImGui::SetCursorPos(m_Specification.CurrentResetWindowPos);
+  }
+
+  bool CalculateTextPos(const char *label) {
+    ImGuiWindow *window = ImGui::GetCurrentWindow();
+    const ImGuiStyle &style = ImGui::GetStyle();
+
+    const ImVec2 currentDCPos = {window->DC.CursorPos.x + IM_TRUNC(style.ItemSpacing.x * 0.5f),
+                                 window->DC.CursorPos.y};
+
+    const ImVec2 labelSize = ImGui::CalcTextSize(label, NULL, true);
+    const ImGuiMenuColumns *offsets = &window->DC.MenuColumns;
+
+    const ImVec2 text_pos_start(window->DC.CursorPos.x + offsets->OffsetLabel + 3,
+                                window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
+
+
+    const float textStartYScreen = text_pos_start.y;
+    const float textEndXScreen = text_pos_start.x + labelSize.x;
+    const float textEndYScreen = text_pos_start.y + labelSize.y;
+
+    const float centeredTitleYPosEnd    = m_Specification.CenteredTitleEndScreenPos.y;
+    const float centeredTitleXPosStart = m_Specification.CenteredTitleStartScreenPos.x;
+    if(textStartYScreen > centeredTitleYPosEnd){
+      return false;
+    }
+    if (textEndXScreen > centeredTitleXPosStart) {
+      //new line
+      {
+        KDB_IMGUI_EXTENSION::EndMenubar();
+        ImGui::EndGroup();
+        ImGui::SetCursorPos(m_Specification.CurrentResetWindowPos);
+      }
+
+      {
+        m_Specification.MenuBarStartWindow.y += m_Specification.MenuBarHeight;
+        const ImVec2 screenSpaceStart = KDB_IMGUI_EXTENSION::windowToScreenSpace(m_Specification.MenuBarStartWindow);
+        ImGui::SetCursorPos(m_Specification.MenuBarStartWindow);
+
+        ImGui::BeginGroup();
+        if (KDB_IMGUI_EXTENSION::BeginMenubar(screenSpaceStart,
+                                              m_Specification.MenuBarWidth, m_Specification.MenuBarHeight,
+                                              m_Specification.DrawDebugOutlines)) {
+          ImGui::SetCursorScreenPos(screenSpaceStart);
+          return true;
+        }
+      }
+    }
+  }
+
+  bool BeginMenuEx(const char *label, const char *icon, bool enabled) {
+    if (CalculateTextPos(label)) {
+    }
+
+    ImGuiWindow *window = ImGui::GetCurrentWindow();
+    if (window->SkipItems)
+      return false;
     ImGuiContext &g = *GImGui;
     const ImGuiStyle &style = g.Style;
     const ImGuiID id = window->GetID(label);
@@ -825,10 +936,8 @@ namespace KDB_IMGUI_EXTENSION {
     g.MenusIdSubmittedThisFrame.push_back(id);
 
     ImVec2 label_size = ImGui::CalcTextSize(label, NULL, true);
-
-    // Odd hack to allow hovering across menus of a same menu-set (otherwise we wouldn't be able to hover parent without always being a Child window)
-    // This is only done for items for the menu set and not the full parent window.
     const bool menuset_is_open = IsRootOfOpenMenuSet();
+
     if (menuset_is_open)
       ImGui::PushItemFlag(ImGuiItemFlags_NoWindowHoverableCheck, true);
 
@@ -842,14 +951,8 @@ namespace KDB_IMGUI_EXTENSION {
     // We use ImGuiSelectableFlags_NoSetKeyOwner to allow down on one menu item, move, up on another.
     const ImGuiSelectableFlags selectable_flags = ImGuiSelectableFlags_NoHoldingActiveID | ImGuiSelectableFlags_NoSetKeyOwner | ImGuiSelectableFlags_SelectOnClick | ImGuiSelectableFlags_DontClosePopups;
     if (window->DC.LayoutType == ImGuiLayoutType_Horizontal) {
-      // Menu inside an horizontal menu bar
-      // Selectable extend their highlight by half ItemSpacing in each direction.
-      // For ChildMenu, the popup position will be overwritten by the call to FindBestWindowPosForPopup() in Begin()
       popup_pos = ImVec2(pos.x - 1.0f - IM_TRUNC(style.ItemSpacing.x * 0.5f), pos.y - style.FramePadding.y + window->MenuBarHeight());
-
       window->DC.CursorPos.x += IM_TRUNC(style.ItemSpacing.x * 0.5f);
-      //check if we exceed the KDB_IMGUI_EXTENSION::CurrentMenuXScreenEnd
-      //TODO: Implement
 
       ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(style.ItemSpacing.x * 2.0f, style.ItemSpacing.y));
       float w = label_size.x;
@@ -861,36 +964,26 @@ namespace KDB_IMGUI_EXTENSION {
       ImGui::PopStyleVar();
       window->DC.CursorPos.x += IM_TRUNC(style.ItemSpacing.x * (-1.0f + 0.5f));// -1 spacing to compensate the spacing added when Selectable() did a SameLine(). It would also work to call SameLine() ourselves after the PopStyleVar().
     }
-    if (!enabled)
-      ImGui::EndDisabled();
-
     const bool hovered = (g.HoveredId == id) && enabled && !g.NavDisableMouseHover;
     if (menuset_is_open)
       ImGui::PopItemFlag();
 
     bool want_open = false;
     bool want_close = false;
-    if (window->DC.LayoutType == ImGuiLayoutType_Vertical)// (window->Flags & (ImGuiWindowFlags_Popup|ImGuiWindowFlags_ChildMenu))
-    {
-      //todo: implement
-    } else {
-      // Menu bar
-      if (menu_is_open && pressed && menuset_is_open)// Click an open menu again to close it
-      {
-        want_close = true;
-        want_open = menu_is_open = false;
-      } else if (pressed || (hovered && menuset_is_open && !menu_is_open))// First click to open, then hover to open others
-      {
-        want_open = true;
-      } else if (g.NavId == id && g.NavMoveDir == ImGuiDir_Down)// Nav-Down to open
-      {
-        want_open = true;
-        ImGui::NavMoveRequestCancel();
-      }
-    }
 
-    if (!enabled)// explicitly close if an open menu becomes disabled, facilitate users code a lot in pattern such as 'if (BeginMenu("options", has_object)) { ..use object.. }'
+    // Menu bar
+    if (menu_is_open && pressed && menuset_is_open)// Click an open menu again to close it
+    {
       want_close = true;
+      want_open = menu_is_open = false;
+    } else if (pressed || (hovered && menuset_is_open && !menu_is_open))// First click to open, then hover to open others
+    {
+      want_open = true;
+    } else if (g.NavId == id && g.NavMoveDir == ImGuiDir_Down)// Nav-Down to open
+    {
+      want_open = true;
+      ImGui::NavMoveRequestCancel();
+    }
     if (want_close && ImGui::IsPopupOpen(id, ImGuiPopupFlags_None))
       ImGui::ClosePopupToLevel(g.BeginPopupStack.Size, true);
 
@@ -925,70 +1018,33 @@ namespace KDB_IMGUI_EXTENSION {
   }
 
   bool KDB_IMGUI_EXTENSION::BeginMenu(const char *label, bool enabled) {
-    return ImGui::BeginMenu(label, true);
-    //    return BeginMenuEx(label, NULL, enabled);
+    return BeginMenuEx(label, NULL, enabled);
   }
 
   void KDB_IMGUI_EXTENSION::EndMenu() {
     return ImGui::EndMenu();
   }
 
-  ImRect MenuBarRect(ImVec2 windowScreenPos, float menuBarWidth, float menuBarHeight) {
-    float y1 = windowScreenPos.y;
-    return ImRect(windowScreenPos.x,
-                  y1,
-                  windowScreenPos.x + menuBarWidth,
-                  y1 + ImGui::GetFrameHeight());
+  ImVec2 screenToWindowSpace(const ImVec2 &screenPos) {
+    ImGuiWindow *window = ImGui::GetCurrentWindow();
+    ImVec2 windowPos = window->Pos;
+    ImVec2 windowSize = window->Size;
+    ImVec2 scroll = window->Scroll;
+    ImVec2 windowSpacePos = {screenPos.x - windowPos.x + scroll.x, screenPos.y - windowPos.y + scroll.y};
+    return windowSpacePos;
   }
 
-  bool BeginMenubar(ImVec2 windowScreenPos, float menuBarWidth, float menuBarHeight, bool drawDebug) {
+  ImVec2 windowToScreenSpace(const ImVec2 &screenPos) {
     ImGuiWindow *window = ImGui::GetCurrentWindow();
+    ImVec2 windowPos = window->Pos;
+    ImVec2 windowSize = window->Size;
 
-    if (window->SkipItems)
-      return false;
-    /*if (!(window->Flags & ImGuiWindowFlags_MenuBar))
-			return false;*/
+    ImVec2 windowMin = windowPos;
 
-    IM_ASSERT(!window->DC.MenuBarAppending);
-    ImGui::BeginGroup();// Backup position on layer 0 // FIXME: Misleading to use a group for that backup/restore
-    ImGui::PushID("##menubar");
+    ImVec2 windowSpacePos = {screenPos.x + windowMin.x, screenPos.y + windowMin.y};
 
-    const ImVec2 padding = window->WindowPadding;
-
-    // We don't clip with current window clipping rectangle as it is already set to the area below. However we clip with window full rect.
-    // We remove 1 worth of rounding to Max.x to that text in long menus and small windows don't tend to display over the lower-right rounded area, which looks particularly glitchy.
-    ImRect MenuBarRect = KDB_IMGUI_EXTENSION::MenuBarRect(windowScreenPos, menuBarWidth, menuBarHeight);
-
-    ImRect bar_rect = MenuBarRect;
-    ImRect clip_rect(
-            IM_ROUND(bar_rect.Min.x + window->WindowBorderSize),
-            IM_ROUND(bar_rect.Min.y + window->WindowBorderSize),
-            IM_ROUND(ImMax(bar_rect.Min.x, bar_rect.Max.x - ImMax(window->WindowRounding, window->WindowBorderSize))),
-            IM_ROUND(bar_rect.Max.y));
-
-    if(drawDebug){
-    ImGui::GetForegroundDrawList()->AddRect(
-    clip_rect.Min,
-    clip_rect.Max,
-    ImColor(155, 155, 0, 255));
-    }
-    KDB_IMGUI_EXTENSION::CurrentMenuXScreenStart = clip_rect.Min.x;
-    KDB_IMGUI_EXTENSION::CurrentMenuXScreenEnd = clip_rect.Max.x;
-
-    clip_rect.ClipWith(window->OuterRectClipped);
-    ImGui::PushClipRect(clip_rect.Min, clip_rect.Max, false);
-
-    // We overwrite CursorMaxPos because BeginGroup sets it to CursorPos (essentially the .EmitItem hack in EndMenuBar() would need something analogous here, maybe a BeginGroupEx() with flags).
-    window->DC.CursorPos = window->DC.CursorMaxPos =
-            ImVec2(bar_rect.Min.x + window->DC.MenuBarOffset.x,
-                   bar_rect.Min.y + window->DC.MenuBarOffset.y);
-
-    window->DC.LayoutType = ImGuiLayoutType_Horizontal;
-    window->DC.NavLayerCurrent = ImGuiNavLayer_Menu;
-    window->DC.MenuBarAppending = true;
-    ImGui::AlignTextToFramePadding();
-    return true;
-  }// namespace KDB_IMGUI_EXTENSION
+    return windowSpacePos;
+  }
 
   void EndMenubar() {
     ImGuiWindow *window = ImGui::GetCurrentWindow();
@@ -1017,8 +1073,6 @@ namespace KDB_IMGUI_EXTENSION {
       }
     }
 
-    IM_MSVC_WARNING_SUPPRESS(6011);// Static Analysis false positive "warning C6011: Dereferencing NULL pointer 'window'"
-    // IM_ASSERT(window->Flags & ImGuiWindowFlags_MenuBar); // NOTE(Yan): Needs to be commented out because Jay
     IM_ASSERT(window->DC.MenuBarAppending);
     ImGui::PopClipRect();
     ImGui::PopID();
@@ -1034,48 +1088,20 @@ namespace KDB_IMGUI_EXTENSION {
 
 ////----------LOCAL FUNCTIONS----------------------------------------------------------------------------------------------
 //Dockspace
-
-static void renderMainMenuBar(ImVec2 startScreen, float width, float height) {
-  const ApplicationSpecification &appSpec = m_Specification;
-  const ApplicationTitleBarSettings &titleBarSettings = appSpec.TitleBarSettings;
-  const ApplicationWindowSettings &windowSettings = appSpec.WindowSettings;
-  auto cursorBeginScreenPos = ImGui::GetCursorScreenPos();
-  ImGui::SetCursorScreenPos(startScreen);
-
-  if (titleBarSettings.CustomTitleBar) {
-    if (titleBarSettings.MainMenuBarCallback != nullptr) {
-      ImVec2 cursPos = ImGui::GetCursorPos();
-      const ImVec2 screenSpaceStart = KDB_IMGUI_EXTENSION::windowToScreenSpace(cursPos);
-      const ImVec2 screenSpaceEnd = KDB_IMGUI_EXTENSION::windowToScreenSpace(ImVec2(cursPos.x + width, cursPos.y + height));
-      ImGui::BeginGroup();
-
-      if (KDB_IMGUI_EXTENSION::BeginMenubar(screenSpaceStart, width, height, appSpec.DrawDebugOutlines)) {
-        (*titleBarSettings.MainMenuBarCallback)();
-      }
-
-      KDB_IMGUI_EXTENSION::EndMenubar();
-      ImGui::EndGroup();
-    }
-  }
-
-  ImGui::SetCursorScreenPos(cursorBeginScreenPos);
-}
-
 static void renderTitleBar(float &outHeight) {
-  const ApplicationSpecification &appSpec = m_Specification;
+  ApplicationSpecification &appSpec = m_Specification;
   const ApplicationTitleBarSettings &titleBarSettings = appSpec.TitleBarSettings;
   const ApplicationWindowSettings &windowSettings = appSpec.WindowSettings;
 
   const float titlebarHeight = titleBarSettings.Height;
   outHeight = titlebarHeight;
+
   const bool isMaximized = ImGui_ImplVKGlfw_isWindowMaximized();
 
   float titlebarHorizontalOffset = isMaximized ? titleBarSettings.StartMaximized.x : titleBarSettings.StartWindowed.x;
   float titlebarVerticalOffset = isMaximized ? titleBarSettings.StartMaximized.y : titleBarSettings.StartWindowed.y;
 
   const ImVec2 windowPadding = ImGui::GetCurrentWindow()->WindowPadding;
-
-  //set curstor to 0,0 off the window
   ImGui::SetCursorPos(ImVec2(0.0f, 0.0f));
 
   const ImVec2 titlebarMin =
@@ -1091,8 +1117,7 @@ static void renderTitleBar(float &outHeight) {
 
   bgDrawList->AddRectFilled(titlebarMin, titlebarMax, KDB_IMGUI_EXTENSION::Colors::Theme::titlebar);
 
-  if(appSpec.DrawDebugOutlines)
-  { fgDrawList->AddRect(titlebarMin, titlebarMax, KDB_IMGUI_EXTENSION::Colors::Theme::titlebar);}
+  if (appSpec.DrawDebugOutlines) { fgDrawList->AddRect(titlebarMin, titlebarMax, KDB_IMGUI_EXTENSION::Colors::Theme::titlebar); }
 
   //set cursor to the start of the titlebar
   ImGui::SetCursorPos(ImVec2(titlebarHorizontalOffset, titlebarVerticalOffset));
@@ -1100,6 +1125,7 @@ static void renderTitleBar(float &outHeight) {
   ImVec2 titleBarStartScreen = {
           ImGui::GetCursorScreenPos().x,
           ImGui::GetCursorScreenPos().y};
+
   ImVec2 titleBarStartWindow = KDB_IMGUI_EXTENSION::screenToWindowSpace(titleBarStartScreen);
   ImVec2 defaultSpacing = ImGui::GetStyle().ItemSpacing;
 
@@ -1116,7 +1142,6 @@ static void renderTitleBar(float &outHeight) {
             logoStartScreen.x + titleBarSettings.LogoDrawSize.x,
             logoStartScreen.y + titleBarSettings.LogoDrawSize.y};
     ImVec2 logoEndWindow = KDB_IMGUI_EXTENSION::screenToWindowSpace(logoEndScreen);
-
     //Zoom in to image
     fgDrawList->AddImage((ImTextureID) titleBarSettings.Logo->GetDescriptorSet(), logoStartScreen, logoEndScreen);
     currentTitleBarPosScreen = logoEndScreen;
@@ -1128,49 +1153,52 @@ static void renderTitleBar(float &outHeight) {
     const ImVec2 titleSize = ImGui::CalcTextSize(appSpec.Name.c_str());
     const float windowCenter = ImGui::GetWindowWidth() / 2.0f;
     const float windowPos = ImGui::GetWindowPos().x;
+
     const float titleCenter = windowCenter - (titleSize.x / 2.0f);
     const float titleStart = windowPos + titleCenter;
+
     titleStartScreen = {
             titleStart,
             titleBarStartScreen.y + defaultSpacing.y};
+
+    m_Specification.CenteredTitleStartScreenPos = titleStartScreen;
+    m_Specification.CenteredTitleEndScreenPos = {titleStartScreen.x + titleSize.x, titleStartScreen.y + titleSize.y};
+
+    if (m_Specification.DrawDebugOutlines) {
+        fgDrawList->AddRect(m_Specification.CenteredTitleStartScreenPos, m_Specification.CenteredTitleEndScreenPos, ImColor(0,255,0,255));
+    }
 
     fgDrawList->AddText(titleStartScreen, KDB_IMGUI_EXTENSION::Colors::Theme::text, appSpec.Name.c_str());
   }
 
   //draw menu bar
   {
-    ImVec2 menuBarStartScreen;
     ImVec2 menuBarStartWindow;
     ImVec2 menuBarEndScreen;
     ImVec2 menuBarEndWindow;
 
     float width = ImGui::GetWindowWidth();
-    if(titleBarSettings.DrawTitleCentered)
-    {
-        width = (titleStartScreen.x - currentTitleBarPosScreen.x) - defaultSpacing.x;
+    if (titleBarSettings.DrawTitleCentered) {
+      width = (titleStartScreen.x - currentTitleBarPosScreen.x) - defaultSpacing.x;
     }
 
-
+    ImVec2 menuBarStartScreen = {};
     //draw menu bar between centered text and logo
     {
-      const float height = titlebarHeight;
-      menuBarStartScreen = {
+      const float height = ImGui::GetFrameHeightWithSpacing();
+      menuBarStartScreen = ImVec2(
               currentTitleBarPosScreen.x + defaultSpacing.x,
-              titleBarStartScreen.y};
+              titleBarStartScreen.y + defaultSpacing.y);
+
       menuBarStartWindow = KDB_IMGUI_EXTENSION::screenToWindowSpace(menuBarStartScreen);
-      menuBarEndScreen = {
-              menuBarStartScreen.x + width,
-              menuBarStartScreen.y + height};
+      menuBarEndScreen = {menuBarStartScreen.x + width, menuBarStartScreen.y + height};
       menuBarEndWindow = KDB_IMGUI_EXTENSION::screenToWindowSpace(menuBarEndScreen);
 
-      //debug draw
-      if(appSpec.DrawDebugOutlines)
-      {
-        fgDrawList->AddRect(menuBarStartScreen, menuBarEndScreen, KDB_IMGUI_EXTENSION::Colors::Theme::mainMenuBarOutLine);
-      }
+      m_Specification.MenuBarStartWindow = menuBarStartWindow;
+      m_Specification.MenuBarWidth = ImGui::GetWindowWidth();
+      m_Specification.MenuBarHeight = height;
 
-      ImGui::CalcItemWidth();
-      renderMainMenuBar(menuBarStartScreen, width, height);
+      KDB_IMGUI_EXTENSION::renderMainMenuBar();
     }
   }
 }
@@ -1222,10 +1250,9 @@ static void renderFullScreenDockspace() {
     renderTitleBar(titleBarHeight);
     ImGui::SetCursorPosY(titleBarHeight);
     ImGui::SetCursorPosX(0.0f);
+    ImGui_ImplVKGlfw_getApplicationSpecification().TitleBarSettings.DebugInfo.TitleBarLastScreenPos = ImGui::GetCursorScreenPos();
+    ImGui_ImplVKGlfw_getApplicationSpecification().TitleBarSettings.DebugInfo.TitleBarLastSize = ImVec2(ImGui::GetWindowWidth(), titleBarHeight);
   }
-
-  // Dockspace
-  ImGuiIO &io = ImGui::GetIO();
   ImGuiStyle &style = ImGui::GetStyle();
   float minWinSizeX = style.WindowMinSize.x;
   style.WindowMinSize.x = 370.0f;
@@ -1233,11 +1260,9 @@ static void renderFullScreenDockspace() {
   style.WindowMinSize.x = minWinSizeX;
 }
 
-
 static void endFullScreenDockSpace() {
   ImGui::End();
 }
-
 
 void ImGui_ImplVKGlfw_init(ApplicationSpecification specification) {
   if (g_GlfwErrorCallback == nullptr) {
@@ -1374,26 +1399,26 @@ void ImGui_ImplVKGlfw_init(ApplicationSpecification specification) {
   // Load default font
   //todo: implement
   // Set icon
-  ApplicationTitleBarSettings& titleBarSpecs = ImGui_ImplVKGlfw_getApplicationSpecification().TitleBarSettings;
+  ApplicationTitleBarSettings &titleBarSpecs = ImGui_ImplVKGlfw_getApplicationSpecification().TitleBarSettings;
 
 
   if (titleBarSpecs.HasLogo) {
-      std::string iconPathStr = titleBarSpecs.LogoPath.string();
-      int channels;
-      GLFWimage icon = {};
-      icon.pixels = stbi_load(iconPathStr.c_str(), &icon.width, &icon.height, &channels, 4);
-      titleBarSpecs.Logo = std::make_shared<Image>(icon.width, icon.height, ImageFormat::RGBA, icon.pixels);
-      stbi_image_free(icon.pixels);
+    std::string iconPathStr = titleBarSpecs.LogoPath.string();
+    int channels;
+    GLFWimage icon = {};
+    icon.pixels = stbi_load(iconPathStr.c_str(), &icon.width, &icon.height, &channels, 4);
+    titleBarSpecs.Logo = std::make_shared<Image>(icon.width, icon.height, ImageFormat::RGBA, icon.pixels);
+    stbi_image_free(icon.pixels);
   }
-   // titleBarSpecs.Logo = std::make_shared<Image>();
+  // titleBarSpecs.Logo = std::make_shared<Image>();
 
-//
-//    if(!titleBarSpecs.Logo->LoadImageFromPath(titleBarSpecs.LogoPath.string())){
-//      (*g_GlfwErrorCallback)(900, "GLFW: Failed to load logo");
-//      titleBarSpecs.Logo.reset();
-//    }else{
-//      titleBarSpecs.Logo->Resize(titleBarSpecs.LogoDrawSize.x, titleBarSpecs.LogoDrawSize.y);
-//    }
+  //
+  //    if(!titleBarSpecs.Logo->LoadImageFromPath(titleBarSpecs.LogoPath.string())){
+  //      (*g_GlfwErrorCallback)(900, "GLFW: Failed to load logo");
+  //      titleBarSpecs.Logo.reset();
+  //    }else{
+  //      titleBarSpecs.Logo->Resize(titleBarSpecs.LogoDrawSize.x, titleBarSpecs.LogoDrawSize.y);
+  //    }
   //}
   // Upload Fonts
   {
@@ -1423,8 +1448,6 @@ void ImGui_ImplVKGlfw_init(ApplicationSpecification specification) {
     err = vkDeviceWaitIdle(g_Device);
     check_vk_result(err);
   }
-
-
 }
 
 void ImGui_ImplVKGlfw_startRender() {
@@ -1550,8 +1573,7 @@ void ImGui_ImplVKGlfw_shutdown() {
     delete m_Specification.TitleBarSettings.MainMenuBarCallback;
   }
 
-  if(m_Specification.TitleBarSettings.HasLogo){
-
+  if (m_Specification.TitleBarSettings.HasLogo) {
   }
 
   CleanupVulkanWindow();
@@ -1721,7 +1743,6 @@ void ImGui_ImplVKGlfw_setWindowSize(const ImVec2 &size) {
 void ImGui_ImplVKGlfw_setWindowPos(const ImVec2 &pos) {
   glfwSetWindowPos(m_WindowHandle, pos.x, pos.y);
 }
-
 
 //Title bar
 void ImGui_ImplVKGlfw_setTitleBarCallback(std::function<void()> &func) {

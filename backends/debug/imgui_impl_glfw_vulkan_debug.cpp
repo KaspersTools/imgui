@@ -39,7 +39,16 @@ void ImguiGlfwVulkanDebugger::render(){
     ImGui::SliderFloat("ImageZoom", &titleBarSetting.ImageZoom, 0.0f, 100.0f);
     ImGui::Checkbox("DrawTitleCentered", &titleBarSetting.DrawTitleCentered);
     ImGui::Text("MainMenuBarCallback: %s", titleBarSetting.MainMenuBarCallback == nullptr ? "nullptr" : titleBarSetting.MainMenuBarCallback->target_type().name());
+    ImGui::Separator();
 
+    ImGui::Text("ApplicationTitleBarDebugInfo");
+    ImGui::Text("TitleBarLastScreenPos: %f, %f", titleBarSetting.DebugInfo.TitleBarLastScreenPos.x, titleBarSetting.DebugInfo.TitleBarLastScreenPos.y);
+    ImGui::Text("TitleBarLastSize: %f, %f", titleBarSetting.DebugInfo.TitleBarLastSize.x, titleBarSetting.DebugInfo.TitleBarLastSize.y);
+
+    ImGui::Separator();
+    ImGui::Text("ImGui_ImplVKGlfw_getApplicationSpecification");
+    ImGui::Text("Centered Title Bar: %f %f", applicationSetting.CenteredTitleStartScreenPos.x, applicationSetting.CenteredTitleStartScreenPos.y);
+    ImGui::Separator();
     ImGui::End();
 }
 
