@@ -63,6 +63,8 @@ set(IMGUI_SOURCES
         ${KDB_IMGUI_INCLUDE_DIR}misc/stb_image/stb_image.h
         ${KDB_IMGUI_INCLUDE_DIR}backends/debug/imgui_impl_glfw_vulkan_debug.cpp
         ${KDB_IMGUI_INCLUDE_DIR}backends/debug/imgui_impl_glfw_vulkan_debug.h
+        Extension.cpp
+        Extension.h
 )
 add_library(KDB_IMGUI-STATIC STATIC
         ${IMGUI_SOURCES}

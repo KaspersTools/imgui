@@ -26,7 +26,7 @@ void MainWindow::init() {
   m_Specification.TitleBarSettings.DrawTitleCentered = true;
 
   m_Specification.TitleBarSettings.MainMenuBarCallback = new std::function<void()>([&]() {
-    if (KDB_IMGUI_EXTENSION::BeginMenu("File")) {
+    if (ImGui::BeginMenu("File")) {
       if (ImGui::MenuItem("New")) {
         std::cout << "New" << std::endl;
       }
@@ -40,17 +40,15 @@ void MainWindow::init() {
         glfwSetWindowShouldClose(ImGui_ImplVKGlfw_getMainWindowHandle(), GLFW_TRUE);
       }
 
-      KDB_IMGUI_EXTENSION::EndMenu();
+      ImGui::EndMenu();
     }
 
-    if (KDB_IMGUI_EXTENSION::BeginMenu("View")) {
+    if (ImGui::BeginMenu("View")) {
     if (ImGui::MenuItem("ImGui About Window"))
         ImGui::ShowAboutWindow();
 
     if(ImGui::MenuItem("Imgui Vulkan Glfw Debug"))
         showDebugWindow = !showDebugWindow;
-
-
       if (ImGui::MenuItem("ImGui Demo Window")) {
         ImGui::ShowDemoWindow();
       }
@@ -60,54 +58,54 @@ void MainWindow::init() {
       if (ImGui::MenuItem("ImGui Style Editor")) {
         ImGui::ShowStyleEditor();
       }
-      KDB_IMGUI_EXTENSION::EndMenu();
+      ImGui::EndMenu();
     }
 
-    if (KDB_IMGUI_EXTENSION::BeginMenu("Help")) {
+    if (ImGui::BeginMenu("Help")) {
       if (ImGui::MenuItem("About")) {
         std::cout << "About" << std::endl;
       }
-      KDB_IMGUI_EXTENSION::EndMenu();
+      ImGui::EndMenu();
     }
 
-    if (KDB_IMGUI_EXTENSION::BeginMenu("Debug")) {
-      KDB_IMGUI_EXTENSION::EndMenu();
+    if (ImGui::BeginMenu("Debug")) {
+      ImGui::EndMenu();
     }
 
-    if (KDB_IMGUI_EXTENSION::BeginMenu("Theme")) {
-      KDB_IMGUI_EXTENSION::EndMenu();
+    if (ImGui::BeginMenu("Theme")) {
+      ImGui::EndMenu();
     }
 
-    if (KDB_IMGUI_EXTENSION::BeginMenu("Window")) {
+    if (ImGui::BeginMenu("Window")) {
       if (ImGui::MenuItem("Center")) {
       }
       if (ImGui::MenuItem("Resize")) {
       }
-      KDB_IMGUI_EXTENSION::EndMenu();
+      ImGui::EndMenu();
     }
 
-    if (KDB_IMGUI_EXTENSION::BeginMenu("Window Decorations")) {
+    if (ImGui::BeginMenu("Window Decorations")) {
       if (ImGui::MenuItem("Decorated")) {
       }
       if (ImGui::MenuItem("Undecorated")) {
       }
-      KDB_IMGUI_EXTENSION::EndMenu();
+      ImGui::EndMenu();
     }
 
-    if (KDB_IMGUI_EXTENSION::BeginMenu("Window Resizeable")) {
+    if (ImGui::BeginMenu("Window Resizeable")) {
       if (ImGui::MenuItem("Resizeable")) {
       }
       if (ImGui::MenuItem("Unresizeable")) {
       }
-      KDB_IMGUI_EXTENSION::EndMenu();
+      ImGui::EndMenu();
     }
 
-    if (KDB_IMGUI_EXTENSION::BeginMenu("Window Floating")) {
+    if (ImGui::BeginMenu("Window Floating")) {
       if (ImGui::MenuItem("Floating")) {
       }
       if (ImGui::MenuItem("Unfloating")) {
       }
-      KDB_IMGUI_EXTENSION::EndMenu();
+      ImGui::EndMenu();
     }
   });
 
