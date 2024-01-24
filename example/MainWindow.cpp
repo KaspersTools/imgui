@@ -4,8 +4,29 @@
 
 
 #include "MainWindow.h"
-#include <backends/imgui_impl_glfw_vulkan_window.h>
 #include <backends/debug/imgui_impl_glfw_vulkan_debug.h>
+#include <backends/imgui_impl_glfw_vulkan_window.h>
+
+#ifdef KDB_IMGUI_ADDONS_CODE_EDITOR
+#include <imguicodeeditor.h>
+#endif
+
+#ifdef KDB_IMGUI_ADDONS_NOTIFY
+#include <imgui_notify.h>
+#endif
+
+#ifdef KDB_IMGUI_ADDONS_DATE_CHOOSER
+#include <imguidatechooser.h>
+#endif
+
+#ifdef KDB_IMGUI_ADDONS_FILE_DIALOG
+#include <ImGuiFileDialog.h>
+#endif
+
+#ifdef KDB_IMGUI_ADDONS_STYLE_SERIALIZER
+#include <imguistyleserializer.h>
+#endif
+
 
 void MainWindow::init() {
 
@@ -24,7 +45,7 @@ void MainWindow::init() {
   m_Specification.TitleBarSettings.HasLogo = true;
   m_Specification.TitleBarSettings.LogoPath = "Assets/Icons/logo.png";
   m_Specification.TitleBarSettings.DrawTitleCentered = true;
-
+  m_Specification.TitleBarSettings.MainMenuBarExtraHeight = 30.0f;
   m_Specification.TitleBarSettings.MainMenuBarCallback = new std::function<void()>([&]() {
     if (ImGui::BeginMenu("File")) {
       if (ImGui::MenuItem("New")) {
@@ -44,10 +65,10 @@ void MainWindow::init() {
     }
 
     if (ImGui::BeginMenu("View")) {
-    if (ImGui::MenuItem("ImGui About Window"))
+      if (ImGui::MenuItem("ImGui About Window"))
         ImGui::ShowAboutWindow();
 
-    if(ImGui::MenuItem("Imgui Vulkan Glfw Debug"))
+      if (ImGui::MenuItem("Imgui Vulkan Glfw Debug"))
         showDebugWindow = !showDebugWindow;
       if (ImGui::MenuItem("ImGui Demo Window")) {
         ImGui::ShowDemoWindow();
@@ -107,6 +128,37 @@ void MainWindow::init() {
       }
       ImGui::EndMenu();
     }
+
+    if (ImGui::BeginMenu("Addons")) {
+
+#ifdef KDB_IMGUI_ADDONS_CODE_EDITOR
+      if (ImGui::MenuItem("KDB_IMGUI_ADDONS_CODE_EDITOR")) {
+      }
+#endif
+
+#ifdef KDB_IMGUI_ADDONS_NOTIFY
+      if (ImGui::MenuItem("KDB_IMGUI_ADDONS_NOTIFY")) {
+      }
+#endif
+
+#ifdef KDB_IMGUI_ADDONS_DATE_CHOOSER
+      if (ImGui::MenuItem("KDB_IMGUI_ADDONS_DATE_CHOOSER")) {
+      }
+#endif
+
+#ifdef KDB_IMGUI_ADDONS_FILE_DIALOG
+      if (ImGui::MenuItem("KDB_IMGUI_ADDONS_FILE_DIALOG")) {
+      }
+#endif
+
+#ifdef KDB_IMGUI_ADDONS_STYLE_SERIALIZER
+      if (ImGui::MenuItem("KDB_IMGUI_ADDONS_STYLE_SERIALIZER")) {
+      }
+#endif
+
+
+      ImGui::EndMenu();
+    }
   });
 
   ImGui_ImplVKGlfw_setImplErrorCallback([&](int error, const char *description) {
@@ -142,6 +194,7 @@ void MainWindow::render() {
   ImGui_ImplVKGlfw_startRender();
 
   ImGui::ShowDemoWindow();
+
   ImguiGlfwVulkanDebugger::render();
   ImGui_ImplVKGlfw_endRender();
 }

@@ -428,6 +428,7 @@ static void renderFullScreenDockspace() {
             ImVec2(titleBarSettings.StartMaximized.x, titleBarSettings.StartMaximized.y),
             ImVec2(titleBarSettings.StartWindowed.x, titleBarSettings.StartWindowed.y),
             titleBarSettings.Height,
+            titleBarSettings.MainMenuBarExtraHeight,
             isMaximized,
             appSpec.DrawDebugOutlines,
             ImColor(255, 255, 0, 255));

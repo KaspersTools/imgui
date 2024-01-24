@@ -12,6 +12,7 @@ namespace KDB::IMGUI {
                      const ImVec2 &startMaximized,
                      const ImVec2 &startWindowed,
                      const float inHeight,
+                     const float menuBarExtraOffsetY,
                      const bool isMaximized,
                      const bool drawDebug,
                      const ImColor debugColor) {
@@ -104,7 +105,7 @@ namespace KDB::IMGUI {
         const float height = ImGui::GetFrameHeightWithSpacing();
         menuBarStartScreen = ImVec2(
                 currentTitleBarPosScreen.x + defaultSpacing.x,
-                titleBarStartScreen.y + defaultSpacing.y);
+                titleBarStartScreen.y + defaultSpacing.y + menuBarExtraOffsetY);
 
         menuBarStartWindow = KDB::IMGUI::screenToWindowSpace(menuBarStartScreen);
         menuBarEndScreen = {menuBarStartScreen.x + width, menuBarStartScreen.y + height};

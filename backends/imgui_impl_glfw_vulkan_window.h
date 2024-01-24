@@ -18,6 +18,8 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
+
+
 struct ApplicationTitleBarDebugInfo {
 //Title bar
   ImVec2 TitleBarLastScreenPos = ImVec2(0.0f, 0.0f);
@@ -37,6 +39,7 @@ struct ApplicationTitleBarSettings {
   std::shared_ptr<Image> Logo = nullptr;
   std::filesystem::path LogoPath = "";
   float ImageZoom = 1.5f;
+  float MainMenuBarExtraHeight = 0.0f;
 
   bool DrawTitleCentered = false;
 

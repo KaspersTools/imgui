@@ -40,16 +40,17 @@ namespace KDB::IMGUI {
   };
 
   void beginTitleBar(const bool drawTitleCentered,
-                      const std::string &appTitle,
-                      const bool hasLogo,
-                      const VkDescriptorSet logoDescriptorSet,
-                      const ImVec2 &logoSize,
-                      const ImVec2 &startMaximized,
-                      const ImVec2 &startWindowed,
-                      const float inHeight,
-                      const bool isMaximized,
-                      const bool drawDebug,
-                      const ImColor debugColor);
+                     const std::string &appTitle,
+                     const bool hasLogo,
+                     const VkDescriptorSet logoDescriptorSet,
+                     const ImVec2 &logoSize,
+                     const ImVec2 &startMaximized,
+                     const ImVec2 &startWindowed,
+                     const float inHeight,
+                     const float menuBarExtraOffsetY,
+                     const bool isMaximized,
+                     const bool drawDebug,
+                     const ImColor debugColor);
   void endTitleBar();
 
   void beginMenuBar(ImVec2 screenPos, float menuBarWidth, float menuBarHeight, bool drawDebug, ImColor debugColor);
