@@ -26,6 +26,7 @@
 #ifdef KDB_IMGUI_ADDONS_STYLE_SERIALIZER
 #include <imguistyleserializer.h>
 #endif
+#include <fonts/FontManager.h>
 
 
 void MainWindow::init() {
@@ -45,7 +46,14 @@ void MainWindow::init() {
   m_Specification.TitleBarSettings.HasLogo = true;
   m_Specification.TitleBarSettings.LogoPath = "Assets/Icons/logo.png";
   m_Specification.TitleBarSettings.DrawTitleCentered = true;
-  m_Specification.TitleBarSettings.MainMenuBarExtraHeight = 30.0f;
+
+  //Make it so that the main menu bar is 20 pixels lower then by default.
+  // This because the menubar is so big that it overlaps the titlebar
+  m_Specification.TitleBarSettings.MainMenuBarExtraHeight = 19.0f;
+
+  m_Specification.TitleBarSettings.Height = 60.132f;
+
+  //Set the main menu bar callback
   m_Specification.TitleBarSettings.MainMenuBarCallback = new std::function<void()>([&]() {
     if (ImGui::BeginMenu("File")) {
       if (ImGui::MenuItem("New")) {
@@ -58,42 +66,20 @@ void MainWindow::init() {
         std::cout << "Save" << std::endl;
       }
       if (ImGui::MenuItem("Exit")) {
-        glfwSetWindowShouldClose(ImGui_ImplVKGlfw_getMainWindowHandle(), GLFW_TRUE);
+        //Close the window
+        ImGui_ImplVKGlfw_setShouldClose(true);
       }
 
-      ImGui::EndMenu();
-    }
-
-    if (ImGui::BeginMenu("View")) {
-      if (ImGui::MenuItem("ImGui About Window"))
-        ImGui::ShowAboutWindow();
-
-      if (ImGui::MenuItem("Imgui Vulkan Glfw Debug"))
-        showDebugWindow = !showDebugWindow;
-      if (ImGui::MenuItem("ImGui Demo Window")) {
-        ImGui::ShowDemoWindow();
-      }
-      if (ImGui::MenuItem("ImGui Metrics Window")) {
-        ImGui::ShowMetricsWindow();
-      }
-      if (ImGui::MenuItem("ImGui Style Editor")) {
-        ImGui::ShowStyleEditor();
-      }
-      ImGui::EndMenu();
-    }
-
-    if (ImGui::BeginMenu("Help")) {
-      if (ImGui::MenuItem("About")) {
-        std::cout << "About" << std::endl;
-      }
       ImGui::EndMenu();
     }
 
     if (ImGui::BeginMenu("Debug")) {
+
       ImGui::EndMenu();
     }
 
     if (ImGui::BeginMenu("Theme")) {
+
       ImGui::EndMenu();
     }
 
@@ -129,6 +115,19 @@ void MainWindow::init() {
       ImGui::EndMenu();
     }
 
+    if (ImGui::BeginMenu("ImGui Widgets")) {
+      if (ImGui::MenuItem("showDemoWindow")) showDemoWindow = true;
+      if (ImGui::MenuItem("showAboutWindow")) showAboutWindow = true;
+      if (ImGui::MenuItem("showStyleEditor")) showStyleEditor = true;
+      if (ImGui::MenuItem("showMetricsWindow")) showMetricsWindow = true;
+      if (ImGui::MenuItem("showDebugLogWindow")) showDebugLogWindow = true;
+      if (ImGui::MenuItem("showIDStackToolWindow")) showIDStackToolWindow = true;
+      if (ImGui::MenuItem("showFontSelector")) showFontSelector = true;
+      if (ImGui::MenuItem("showStyleSelector")) showStyleSelector = true;
+      if (ImGui::MenuItem("showUserGuide")) showUserGuide = true;
+      ImGui::EndMenu();
+    }
+
     if (ImGui::BeginMenu("Addons")) {
 
 #ifdef KDB_IMGUI_ADDONS_CODE_EDITOR
@@ -155,8 +154,6 @@ void MainWindow::init() {
       if (ImGui::MenuItem("KDB_IMGUI_ADDONS_STYLE_SERIALIZER")) {
       }
 #endif
-
-
       ImGui::EndMenu();
     }
   });
@@ -181,19 +178,50 @@ void MainWindow::init() {
   std::cout << "---------Title bar Specification------------------------------------------------------------------------" << std::endl;
   std::cout << "GLFWVULKANIMPL::getApplicationSpecification().TitleBarSettings.WindowNoDefaultTitleBar: " << ImGui_ImplVKGlfw_getApplicationSpecification().TitleBarSettings.CustomTitleBar << std::endl;
   std::cout << "--------------------------------------------------------------------------------------------------------" << std::endl;
+  ///////////
+
+  ImFontConfig conf;
+  conf.OversampleH = 4;
+  conf.OversampleV = 4;
+  KDB_ImGui::FontManager::getInstance()->addFont("Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFont-Regular.ttf", 16.0f, conf);
+  ImGui::GetIO().FontDefault = KDB_ImGui::FontManager::getInstance()->getFont("Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFont-Regular.ttf");
+  ImGui::GetIO().Fonts->Build();
   run();
 }
 
 bool MainWindow::run() {
-  while (!glfwWindowShouldClose(ImGui_ImplVKGlfw_getMainWindowHandle())) {
+  while (!ImGui_ImplVKGlfw_shouldClose()) {
     render();
   }
 }
 
 void MainWindow::render() {
   ImGui_ImplVKGlfw_startRender();
-
-  ImGui::ShowDemoWindow();
+  if (showDemoWindow)
+    ImGui::ShowDemoWindow(&showDemoWindow);
+  if (showMetricsWindow)
+    ImGui::ShowMetricsWindow(&showMetricsWindow);
+  if (showDebugLogWindow)
+    ImGui::ShowDebugLogWindow(&showDebugLogWindow);
+  if (showIDStackToolWindow)
+    ImGui::ShowIDStackToolWindow(&showIDStackToolWindow);
+  if (showAboutWindow)
+    ImGui::ShowAboutWindow(&showAboutWindow);
+  if (showStyleEditor)
+    ImGui::ShowStyleEditor(&ImGui::GetStyle());
+  if (showFontSelector) {
+    ImGui::Begin("Font Selector");
+    ImGui::ShowFontSelector("Font Selector");
+    ImGui::End();
+  }
+  if (showStyleSelector) {
+    ImGui_ImplVKGlfw_ShowStyleSelector("Style Selector", &showStyleSelector);
+  }
+  if (showUserGuide) {
+    ImGui::Begin("User Guide");
+    ImGui::ShowUserGuide();
+    ImGui::End();
+  }
 
   ImguiGlfwVulkanDebugger::render();
   ImGui_ImplVKGlfw_endRender();

@@ -435,7 +435,7 @@ static void renderFullScreenDockspace() {
     KDB::IMGUI::beginMainMenuBar();
 
     //render itemsi
-    if(titleBarSettings.MainMenuBarCallback != nullptr)
+    if (titleBarSettings.MainMenuBarCallback != nullptr)
       (*titleBarSettings.MainMenuBarCallback)();
 
     KDB::IMGUI::endMainMenuBar();
@@ -774,6 +774,14 @@ const float ImGui_ImplVKGlfw_getTime() {
   return (float) glfwGetTime();
 }
 
+const bool ImGui_ImplVKGlfw_shouldClose() {
+  return glfwWindowShouldClose(m_WindowHandle);
+}
+
+void ImGui_ImplVKGlfw_setShouldClose(const bool value) {
+  glfwSetWindowShouldClose(m_WindowHandle, value);
+}
+
 //SPECIFICATIONS
 ApplicationSpecification &ImGui_ImplVKGlfw_getApplicationSpecification() {
   return m_Specification;
@@ -927,8 +935,24 @@ void ImGui_ImplVKGlfw_setWindowPos(const ImVec2 &pos) {
   glfwSetWindowPos(m_WindowHandle, pos.x, pos.y);
 }
 
-//Title bar
-void ImGui_ImplVKGlfw_setTitleBarCallback(std::function<void()> &func) {
-  //  m_ImplErrorCallback(404, "Set Title Bar Callback not implemented yet!");
-  (*g_GlfwErrorCallback)(404, "Set Title Bar Callback not implemented yet!");
+bool ImGui_ImplVKGlfw_ShowStyleSelector(const char *label, bool *p_open){
+  ImGui::Begin(label, p_open, ImGuiWindowFlags_None);
+  bool changed = false;
+  static int style_idx = -1;
+  if (ImGui::Combo(label, &style_idx, "Dark\0Light\0Classic\0")) {
+    switch (style_idx) {
+      case 0:
+        ImGui::StyleColorsDark();
+        break;
+      case 1:
+        ImGui::StyleColorsLight();
+        break;
+      case 2:
+        ImGui::StyleColorsClassic();
+        break;
+    }
+    changed = true;
+  }
+  ImGui::End();
+  return changed;
 }

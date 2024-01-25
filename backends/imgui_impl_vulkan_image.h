@@ -3,7 +3,6 @@
 #pragma once
 
 #include <filesystem>
-#include "vulkan/vulkan.h"
 
 enum class ImageFormat
 	{
@@ -11,6 +10,8 @@ enum class ImageFormat
 		RGBA,
 		RGBA32F
 	};
+
+#include <vulkan/vulkan.h>
 
 class Image{
 public:

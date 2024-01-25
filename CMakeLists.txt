@@ -15,7 +15,7 @@ option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
 option(GLFW_INSTALL "Generate installation target" OFF)
 option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 set(KDB_IMGUI_INCLUDE_DIR ./)
-add_subdirectory(${KDB_IMGUI_INCLUDE_DIR}${GLFW_DIR})
+ add_subdirectory(vendor/glfw)
 
 #vulkan
 find_package(Vulkan REQUIRED)
@@ -44,10 +44,13 @@ set(IMGUI_SOURCES
         #backends
         ${KDB_IMGUI_INCLUDE_DIR}backends/imgui_impl_glfw.cpp
         ${KDB_IMGUI_INCLUDE_DIR}backends/imgui_impl_glfw.h
+
         ${KDB_IMGUI_INCLUDE_DIR}backends/imgui_impl_vulkan.cpp
         ${KDB_IMGUI_INCLUDE_DIR}backends/imgui_impl_vulkan.h
+
         ${KDB_IMGUI_INCLUDE_DIR}backends/imgui_impl_glfw_vulkan_window.cpp
         ${KDB_IMGUI_INCLUDE_DIR}backends/imgui_impl_glfw_vulkan_window.h
+
         ${KDB_IMGUI_INCLUDE_DIR}backends/imgui_impl_vulkan_image.cpp
         ${KDB_IMGUI_INCLUDE_DIR}backends/imgui_impl_vulkan_image.h
 
@@ -63,8 +66,11 @@ set(IMGUI_SOURCES
         ${KDB_IMGUI_INCLUDE_DIR}misc/stb_image/stb_image.h
         ${KDB_IMGUI_INCLUDE_DIR}backends/debug/imgui_impl_glfw_vulkan_debug.cpp
         ${KDB_IMGUI_INCLUDE_DIR}backends/debug/imgui_impl_glfw_vulkan_debug.h
+
         Extension.cpp
         Extension.h
+        fonts/FontManager.cpp
+        fonts/FontManager.h
 )
 add_library(KDB_IMGUI-STATIC STATIC
         ${IMGUI_SOURCES}
@@ -74,13 +80,17 @@ message(STATUS "KDB_IMGUI_INCLUDE_DIR: ${KDB_IMGUI_INCLUDE_DIR}")
 message(STATUS "GLFW_DIR: ${GLFW_DIR}")
 message(STATUS "Vulkan_INCLUDE_DIRS: ${Vulkan_INCLUDE_DIRS}")
 
+list(APPEND  ${KDB_IMGUI_INCLUDE_DIR} {Vulkan_INCLUDE_DIRS})
 
 target_include_directories(KDB_IMGUI-STATIC PUBLIC
         ${KDB_IMGUI_INCLUDE_DIR}
-        ${GLFW_DIR}/include
         ${Vulkan_INCLUDE_DIRS}
 )
-target_link_libraries(KDB_IMGUI-STATIC PUBLIC
+
+target_include_directories(KDB_IMGUI-STATIC PRIVATE
+        ${GLFW_DIR}/include
+)
+target_link_libraries(KDB_IMGUI-STATIC PRIVATE
         glfw
         Vulkan::Vulkan
 )
@@ -88,11 +98,12 @@ target_link_libraries(KDB_IMGUI-STATIC PUBLIC
 
 if (KDB_IMGUI_BUILD_EXAMPLES)
     set(IMGUI_EXAMPLES_SOURCES example/main.cpp example/MainWindow.cpp example/MainWindow.h)
-    add_executable(KDB_IMGUI-EXAMPLES ${IMGUI_EXAMPLES_SOURCES})
-    target_link_libraries(KDB_IMGUI-EXAMPLES PRIVATE KDB_IMGUI-STATIC)
+    add_executable(KDB_IMGUI-EXAMPLE ${IMGUI_EXAMPLES_SOURCES})
+    target_link_libraries(KDB_IMGUI-EXAMPLE PRIVATE KDB_IMGUI-STATIC)
 
     #copy assets
     file(COPY example/Assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(KDB_IMGUI-EXAMPLE PRIVATE ${KDB_IMGUI_INCLUDE_DIR})
 endif ()
 
 #compile definitions

@@ -39,6 +39,7 @@ void ImguiGlfwVulkanDebugger::render(){
     ImGui::SliderFloat("ImageZoom", &titleBarSetting.ImageZoom, 0.0f, 100.0f);
     ImGui::Checkbox("DrawTitleCentered", &titleBarSetting.DrawTitleCentered);
     ImGui::Text("MainMenuBarCallback: %s", titleBarSetting.MainMenuBarCallback == nullptr ? "nullptr" : titleBarSetting.MainMenuBarCallback->target_type().name());
+    ImGui::SliderFloat("MainMenuBarExtraHeightOffset", &titleBarSetting.MainMenuBarExtraHeight, 0.0f, 100.0f);
     ImGui::Separator();
 
     ImGui::Text("ApplicationTitleBarDebugInfo");

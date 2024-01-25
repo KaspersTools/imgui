@@ -6329,6 +6329,7 @@ static void ShowDemoWindowInputs()
     }
 }
 
+
 //-----------------------------------------------------------------------------
 // [SECTION] About Window / ShowAboutWindow()
 // Access from Dear ImGui Demo -> Tools -> About

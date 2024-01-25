@@ -14,11 +14,10 @@
 #include <vector>
 
 #include "vulkan/vulkan.h"
-#include <GLFW/glfw3.h>
 #include <imgui.h>
 #include <imgui_internal.h>
 
-
+class GLFWwindow;
 
 struct ApplicationTitleBarDebugInfo {
 //Title bar
@@ -29,7 +28,7 @@ struct ApplicationTitleBarDebugInfo {
 struct ApplicationTitleBarSettings {
   bool CustomTitleBar = false;
 
-  float Height = 65.806f;
+  float Height = 50.f;
 
   ImVec4 StartMaximized = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
   ImVec4 StartWindowed = ImVec4(64.0f, 0.0f, 0.0f, 0.0f);
@@ -39,7 +38,7 @@ struct ApplicationTitleBarSettings {
   std::shared_ptr<Image> Logo = nullptr;
   std::filesystem::path LogoPath = "";
   float ImageZoom = 1.5f;
-  float MainMenuBarExtraHeight = 0.0f;
+  float MainMenuBarExtraHeight = 20.0f;
 
   bool DrawTitleCentered = false;
 
@@ -109,8 +108,12 @@ IMGUI_IMPL_API float ImGui_ImplVKGlfw_getMonitorHeight();
 
 IMGUI_IMPL_API ImVec2 ImGui_ImplVKGlfw_getWindowFrameSize();
 IMGUI_IMPL_API ImVec2 ImGui_ImplVKGlfw_getWindowSize();
+IMGUI_IMPL_API ImVec2 ImGui_ImplVKGlfw_getWindowSize();
 
+IMGUI_IMPL_API const bool ImGui_ImplVKGlfw_shouldClose();
+IMGUI_IMPL_API void ImGui_ImplVKGlfw_setShouldClose(const bool value);
 
-//namespace KDB_IMGUI_EXTENSION {
+IMGUI_IMPL_API bool ImGui_ImplVKGlfw_ShowStyleSelector(const char *label, bool *p_open);
+        //namespace KDB_IMGUI_EXTENSION {
 //
 //}// namespace KDB_IMGUI_EXTENSION
