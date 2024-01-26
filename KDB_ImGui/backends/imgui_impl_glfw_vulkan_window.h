@@ -24,13 +24,13 @@ struct ApplicationTitleBarDebugInfo {
   ImVec2 end;
   bool drawFilled;
 
-  ImColor rectColor;
-  ImColor rectFilledColor;
-  ImColor textColor;
-  ImColor textBGColor;
+  ImColor rectColor = {255, 0, 0, 255};
+  ImColor rectFilledColor = {0, 145, 111, 255};
+  ImColor textColor = {0, 255, 255, 255};
+  ImColor textBGColor = {255, 0, 0, 165};
 
   bool backGroundBehindText;
-  ImGuiDir_ textDir;
+  ImGuiDir_ textDir = ImGuiDir_Right;
 };
 
 struct ApplicationTitleBarSettings {

@@ -441,7 +441,7 @@ static void renderFullScreenDockspace() {
 
 
       KDB_ImGui::beginTitleBar(
-                titleBarSettings.DrawTitleCentered,
+              titleBarSettings.DrawTitleCentered,
                 appSpec.Name,
                 titleBarSettings.HasLogo,
                 titleBarSettings.Logo->GetDescriptorSet(),
@@ -454,7 +454,7 @@ static void renderFullScreenDockspace() {
               titleBarSettings.DebugInfo);
       KDB_ImGui::beginMainMenuBar();
 
-        //render itemsi
+      //render itemsi
         if (titleBarSettings.MainMenuBarCallback != nullptr)
             (*titleBarSettings.MainMenuBarCallback)();
 
