@@ -15,7 +15,18 @@ namespace KDB_ImGui {
     ImGuiTweakedTheme KDB_ImGui::Themes::ThemeManager::tweakedTheme = {};
 
     void ThemeManager::showThemeManager(bool *p_open) {
-      ImGui::Begin("Theme Manager", p_open, ImGuiWindowFlags_None);
+      ImGui::Begin("Theme Manager", p_open, ImGuiWindowFlags_MenuBar);
+      if (ImGui::BeginMenuBar()) {
+        if (ImGui::MenuItem("Save Theme")) {
+          //Todo:
+          // SaveThemeToFile(tweakedTheme);
+        }
+        if (ImGui::MenuItem("Load Theme")) {
+          //Todo:
+          // LoadThemeFromFile(tweakedTheme);
+        }
+        ImGui::EndMenuBar();
+      }
       ImGui::Text("Theme");
       ImGui::Separator();// ---------------------------------------------------------
       ImGui::Text("Select a theme from the list below.");

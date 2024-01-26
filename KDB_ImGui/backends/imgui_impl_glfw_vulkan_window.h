@@ -18,9 +18,19 @@
 #include <imgui_internal.h>
 
 struct ApplicationTitleBarDebugInfo {
-    //Title bar
-    ImVec2 TitleBarLastScreenPos = ImVec2(0.0f, 0.0f);
-    ImVec2 TitleBarLastSize = ImVec2(0.0f, 0.0f);
+  std::string label;
+  bool isActive;
+  ImVec2 start;
+  ImVec2 end;
+  bool drawFilled;
+
+  ImColor rectColor;
+  ImColor rectFilledColor;
+  ImColor textColor;
+  ImColor textBGColor;
+
+  bool backGroundBehindText;
+  ImGuiDir_ textDir;
 };
 
 struct ApplicationTitleBarSettings {
@@ -44,7 +54,7 @@ struct ApplicationTitleBarSettings {
     ///DONT CALL BEGIN MAIN MENU BAR IN YOUR CODE
     std::function<void()> *MainMenuBarCallback = nullptr;
 
-    ApplicationTitleBarDebugInfo DebugInfo;
+    std::shared_ptr<ApplicationTitleBarDebugInfo> DebugInfo = std::make_shared<ApplicationTitleBarDebugInfo>();
 };
 
 struct ApplicationWindowSettings {
@@ -71,8 +81,6 @@ struct ApplicationSpecification {
 
     float MenuBarWidth;
     float MenuBarHeight;
-
-    bool DrawDebugOutlines = false;
 };
 
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_init(ApplicationSpecification m_Specification);

@@ -439,7 +439,8 @@ static void renderFullScreenDockspace() {
 
     if (titleBarSettings.CustomTitleBar) {
 
-        KDB_ImGui::beginTitleBar(
+
+      KDB_ImGui::beginTitleBar(
                 titleBarSettings.DrawTitleCentered,
                 appSpec.Name,
                 titleBarSettings.HasLogo,
@@ -450,9 +451,8 @@ static void renderFullScreenDockspace() {
                 titleBarSettings.Height,
                 titleBarSettings.MainMenuBarExtraHeight,
                 isMaximized,
-                appSpec.DrawDebugOutlines,
-                ImColor(255, 255, 0, 255));
-        KDB_ImGui::beginMainMenuBar();
+              titleBarSettings.DebugInfo);
+      KDB_ImGui::beginMainMenuBar();
 
         //render itemsi
         if (titleBarSettings.MainMenuBarCallback != nullptr)
@@ -467,6 +467,7 @@ static void renderFullScreenDockspace() {
     float minWinSizeX = style.WindowMinSize.x;
     style.WindowMinSize.x = 370.0f;
     ImGui::DockSpace(ImGui::GetID("MyDockspace"));
+
     style.WindowMinSize.x = minWinSizeX;
 }
 
