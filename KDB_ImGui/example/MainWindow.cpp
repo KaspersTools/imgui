@@ -4,8 +4,8 @@
 
 
 #include "MainWindow.h"
-#include <backends/debug/imgui_impl_glfw_vulkan_debug.h>
-#include <backends/imgui_impl_glfw_vulkan_window.h>
+#include <KDB_ImGui/backends/debug/imgui_impl_glfw_vulkan_debug.h>
+#include <KDB_ImGui/backends/imgui_impl_glfw_vulkan_window.h>
 
 #ifdef KDB_IMGUI_ADDONS_CODE_EDITOR
 #include <imguicodeeditor.h>
@@ -26,7 +26,6 @@
 #ifdef KDB_IMGUI_ADDONS_STYLE_SERIALIZER
 #include <imguistyleserializer.h>
 #endif
-#include <fonts/FontManager.h>
 
 
 void MainWindow::init() {
@@ -50,7 +49,6 @@ void MainWindow::init() {
   //Make it so that the main menu bar is 20 pixels lower then by default.
   // This because the menubar is so big that it overlaps the titlebar
   m_Specification.TitleBarSettings.MainMenuBarExtraHeight = 19.0f;
-
   m_Specification.TitleBarSettings.Height = 60.132f;
 
   //Set the main menu bar callback
@@ -180,12 +178,17 @@ void MainWindow::init() {
   std::cout << "--------------------------------------------------------------------------------------------------------" << std::endl;
   ///////////
 
-  ImFontConfig conf;
-  conf.OversampleH = 4;
-  conf.OversampleV = 4;
-  KDB_ImGui::FontManager::getInstance()->addFont("Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFont-Regular.ttf", 16.0f, conf);
-  ImGui::GetIO().FontDefault = KDB_ImGui::FontManager::getInstance()->getFont("Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFont-Regular.ttf");
-  ImGui::GetIO().Fonts->Build();
+  //load fonts
+  //  ImGui_ImplVKGlfw_addFont("JetBrainsMonoNerdFontPropo-Regular.ttf")
+  ImFontConfig fontConfig;
+  fontConfig.OversampleH = 4;
+  fontConfig.OversampleV = 4;
+
+  ImGui_ImplVKGlfw_addFont(
+          "Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf",
+          "JetBrainsMonoNerdFontPropo-Regular",
+          14.0f,
+          fontConfig, true);
   run();
 }
 

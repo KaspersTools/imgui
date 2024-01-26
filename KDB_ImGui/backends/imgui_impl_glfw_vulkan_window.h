@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "backends/imgui_impl_vulkan_image.h"
+#include "KDB_ImGui/backends/imgui_impl_vulkan_image.h"
 
 #include <functional>
 #include <iostream>
@@ -114,6 +114,7 @@ IMGUI_IMPL_API const bool ImGui_ImplVKGlfw_shouldClose();
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_setShouldClose(const bool value);
 
 IMGUI_IMPL_API bool ImGui_ImplVKGlfw_ShowStyleSelector(const char *label, bool *p_open);
-        //namespace KDB_IMGUI_EXTENSION {
-//
-//}// namespace KDB_IMGUI_EXTENSION
+IMGUI_IMPL_API bool ImGui_ImplVKGlfw_addFont(const std::filesystem::path& path, const std::string& name,
+                                             const float& size,
+                                             const ImFontConfig& config,
+                                             const bool& defaultFont = false);

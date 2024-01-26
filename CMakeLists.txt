@@ -48,30 +48,34 @@ set(IMGUI_SOURCES
         ${KDB_IMGUI_INCLUDE_DIR}backends/imgui_impl_vulkan.cpp
         ${KDB_IMGUI_INCLUDE_DIR}backends/imgui_impl_vulkan.h
 
-        ${KDB_IMGUI_INCLUDE_DIR}backends/imgui_impl_glfw_vulkan_window.cpp
-        ${KDB_IMGUI_INCLUDE_DIR}backends/imgui_impl_glfw_vulkan_window.h
-
-        ${KDB_IMGUI_INCLUDE_DIR}backends/imgui_impl_vulkan_image.cpp
-        ${KDB_IMGUI_INCLUDE_DIR}backends/imgui_impl_vulkan_image.h
-
         #misc
         ${KDB_IMGUI_INCLUDE_DIR}misc/cpp/imgui_stdlib.cpp
         ${KDB_IMGUI_INCLUDE_DIR}misc/cpp/imgui_stdlib.h
+
+        #misc
+        ${KDB_IMGUI_INCLUDE_DIR}misc/stb_image/stb_image.h
 
         #fonts
         ${KDB_IMGUI_INCLUDE_DIR}addons/imguinotify/font_awesome_5.h
         ${KDB_IMGUI_INCLUDE_DIR}addons/imguinotify/fa_solid_900.h
 
-        #misc
-        ${KDB_IMGUI_INCLUDE_DIR}misc/stb_image/stb_image.h
-        ${KDB_IMGUI_INCLUDE_DIR}backends/debug/imgui_impl_glfw_vulkan_debug.cpp
-        ${KDB_IMGUI_INCLUDE_DIR}backends/debug/imgui_impl_glfw_vulkan_debug.h
+        #kdbimgui
+        KDB_ImGui/backends/imgui_impl_glfw_vulkan_window.cpp
+        KDB_ImGui/backends/imgui_impl_glfw_vulkan_window.h
 
-        Extension.cpp
-        Extension.h
-        fonts/FontManager.cpp
-        fonts/FontManager.h
+        KDB_ImGui/backends/imgui_impl_vulkan_image.cpp
+        KDB_ImGui/backends/imgui_impl_vulkan_image.h
+
+        KDB_ImGui/backends/debug/imgui_impl_glfw_vulkan_debug.cpp
+        KDB_ImGui/backends/debug/imgui_impl_glfw_vulkan_debug.h
+
+        KDB_ImGui/Extension.cpp
+        KDB_ImGui/Extension.h
+
+        KDB_ImGui/fonts/FontManager.cpp
+        KDB_ImGui/fonts/FontManager.h
 )
+
 add_library(KDB_IMGUI-STATIC STATIC
         ${IMGUI_SOURCES}
 )
@@ -97,7 +101,10 @@ target_link_libraries(KDB_IMGUI-STATIC PRIVATE
 
 
 if (KDB_IMGUI_BUILD_EXAMPLES)
-    set(IMGUI_EXAMPLES_SOURCES example/main.cpp example/MainWindow.cpp example/MainWindow.h)
+    set(IMGUI_EXAMPLES_SOURCES
+            KDB_ImGui/example/main.cpp
+            KDB_ImGui/example/MainWindow.cpp
+            KDB_ImGui/example/MainWindow.h)
     add_executable(KDB_IMGUI-EXAMPLE ${IMGUI_EXAMPLES_SOURCES})
     target_link_libraries(KDB_IMGUI-EXAMPLE PRIVATE KDB_IMGUI-STATIC)
 

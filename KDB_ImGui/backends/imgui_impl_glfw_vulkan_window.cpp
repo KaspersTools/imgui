@@ -6,7 +6,7 @@
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_vulkan.h"
-#include <Extension.h>
+#include <KDB_ImGui/Extension.h>
 #include <misc/stb_image/stb_image.h>
 
 #include <stdio.h> // printf, fprintf
@@ -413,13 +413,14 @@ static void renderFullScreenDockspace() {
     ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(50, 50, 50, 255));
     // Draw window border if the window is not maximized
     if (!isMaximized)
-      KDB::IMGUI::renderWindowOuterBorders(ImGui::GetCurrentWindow());
+      KDB_ImGui::renderWindowOuterBorders(ImGui::GetCurrentWindow());
 
     ImGui::PopStyleColor();// ImGuiCol_Border
   }
 
   if (titleBarSettings.CustomTitleBar) {
-    KDB::IMGUI::beginTitleBar(
+
+    KDB_ImGui::beginTitleBar(
             titleBarSettings.DrawTitleCentered,
             appSpec.Name,
             titleBarSettings.HasLogo,
@@ -432,14 +433,14 @@ static void renderFullScreenDockspace() {
             isMaximized,
             appSpec.DrawDebugOutlines,
             ImColor(255, 255, 0, 255));
-    KDB::IMGUI::beginMainMenuBar();
+    KDB_ImGui::beginMainMenuBar();
 
     //render itemsi
     if (titleBarSettings.MainMenuBarCallback != nullptr)
       (*titleBarSettings.MainMenuBarCallback)();
 
-    KDB::IMGUI::endMainMenuBar();
-    KDB::IMGUI::endTitleBar();
+    KDB_ImGui::endMainMenuBar();
+    KDB_ImGui::endTitleBar();
   }
 
   //  KDB::IMGUI::endMainMenuBar();
@@ -935,7 +936,7 @@ void ImGui_ImplVKGlfw_setWindowPos(const ImVec2 &pos) {
   glfwSetWindowPos(m_WindowHandle, pos.x, pos.y);
 }
 
-bool ImGui_ImplVKGlfw_ShowStyleSelector(const char *label, bool *p_open){
+bool ImGui_ImplVKGlfw_ShowStyleSelector(const char *label, bool *p_open) {
   ImGui::Begin(label, p_open, ImGuiWindowFlags_None);
   bool changed = false;
   static int style_idx = -1;
@@ -955,4 +956,24 @@ bool ImGui_ImplVKGlfw_ShowStyleSelector(const char *label, bool *p_open){
   }
   ImGui::End();
   return changed;
+}
+
+#include <KDB_ImGui/fonts/FontManager.h>
+bool ImGui_ImplVKGlfw_addFont(const std::filesystem::path &path, const std::string &name,
+                              const float &size,
+                              const ImFontConfig &config,
+                              const bool &defaultFont) {
+    if (KDB_ImGui::FontManager::addFont(path, name, size, config)) {
+      if(defaultFont){
+        ImGui::GetIO().FontDefault = KDB_ImGui::FontManager::getFont(name);
+      }
+      return true;
+    } else {
+      return false;
+    }
+}
+
+ImFont *ImGui_ImplVKGlfw_getFont(const std::string &name) {
+//  return false;
+  //  return KDB_ImGui::FontManager::getFont(name);
 }

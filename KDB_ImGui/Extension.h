@@ -4,7 +4,7 @@
 
 #include <vulkan/vulkan.h>
 
-namespace KDB::IMGUI {
+namespace KDB_ImGui {
   struct TempData {
     ImVec2 CurrentResetWindowPos;
 

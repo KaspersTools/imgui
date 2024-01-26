@@ -1,8 +1,7 @@
-#include <Extension.h>
-
+#include "Extension.h"
 #include <string>
 
-namespace KDB::IMGUI {
+namespace KDB_ImGui {
 
   void beginTitleBar(const bool drawTitleCentered,
                      const std::string &appTitle,
@@ -107,9 +106,9 @@ namespace KDB::IMGUI {
                 currentTitleBarPosScreen.x + defaultSpacing.x,
                 titleBarStartScreen.y + defaultSpacing.y + menuBarExtraOffsetY);
 
-        menuBarStartWindow = KDB::IMGUI::screenToWindowSpace(menuBarStartScreen);
+        menuBarStartWindow = screenToWindowSpace(menuBarStartScreen);
         menuBarEndScreen = {menuBarStartScreen.x + width, menuBarStartScreen.y + height};
-        menuBarEndWindow = KDB::IMGUI::screenToWindowSpace(menuBarEndScreen);
+        menuBarEndWindow = screenToWindowSpace(menuBarEndScreen);
 
         Extension::getTempData()->MenuBarStartWindow = menuBarStartWindow;
         Extension::getTempData()->MenuBarSize = {ImGui::GetWindowWidth(), height};

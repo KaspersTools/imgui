@@ -3,15 +3,15 @@
 #pragma once
 
 #include <filesystem>
+#include <vulkan/vulkan.h>
+
 
 enum class ImageFormat
-	{
-		None = 0,
-		RGBA,
-		RGBA32F
-	};
-
-#include <vulkan/vulkan.h>
+{
+None = 0,
+RGBA,
+RGBA32F
+};
 
 class Image{
 public:
