@@ -22,31 +22,19 @@
 # Example of using Dear ImGui in your CMake project:
 #
 #   # Set various library options:
-#   set(IMGUI_SDL_TARGET sdl CACHE STRING "" FORCE)
+#   set(IMGUI_VULKAN_TARGET vulkan CACHE STRING "" FORCE)
 #   # Include Dear ImGui into build.
 #   add_subdirectory(path/to/imgui)
 #   <..>
 #   # Link Dear ImGui to your application:
 #   #  imgui - a main library target
-#   #  imgui-glfw: platform backend for Windows/Linux/MacOS/etc using GLFW.
+#   #  imgui-glfw:   platform backend for Windows/Linux/MacOS/etc using GLFW.
 #   #  imgui-vulkan: graphics backend for Windows/Linux/MacOS/etc using Vulkan graphics API.
 #   target_link_libraries(YourApplication PUBLIC imgui imgui-glfw imgui-vulkan)
 #
 # A list of defined targets:
-#   imgui-sdl2: platform backend for Windows/Linux/MacOS/etc using SDL2.
 #   imgui-glfw: platform backend for Windows/Linux/MacOS/etc using GLFW.
-#   imgui-osx: platform backend for MacOS.
-#   imgui-win32: platform backend for Windows.
-#   imgui-glut: platform backend for Windows/Linux/MacOS using glut/freeglut with OpenGL.
-#   imgui-metal: graphics backend for MacOS using Metal graphics API.
-#   imgui-opengl3: graphics backend for Windows/Linux/MacOS/etc using OpenGL3 graphics API.
-#   imgui-opengl2: graphics backend for Windows/Linux/MacOS/etc using OpenGL2 graphics API.
 #   imgui-vulkan: graphics backend for Windows/Linux/MacOS/etc using Vulkan graphics API.
-#   imgui-dx9: graphics backend for Windows using DirectX 9 graphics API.
-#   imgui-dx10: graphics backend for Windows using DirectX 10 graphics API.
-#   imgui-dx11: graphics backend for Windows using DirectX 11 graphics API.
-#   imgui-dx12: graphics backend for Windows using DirectX 12 graphics API.
-#   imgui-sdlrenderer: graphics backend for platforms supported by SDL.
 #
 cmake_minimum_required(VERSION 3.13)
 project(imgui)
