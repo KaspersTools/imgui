@@ -35,7 +35,6 @@ static VkPhysicalDevice g_PhysicalDevice = VK_NULL_HANDLE;
 static VkDevice g_Device = VK_NULL_HANDLE;
 static uint32_t g_QueueFamily = (uint32_t) -1;
 static VkQueue g_Queue = VK_NULL_HANDLE;
-static VkDebugReportCallbackEXT g_DebugReport = VK_NULL_HANDLE;
 static VkPipelineCache g_PipelineCache = VK_NULL_HANDLE;
 static VkDescriptorPool g_DescriptorPool = VK_NULL_HANDLE;
 static int g_MinImageCount = 2;
@@ -48,7 +47,6 @@ static ImGui_ImplVulkanH_Window *g_wd = &g_MainWindowData;
 static std::vector<std::vector<VkCommandBuffer>> s_AllocatedCommandBuffers = {};
 static std::vector<std::vector<std::function<void()>>> s_ResourceFreeQueue = {};
 static uint32_t s_CurrentFrameIndex = 0;
-static ImVec4 g_ClearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 static ApplicationSpecification m_Specification;
 
@@ -380,7 +378,6 @@ static void FramePresent(ImGui_ImplVulkanH_Window *wd) {
 
 static void renderFullScreenDockspace() {
   const ApplicationSpecification &appSpec = m_Specification;
-  const ApplicationWindowSettings &windowSettings = appSpec.WindowSettings;
   const ApplicationTitleBarSettings &titleBarSettings = appSpec.TitleBarSettings;
 
   ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
@@ -569,7 +566,6 @@ void ImGui_ImplVKGlfw_init(ApplicationSpecification specification) {
     style.WindowRounding = 0.0f;
     style.Colors[ImGuiCol_WindowBg].w = 1.0f;
   }
-  ImVec2 cv = {};
   // Setup Platform/Renderer backends
   ImGui_ImplGlfw_InitForVulkan(m_WindowHandle, true);
   ImGui_ImplVulkan_InitInfo init_info = {};
@@ -772,11 +768,7 @@ void ImGui_ImplVKGlfw_shutdown() {
   glfwTerminate();
 }
 
-const float ImGui_ImplVKGlfw_getTime() {
-  return (float) glfwGetTime();
-}
-
-const bool ImGui_ImplVKGlfw_shouldClose() {
+bool ImGui_ImplVKGlfw_shouldClose() {
   return glfwWindowShouldClose(m_WindowHandle);
 }
 
@@ -800,14 +792,12 @@ void ImGui_ImplVKGlfw_setImplErrorCallback(const std::function<void(int error, c
   (*g_GlfwErrorCallback) = *func;
 }
 
-const std::map<std::string, std::string> ImGui_ImplVKGlfw_getLog() {
+std::map<std::string, std::string> ImGui_ImplVKGlfw_getLog() {
   return g_debugStats;
 }
-
 void ImGui_ImplVKGlfw_addLog(const std::string &logMsg, const std::string &logType) {
   g_debugStats[logType] = logMsg;
 }
-
 void ImGui_ImplVKGlfw_check_vk_result(VkResult err) {
   check_vk_result(err);
 }
@@ -822,7 +812,7 @@ VkPhysicalDevice ImGui_ImplVKGlfw_getPhysicalDevice() {
 VkDevice ImGui_ImplVKGlfw_getDevice() {
   return g_Device;
 }
-VkCommandBuffer ImGui_ImplVKGlfw_getCommandBuffer(bool begin) {
+VkCommandBuffer ImGui_ImplVKGlfw_getCommandBuffer() {
   ImGui_ImplVulkanH_Window *wd = &g_MainWindowData;
 
   // Use any command queue
@@ -870,11 +860,9 @@ void ImGui_ImplVKGlfw_flushCommandBuffer(VkCommandBuffer commandBuffer) {
 
   vkDestroyFence(g_Device, fence, nullptr);
 }
-
 void ImGui_ImplVKGlfw_submitResourceFree(std::function<void()> &&func) {
   s_ResourceFreeQueue[s_CurrentFrameIndex].emplace_back(func);
 }
-
 
 //callbacks
 //--glfw
@@ -886,7 +874,7 @@ void ImGui_ImplVKGlfw_setImplErrorCallback(const std::function<void(int error, c
 GLFWwindow *ImGui_ImplVKGlfw_getMainWindowHandle() {
   return m_WindowHandle;
 }
-const bool ImGui_ImplVKGlfw_isWindowMaximized() {
+bool ImGui_ImplVKGlfw_isWindowMaximized() {
   ImVec2 size = ImGui_ImplVKGlfw_getWindowSize();
   ImVec2 frameSize = ImGui_ImplVKGlfw_getWindowFrameSize();
 
@@ -960,7 +948,7 @@ bool ImGui_ImplVKGlfw_ShowStyleSelector(const char *label, bool *p_open) {
 }
 
 #include <KDB_ImGui/fonts/FontManager.h>
-const bool ImGui_ImplVKGlfw_addFont(const std::filesystem::path &path, const std::string &name,
+bool ImGui_ImplVKGlfw_addFont(const std::filesystem::path &path, const std::string &name,
                               const float &size,
                               const ImFontConfig &config,
                               const bool &defaultFont) {
@@ -975,4 +963,6 @@ const bool ImGui_ImplVKGlfw_addFont(const std::filesystem::path &path, const std
 }
 
 ImFont *ImGui_ImplVKGlfw_getFont(const std::string &name) {
+    //todo: implement
+    return KDB_ImGui::FontManager::getFont(name);
 }

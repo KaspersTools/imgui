@@ -17,8 +17,6 @@
 #include <filesystem>
 #include <imgui_internal.h>
 
-class GLFWwindow;
-
 struct ApplicationTitleBarDebugInfo {
     //Title bar
     ImVec2 TitleBarLastScreenPos = ImVec2(0.0f, 0.0f);
@@ -94,9 +92,9 @@ IMGUI_IMPL_API float ImGui_ImplVKGlfw_getMonitorHeight();
 
 IMGUI_IMPL_API ImVec2 ImGui_ImplVKGlfw_getWindowFrameSize();
 
-IMGUI_IMPL_API const bool ImGui_ImplVKGlfw_isWindowMaximized();
+IMGUI_IMPL_API bool ImGui_ImplVKGlfw_isWindowMaximized();
 
-IMGUI_IMPL_API const bool ImGui_ImplVKGlfw_shouldClose();
+IMGUI_IMPL_API bool ImGui_ImplVKGlfw_shouldClose();
 
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_setShouldClose(const bool value);
 
@@ -109,7 +107,7 @@ IMGUI_IMPL_API VkPhysicalDevice ImGui_ImplVKGlfw_getPhysicalDevice();
 
 IMGUI_IMPL_API VkDevice ImGui_ImplVKGlfw_getDevice();
 
-IMGUI_IMPL_API VkCommandBuffer ImGui_ImplVKGlfw_getCommandBuffer(bool begin);
+IMGUI_IMPL_API VkCommandBuffer ImGui_ImplVKGlfw_getCommandBuffer();
 
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_flushCommandBuffer(VkCommandBuffer commandBuffer);
 
@@ -119,7 +117,7 @@ IMGUI_IMPL_API void ImGui_ImplVKGlfw_submitResourceFree(std::function<void()> &&
 
 
 //KDB_ImGui
-[[maybe_unused]]IMGUI_IMPL_API const bool
+[[maybe_unused]]IMGUI_IMPL_API bool
 ImGui_ImplVKGlfw_addFont(const std::filesystem::path &path, const std::string &name, const float &size,
                          const ImFontConfig &config, const bool &defaultFont = false);
 

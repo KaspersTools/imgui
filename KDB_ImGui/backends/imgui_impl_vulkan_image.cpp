@@ -34,6 +34,7 @@ namespace Utils {
         {
             case ImageFormat::RGBA:    return 4;
             case ImageFormat::RGBA32F: return 16;
+            case ImageFormat::None : return 0;
         }
         return 0;
     }
@@ -44,6 +45,7 @@ namespace Utils {
         {
             case ImageFormat::RGBA:    return VK_FORMAT_R8G8B8A8_UNORM;
             case ImageFormat::RGBA32F: return VK_FORMAT_R32G32B32A32_SFLOAT;
+            case ImageFormat::None : return VK_FORMAT_UNDEFINED;
         }
         return (VkFormat)0;
     }
@@ -87,7 +89,7 @@ bool Image::LoadImageFromPath(){
     m_Width = width;
     m_Height = height;
 
-    AllocateMemory(m_Width * m_Height * Utils::BytesPerPixel(m_Format));
+    AllocateMemory();
     SetData(data);
     stbi_image_free(data);
 
@@ -97,7 +99,7 @@ bool Image::LoadImageFromPath(){
 Image::Image(uint32_t width, uint32_t height, ImageFormat format, const void* data)
     : m_Width(width), m_Height(height), m_Format(format)
 {
-    AllocateMemory(m_Width * m_Height * Utils::BytesPerPixel(m_Format));
+    AllocateMemory();
     if (data)
         SetData(data);
 }
@@ -107,11 +109,9 @@ Image::~Image()
     Release();
 }
 
-void Image::AllocateMemory(uint64_t size)
+void Image::AllocateMemory()
 {
     VkDevice device = ImGui_ImplVKGlfw_getDevice();
-
-    VkResult err;
 
     VkFormat vulkanFormat = Utils::WalnutFormatToVulkanFormat(m_Format);
 
@@ -131,7 +131,7 @@ void Image::AllocateMemory(uint64_t size)
         info.usage = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
         info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        err = vkCreateImage(device, &info, nullptr, &m_Image);
+        VkResult err = vkCreateImage(device, &info, nullptr, &m_Image);
         ImGui_ImplVKGlfw_check_vk_result(err);
         VkMemoryRequirements req;
         vkGetImageMemoryRequirements(device, m_Image, &req);
@@ -155,7 +155,7 @@ void Image::AllocateMemory(uint64_t size)
         info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
         info.subresourceRange.levelCount = 1;
         info.subresourceRange.layerCount = 1;
-        err = vkCreateImageView(device, &info, nullptr, &m_ImageView);
+        VkResult err = vkCreateImageView(device, &info, nullptr, &m_ImageView);
         ImGui_ImplVKGlfw_check_vk_result(err);
     }
 
@@ -172,16 +172,11 @@ void Image::AllocateMemory(uint64_t size)
         info.minLod = -1000;
         info.maxLod = 1000;
         info.maxAnisotropy = 1.0f;
-        VkResult err = vkCreateSampler(device, &info, nullptr, &m_Sampler);
-        ImGui_ImplVKGlfw_check_vk_result(err);
+        ImGui_ImplVKGlfw_check_vk_result(vkCreateSampler(device, &info, nullptr, &m_Sampler));
     }
 
     // Create the Descriptor Set:
     m_DescriptorSet = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(m_Sampler, m_ImageView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-}
-
-void Image::Zoom(float zoom) {
-
 }
 
 void Image::Release()
@@ -259,7 +254,7 @@ void Image::SetData(const void* data)
 
     // Copy to Image
     {
-        VkCommandBuffer command_buffer = ImGui_ImplVKGlfw_getCommandBuffer(true);
+        VkCommandBuffer command_buffer = ImGui_ImplVKGlfw_getCommandBuffer();
 
         VkImageMemoryBarrier copy_barrier = {};
         copy_barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -311,6 +306,6 @@ void Image::Resize(uint32_t width, uint32_t height)
     m_Height = height;
 
     Release();
-    AllocateMemory(m_Width * m_Height * Utils::BytesPerPixel(m_Format));
+    AllocateMemory();
 }
 

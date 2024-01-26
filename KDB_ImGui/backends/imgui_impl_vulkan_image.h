@@ -34,7 +34,7 @@ public:
 
 
 private:
-    void AllocateMemory(uint64_t size);
+    void AllocateMemory();
     void Release();
 private:
     uint32_t m_Width = 32, m_Height = 32;
