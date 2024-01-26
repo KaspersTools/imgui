@@ -577,7 +577,7 @@ void ImGui_ImplVKGlfw_init(ApplicationSpecification specification) {
     ImGui::StyleColorsDark();
 
     // Style
-    KDB_ImGui::Themes::ApplyTheme(KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentBlue);
+    KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentBlue);
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForVulkan(m_WindowHandle, true);
@@ -973,47 +973,4 @@ void ImGui_ImplVKGlfw_setWindowSize(const ImVec2 &size) {
 
 void ImGui_ImplVKGlfw_setWindowPos(const ImVec2 &pos) {
     glfwSetWindowPos(m_WindowHandle, pos.x, pos.y);
-}
-
-bool ImGui_ImplVKGlfw_ShowStyleSelector(const char *label, bool *p_open) {
-    ImGui::Begin(label, p_open, ImGuiWindowFlags_None);
-    bool changed = false;
-    static int style_idx = -1;
-    if (ImGui::Combo(label, &style_idx, "Dark\0Light\0Classic\0")) {
-        switch (style_idx) {
-            case 0:
-                ImGui::StyleColorsDark();
-                break;
-            case 1:
-                ImGui::StyleColorsLight();
-                break;
-            case 2:
-                ImGui::StyleColorsClassic();
-                break;
-        }
-        changed = true;
-    }
-    ImGui::End();
-    return changed;
-}
-
-#include <KDB_ImGui/fonts/FontManager.h>
-
-bool ImGui_ImplVKGlfw_addFont(const std::filesystem::path &path, const std::string &name,
-                              const float &size,
-                              const ImFontConfig &config,
-                              const bool &defaultFont) {
-    if (KDB_ImGui::FontManager::addFont(path, name, size, config)) {
-        if (defaultFont) {
-            ImGui::GetIO().FontDefault = KDB_ImGui::FontManager::getFont(name);
-        }
-        return true;
-    } else {
-        return false;
-    }
-}
-
-ImFont *ImGui_ImplVKGlfw_getFont(const std::string &name) {
-    //todo: implement
-    return KDB_ImGui::FontManager::getFont(name);
 }

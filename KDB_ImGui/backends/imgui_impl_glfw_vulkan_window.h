@@ -118,14 +118,7 @@ IMGUI_IMPL_API void ImGui_ImplVKGlfw_submitResourceFree(std::function<void()> &&
 
 
 //KDB_ImGui
-[[maybe_unused]]IMGUI_IMPL_API bool
-ImGui_ImplVKGlfw_addFont(const std::filesystem::path &path, const std::string &name, const float &size,
-                         const ImFontConfig &config, const bool &defaultFont = false);
-
-
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_startRender();
-
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_endRender();
-
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_shutdown();
 

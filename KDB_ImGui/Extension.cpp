@@ -16,12 +16,13 @@ namespace KDB_ImGui {
                      const bool drawDebug,
                      const ImColor debugColor) {
 
+    Extension::getTempData()->DrawDebug = drawDebug;
+    Extension::getTempData()->DebugColor = debugColor;
     Extension::getTempData()->TitleBarHeight = inHeight;
 
     float titlebarHorizontalOffset = isMaximized ? startMaximized.x : startWindowed.x;
     float titlebarVerticalOffset = isMaximized ? startMaximized.y : startWindowed.y;
 
-    const ImVec2 windowPadding = ImGui::GetCurrentWindow()->WindowPadding;
     ImGui::SetCursorPos(ImVec2(0.0f, 0.0f));
 
     const ImVec2 titlebarMin =
@@ -35,9 +36,12 @@ namespace KDB_ImGui {
     auto *bgDrawList = ImGui::GetBackgroundDrawList();
     auto *fgDrawList = ImGui::GetForegroundDrawList();
 
-    bgDrawList->AddRectFilled(titlebarMin, titlebarMax, ImColor(0, 0, 0, 255));
+    bgDrawList->AddRectFilled(titlebarMin, titlebarMax, ImColor(255, 0, 0, 255));
 
-    if (drawDebug) { fgDrawList->AddRect(titlebarMin, titlebarMax, ImColor(255, 0, 0, 255)); }
+    if (drawDebug) {
+      fgDrawList->AddRect(titlebarMin, titlebarMax,
+                          debugColor);
+    }
 
     //set cursor to the start of the titlebar
     ImGui::SetCursorPos(ImVec2(titlebarHorizontalOffset, titlebarVerticalOffset));
@@ -83,7 +87,8 @@ namespace KDB_ImGui {
               titleBarStartScreen.y + defaultSpacing.y};
 
       Extension::getTempData()->CenteredTitleStartWindow = titleStartScreen;
-      Extension::getTempData()->CenteredTitleEndWindow = {titleStartScreen.x + titleSize.x, titleStartScreen.y + titleSize.y};
+      Extension::getTempData()->CenteredTitleEndWindow = {titleStartScreen.x + titleSize.x,
+                                                          titleStartScreen.y + titleSize.y};
       const ImColor textColor = ImGui::GetStyleColorVec4(ImGuiCol_Text);
       fgDrawList->AddText(titleStartScreen, textColor, appTitle.c_str());
     }
@@ -111,9 +116,9 @@ namespace KDB_ImGui {
         menuBarEndWindow = screenToWindowSpace(menuBarEndScreen);
 
         Extension::getTempData()->MenuBarStartWindow = menuBarStartWindow;
-        Extension::getTempData()->MenuBarSize = {ImGui::GetWindowWidth(), height};
-        Extension::getTempData()->DrawDebug = drawDebug;
-        Extension::getTempData()->DebugColor = debugColor;
+        Extension::getTempData()->MenuBarSize = {
+                ImGui::GetWindowWidth() - menuBarStartWindow.x,
+                height};
       }
     }
   }
@@ -171,12 +176,17 @@ namespace KDB_ImGui {
     ImGuiContext &g = *GImGui;
 
     // Nav: When a move request within one of our child menu failed, capture the request to navigate among our siblings.
-    if (ImGui::NavMoveRequestButNoResultYet() && (g.NavMoveDir == ImGuiDir_Left || g.NavMoveDir == ImGuiDir_Right) && (g.NavWindow->Flags & ImGuiWindowFlags_ChildMenu)) {
+    if (ImGui::NavMoveRequestButNoResultYet() &&
+        (g.NavMoveDir == ImGuiDir_Left || g.NavMoveDir == ImGuiDir_Right) &&
+        (g.NavWindow->Flags & ImGuiWindowFlags_ChildMenu)) {
       // Try to find out if the request is for one of our child menu
       ImGuiWindow *nav_earliest_child = g.NavWindow;
-      while (nav_earliest_child->ParentWindow && (nav_earliest_child->ParentWindow->Flags & ImGuiWindowFlags_ChildMenu))
+      while (nav_earliest_child->ParentWindow &&
+             (nav_earliest_child->ParentWindow->Flags & ImGuiWindowFlags_ChildMenu))
         nav_earliest_child = nav_earliest_child->ParentWindow;
-      if (nav_earliest_child->ParentWindow == window && nav_earliest_child->DC.ParentLayoutType == ImGuiLayoutType_Horizontal && (g.NavMoveFlags & ImGuiNavMoveFlags_Forwarded) == 0) {
+      if (nav_earliest_child->ParentWindow == window &&
+          nav_earliest_child->DC.ParentLayoutType == ImGuiLayoutType_Horizontal &&
+          (g.NavMoveFlags & ImGuiNavMoveFlags_Forwarded) == 0) {
         // To do so we claim focus back, restore NavId and then process the movement request for yet another frame.
         // This involve a one-frame delay which isn't very problematic in this situation. We could remove it by scoring in advance for multiple window (probably not worth bothering)
         const ImGuiNavLayer layer = ImGuiNavLayer_Menu;
@@ -187,14 +197,16 @@ namespace KDB_ImGui {
         g.NavDisableHighlight = true;// Hide highlight for the current frame so we don't see the intermediary selection.
         g.NavDisableMouseHover = g.NavMousePosDirty = true;
 
-        ImGui::NavMoveRequestForward(g.NavMoveDir, g.NavMoveClipDir, g.NavMoveFlags, g.NavMoveScrollFlags);// Repeat
+        ImGui::NavMoveRequestForward(g.NavMoveDir, g.NavMoveClipDir, g.NavMoveFlags,
+                                     g.NavMoveScrollFlags);// Repeat
       }
     }
 
     IM_ASSERT(window->DC.MenuBarAppending);
     ImGui::PopClipRect();
     ImGui::PopID();
-    window->DC.MenuBarOffset.x = window->DC.CursorPos.x - window->Pos.x;// Save horizontal position so next append can reuse it. This is kinda equivalent to a per-layer CursorPos.
+    window->DC.MenuBarOffset.x = window->DC.CursorPos.x -
+                                 window->Pos.x;// Save horizontal position so next append can reuse it. This is kinda equivalent to a per-layer CursorPos.
     g.GroupStack.back().EmitItem = false;
     ImGui::EndGroup();// Restore position on layer 0
     window->DC.LayoutType = ImGuiLayoutType_Vertical;
@@ -210,8 +222,11 @@ namespace KDB_ImGui {
 
     const ImVec2 startScreenPos = windowToScreenSpace(startWindow);
     ImGui::BeginGroup();
-    beginMenuBar(startScreenPos, Extension::getTempData()->MenuBarSize.x, Extension::getTempData()->MenuBarSize.y,
-                 Extension::getTempData()->DrawDebug, Extension::getTempData()->DebugColor);
+    beginMenuBar(startScreenPos,
+                 Extension::getTempData()->MenuBarSize.x,
+                 Extension::getTempData()->MenuBarSize.y,
+                 Extension::getTempData()->DrawDebug,
+                 Extension::getTempData()->DebugColor);
   }
 
   void endMainMenuBar() {
@@ -243,10 +258,22 @@ namespace KDB_ImGui {
         rect.Max.x -= 1;
         rect.Max.y -= 1;
       }
-      if (border_n == ImGuiDir_Left) { return ImRect(rect.Min.x - thickness, rect.Min.y + perp_padding, rect.Min.x + thickness, rect.Max.y - perp_padding); }
-      if (border_n == ImGuiDir_Right) { return ImRect(rect.Max.x - thickness, rect.Min.y + perp_padding, rect.Max.x + thickness, rect.Max.y - perp_padding); }
-      if (border_n == ImGuiDir_Up) { return ImRect(rect.Min.x + perp_padding, rect.Min.y - thickness, rect.Max.x - perp_padding, rect.Min.y + thickness); }
-      if (border_n == ImGuiDir_Down) { return ImRect(rect.Min.x + perp_padding, rect.Max.y - thickness, rect.Max.x - perp_padding, rect.Max.y + thickness); }
+      if (border_n == ImGuiDir_Left) {
+        return ImRect(rect.Min.x - thickness, rect.Min.y + perp_padding, rect.Min.x + thickness,
+                      rect.Max.y - perp_padding);
+      }
+      if (border_n == ImGuiDir_Right) {
+        return ImRect(rect.Max.x - thickness, rect.Min.y + perp_padding, rect.Max.x + thickness,
+                      rect.Max.y - perp_padding);
+      }
+      if (border_n == ImGuiDir_Up) {
+        return ImRect(rect.Min.x + perp_padding, rect.Min.y - thickness, rect.Max.x - perp_padding,
+                      rect.Min.y + thickness);
+      }
+      if (border_n == ImGuiDir_Down) {
+        return ImRect(rect.Min.x + perp_padding, rect.Max.y - thickness, rect.Max.x - perp_padding,
+                      rect.Max.y + thickness);
+      }
       IM_ASSERT(0);
       return ImRect();
     };
@@ -256,8 +283,8 @@ namespace KDB_ImGui {
   screenToWindowSpace(const ImVec2 &screenPos) {
     ImGuiWindow *window = ImGui::GetCurrentWindow();
     ImVec2 windowPos = window->Pos;
-    ImVec2 windowSize = window->Size;
     ImVec2 scroll = window->Scroll;
+
     ImVec2 windowSpacePos = {screenPos.x - windowPos.x + scroll.x, screenPos.y - windowPos.y + scroll.y};
     return windowSpacePos;
   }
@@ -265,19 +292,17 @@ namespace KDB_ImGui {
   ImVec2 windowToScreenSpace(const ImVec2 &screenPos) {
     ImGuiWindow *window = ImGui::GetCurrentWindow();
     ImVec2 windowPos = window->Pos;
-    ImVec2 windowSize = window->Size;
-
     ImVec2 windowMin = windowPos;
-
     ImVec2 windowSpacePos = {screenPos.x + windowMin.x, screenPos.y + windowMin.y};
 
     return windowSpacePos;
   }
 
   void endTitleBar() {
+    //reset cursor pos
     ImGui::SetCursorPos(ImVec2(0.0f, 0.0f));
     ImGui::SetCursorPosY(Extension::getTempData()->TitleBarHeight);
-
+    //Todo: maybe in end frame?
     Extension::getTempData()->reset();
   }
 

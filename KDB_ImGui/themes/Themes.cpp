@@ -1072,12 +1072,6 @@ namespace KDB_ImGui::Themes {
         }
     } // namespace ThemesImpl
 
-    struct ThemeInfo {
-        ImGuiTheme_ Theme;
-        char Name[256];
-        ImGuiStyle Style;
-    };
-
     ThemeInfo gThemeInfos[] = {
             {ImGuiTheme_ImGuiColorsClassic,    "ImGuiColorsClassic",    ThemesImpl::ImGui_StyleColorsClassic()},
             {ImGuiTheme_ImGuiColorsLight,      "ImGuiColorsLight",      ThemesImpl::ImGui_StyleColorsLight()},
@@ -1124,27 +1118,6 @@ namespace KDB_ImGui::Themes {
                 return gThemeInfos[i].Style;
         }
         return ImGuiStyle();
-    }
-
-    void ApplyTheme(ImGuiTheme_ theme) {
-        ImGuiStyle style = ThemeToStyle(theme);
-
-        style.WindowPadding = ImVec2(10.0f, 10.0f);
-        style.FramePadding = ImVec2(8.0f, 6.0f);
-        style.ItemSpacing = ImVec2(6.0f, 6.0f);
-        style.ChildRounding = 6.0f;
-        style.PopupRounding = 6.0f;
-        style.FrameRounding = 6.0f;
-        style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
-
-        auto io = ImGui::GetIO();
-        // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-            style.WindowRounding = 0.0f;
-            style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-        }
-
-        ImGui::GetStyle() = style;
     }
 
     ImGuiStyle TweakedThemeThemeToStyle(const ImGuiTweakedTheme &tweaked_theme) {

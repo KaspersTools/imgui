@@ -63,7 +63,6 @@ void MainWindow::init() {
             if (ImGui::BeginMenu("ImGui Widgets")) {
                 if (ImGui::MenuItem("showDemoWindow")) showDemoWindow = true;
                 if (ImGui::MenuItem("showAboutWindow")) showAboutWindow = true;
-                if (ImGui::MenuItem("showStyleEditor")) showStyleEditor = true;
                 if (ImGui::MenuItem("showMetricsWindow")) showMetricsWindow = true;
                 if (ImGui::MenuItem("showDebugLogWindow")) showDebugLogWindow = true;
                 if (ImGui::MenuItem("showIDStackToolWindow")) showIDStackToolWindow = true;
@@ -73,43 +72,45 @@ void MainWindow::init() {
             }
 
             if (ImGui::BeginMenu("Themes")) {
-                if(ImGui::MenuItem("ImGuiTheme_ImGuiColorsClassic"))
-                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_ImGuiColorsClassic);
-                if(ImGui::MenuItem("ImGuiTheme_ImGuiColorsDark"))
-                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_ImGuiColorsDark);
-                if(ImGui::MenuItem("ImGuiTheme_ImGuiColorsLight"))
-                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_ImGuiColorsLight);
-                if(ImGui::MenuItem("ImGuiTheme_MaterialFlat"))
-                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_MaterialFlat);
-                if(ImGui::MenuItem("ImGuiTheme_PhotoshopStyle"))
-                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_PhotoshopStyle);
-                if(ImGui::MenuItem("ImGuiTheme_GrayVariations"))
-                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_GrayVariations);
-                if(ImGui::MenuItem("ImGuiTheme_GrayVariations_Darker"))
-                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_GrayVariations_Darker);
-                if(ImGui::MenuItem("ImGuiTheme_MicrosoftStyle"))
-                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_MicrosoftStyle);
-                if(ImGui::MenuItem("ImGuiTheme_Cherry"))
-                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_Cherry);
-                if(ImGui::MenuItem("ImGuiTheme_Darcula"))
-                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_Darcula);
-                if(ImGui::MenuItem("ImGuiTheme_DarculaDarker"))
-                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_DarculaDarker);
-                if(ImGui::MenuItem("ImGuiTheme_LightRounded"))
-                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_LightRounded);
-                if(ImGui::MenuItem("ImGuiTheme_SoDark_AccentBlue"))
-                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentBlue);
-                if(ImGui::MenuItem("ImGuiTheme_SoDark_AccentYellow"))
-                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentYellow);
-                if(ImGui::MenuItem("ImGuiTheme_SoDark_AccentRed"))
-                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentRed);
-                if(ImGui::MenuItem("ImGuiTheme_BlackIsBlack"))
-                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_BlackIsBlack);
-                if(ImGui::MenuItem("ImGuiTheme_WhiteIsWhite"))
-                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_WhiteIsWhite);
-                if(ImGui::MenuItem("ImGuiTheme_Count"))
-                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_Count);
-                ImGui::EndMenu();
+              if (ImGui::MenuItem("Show Style Editor"))
+                showStyleEditor = true;
+              if(ImGui::MenuItem("ImGuiTheme_ImGuiColorsClassic"))
+                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_ImGuiColorsClassic);
+              if(ImGui::MenuItem("ImGuiTheme_ImGuiColorsDark"))
+                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_ImGuiColorsDark);
+              if(ImGui::MenuItem("ImGuiTheme_ImGuiColorsLight"))
+                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_ImGuiColorsLight);
+              if(ImGui::MenuItem("ImGuiTheme_MaterialFlat"))
+                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_MaterialFlat);
+              if(ImGui::MenuItem("ImGuiTheme_PhotoshopStyle"))
+                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_PhotoshopStyle);
+              if(ImGui::MenuItem("ImGuiTheme_GrayVariations"))
+                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_GrayVariations);
+              if(ImGui::MenuItem("ImGuiTheme_GrayVariations_Darker"))
+                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_GrayVariations_Darker);
+              if(ImGui::MenuItem("ImGuiTheme_MicrosoftStyle"))
+                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_MicrosoftStyle);
+              if(ImGui::MenuItem("ImGuiTheme_Cherry"))
+                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_Cherry);
+              if(ImGui::MenuItem("ImGuiTheme_Darcula"))
+                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_Darcula);
+              if(ImGui::MenuItem("ImGuiTheme_DarculaDarker"))
+                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_DarculaDarker);
+              if(ImGui::MenuItem("ImGuiTheme_LightRounded"))
+                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_LightRounded);
+              if(ImGui::MenuItem("ImGuiTheme_SoDark_AccentBlue"))
+                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentBlue);
+              if(ImGui::MenuItem("ImGuiTheme_SoDark_AccentYellow"))
+                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentYellow);
+              if(ImGui::MenuItem("ImGuiTheme_SoDark_AccentRed"))
+                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentRed);
+              if(ImGui::MenuItem("ImGuiTheme_BlackIsBlack"))
+                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_BlackIsBlack);
+              if(ImGui::MenuItem("ImGuiTheme_WhiteIsWhite"))
+                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_WhiteIsWhite);
+              if(ImGui::MenuItem("ImGuiTheme_Count"))
+                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_Count);
+              ImGui::EndMenu();
             }
         });
     }
@@ -126,7 +127,7 @@ void MainWindow::init() {
 
     //Set theme
     {
-        KDB_ImGui::Themes::ApplyTheme(KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentBlue);
+      KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentBlue);
     }
 
     //load font(s)
@@ -161,8 +162,9 @@ void MainWindow::render() {
         ImGui::ShowIDStackToolWindow(&showIDStackToolWindow);
     if (showAboutWindow)
         ImGui::ShowAboutWindow(&showAboutWindow);
-    if (showStyleEditor)
-        ImGui::ShowStyleEditor(&ImGui::GetStyle());
+    if (showStyleEditor) {
+      KDB_ImGui::Themes::ThemeManager::showThemeManager(&showStyleEditor);
+    }
     if (showFontSelector) {
         ImGui::Begin("Font Selector");
         ImGui::ShowFontSelector("Font Selector");
