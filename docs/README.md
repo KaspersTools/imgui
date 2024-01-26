@@ -3,8 +3,11 @@ Dear ImGui
 
 IMPORTANT NOTE BY KASPER:
 ===============
-To set this up, please read the following doc: 
-SETUPKASPER.md, also currently only tested on MacOS Monterey.
+### To set this up, please read the following doc: SETUPKASPER.md, also currently only tested on MacOS Monterey.
+### Based on: https://github.com/StudioCherno/Walnut
+### Credits to: https://www.youtube.com/@TheCherno.
+
+### ====================================================================================================
 
 <center><b><i>"Give someone state and they'll have a bug one day, but teach them how to represent state in two separate locations that have to be kept in sync and they'll have bugs for a lifetime."</i></b></center> <a href="https://twitter.com/rygorous/status/1507178315886444544">-ryg</a>
 
