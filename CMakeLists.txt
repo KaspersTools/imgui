@@ -257,9 +257,13 @@ if (IMGUI_IMPL_VULKAN)
     else ()
         add_library(imgui-vulkan INTERFACE)
         set(KDB_IMGUI_DIR ${IMGUI_ROOT_DIR}/KDB_ImGui)
-        target_sources(imgui-vulkan INTERFACE
+        target_sources(imgui-vulkan INTERFACE PUBLIC
                 ${KDB_IMGUI_DIR}/backends/imgui_impl_glfw_vulkan_window.h
                 ${KDB_IMGUI_DIR}/backends/imgui_impl_glfw_vulkan_window.cpp
+        )
+        target_sources(imgui-vulkan INTERFACE PUBLIC
+                ${IMGUI_BACKENDS_DIR}/imgui_impl_vulkan.cpp
+
                 ${KDB_IMGUI_DIR}/backends/imgui_impl_vulkan_image.h
                 ${KDB_IMGUI_DIR}/backends/imgui_impl_vulkan_image.cpp
 
@@ -272,7 +276,10 @@ if (IMGUI_IMPL_VULKAN)
                 ${KDB_IMGUI_DIR}/Extension.h
                 ${KDB_IMGUI_DIR}/Extension.cpp
 
-                ${IMGUI_BACKENDS_DIR}/imgui_impl_vulkan.cpp
+                ${KDB_IMGUI_DIR}/themes/ThemeManager.h
+                ${KDB_IMGUI_DIR}/themes/ThemeManager.cpp
+                ${KDB_IMGUI_DIR}/themes/Themes.h
+                ${KDB_IMGUI_DIR}/themes/Themes.cpp
 
         )
         target_link_libraries(imgui-vulkan INTERFACE imgui ${Vulkan_LIBRARIES})
@@ -290,4 +297,7 @@ if (IMGUI_EXAMPLES)
             KDB_ImGui/example/MainWindow.cpp)
     add_executable(KDB_ImGui ${IMGUI_EXAM_SRC})
     target_link_libraries(KDB_ImGui PUBLIC imgui imgui-glfw imgui-vulkan)
+    # Copying resources from source to build
+    message("Copying resources from ${CMAKE_CURRENT_SOURCE_DIR}/Assets to ${CMAKE_CURRENT_BINARY_DIR}/bin/Assets§")
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endif ()

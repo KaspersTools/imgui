@@ -32,11 +32,12 @@ struct ApplicationTitleBarSettings {
     ImVec4 StartWindowed = ImVec4(64.0f, 0.0f, 0.0f, 0.0f);
 
     bool HasLogo = false;
-    ImVec2 LogoDrawSize = ImVec2(45.021f, 39.628f);
+    ImVec2 LogoDrawSize = ImVec2(45.0f, 45.0f);
     std::shared_ptr<Image> Logo = nullptr;
-    std::__fs::filesystem::path LogoPath = "";
+    std::filesystem::path LogoPath = "";
+
     float ImageZoom = 1.5f;
-    float MainMenuBarExtraHeight = 20.0f;
+    float MainMenuBarExtraHeight = 8.558f;
 
     bool DrawTitleCentered = false;
 

@@ -6,230 +6,179 @@
 #include "MainWindow.h"
 #include <KDB_ImGui/backends/debug/imgui_impl_glfw_vulkan_debug.h>
 #include <KDB_ImGui/backends/imgui_impl_glfw_vulkan_window.h>
-
-#ifdef KDB_IMGUI_ADDONS_CODE_EDITOR
-#include <imguicodeeditor.h>
-#endif
-
-#ifdef KDB_IMGUI_ADDONS_NOTIFY
-#include <imgui_notify.h>
-#endif
-
-#ifdef KDB_IMGUI_ADDONS_DATE_CHOOSER
-#include <imguidatechooser.h>
-#endif
-
-#ifdef KDB_IMGUI_ADDONS_FILE_DIALOG
-#include <ImGuiFileDialog.h>
-#endif
-
-#ifdef KDB_IMGUI_ADDONS_STYLE_SERIALIZER
-#include <imguistyleserializer.h>
-#endif
+#include <KDB_ImGui/themes/Themes.h>
+#include <KDB_ImGui/fonts/FontManager.h>
 
 void MainWindow::init() {
 
-  ApplicationSpecification m_Specification;
-  //App settings
-  m_Specification.Name = "Imgui Vulkan Example";
-  m_Specification.WindowSettings.Width = 800;
-  m_Specification.WindowSettings.Height = 600;
-  m_Specification.WindowSettings.WindowResizeable = true;
-  m_Specification.WindowSettings.WindowDecorated = true;
-  m_Specification.WindowSettings.CenterWindow = true;
-  m_Specification.WindowSettings.CreateDefaultDockSpace = true;
+    ApplicationSpecification m_Specification;
+    //App settings
+    m_Specification.Name = "Imgui Vulkan Example";
 
-  //Titlebar settings
-  m_Specification.TitleBarSettings.CustomTitleBar = true;
-  m_Specification.TitleBarSettings.HasLogo = true;
-  m_Specification.TitleBarSettings.LogoPath = "Assets/Icons/logo.png";
-  m_Specification.TitleBarSettings.DrawTitleCentered = true;
+    //Window settings
+    m_Specification.WindowSettings.Width = 800;
+    m_Specification.WindowSettings.Height = 600;
+    m_Specification.WindowSettings.WindowResizeable = true;
+    m_Specification.WindowSettings.WindowDecorated = true;
+    m_Specification.WindowSettings.CenterWindow = true;
+    m_Specification.WindowSettings.CreateDefaultDockSpace = true;
 
-  //Make it so that the main menu bar is 20 pixels lower then by default.
-  // This because the menubar is so big that it overlaps the titlebar
-  m_Specification.TitleBarSettings.MainMenuBarExtraHeight = 19.0f;
-  m_Specification.TitleBarSettings.Height = 60.132f;
+    //Titlebar settings
+    m_Specification.TitleBarSettings.CustomTitleBar = true;
+    m_Specification.TitleBarSettings.DrawTitleCentered = true;
 
-  //Set the main menu bar callback
-  m_Specification.TitleBarSettings.MainMenuBarCallback = new std::function<void()>([&]() {
-    if (ImGui::BeginMenu("File")) {
-      if (ImGui::MenuItem("New")) {
-        std::cout << "New" << std::endl;
-      }
-      if (ImGui::MenuItem("Open")) {
-        std::cout << "Open" << std::endl;
-      }
-      if (ImGui::MenuItem("Save")) {
-        std::cout << "Save" << std::endl;
-      }
-      if (ImGui::MenuItem("Exit")) {
-        //Close the window
-        ImGui_ImplVKGlfw_setShouldClose(true);
-      }
+    m_Specification.TitleBarSettings.HasLogo = true;
+    m_Specification.TitleBarSettings.LogoPath = "Assets/Textures/LogoSqaured.jpeg";
+    m_Specification.TitleBarSettings.LogoDrawSize = ImVec2(45., 45.);
+//    m_Specification.TitleBarSettings.LogoRemoveBackground = true;
+//    m_Specification.TitleBarSettings.LogoBackgroundColor = ImVec4(255.f, 255.f, 255.f, 255.f);
 
-      ImGui::EndMenu();
+    //Make it so that the main menu bar is 10 pixels lower then by default.
+    // This because the menubar is so big that it overlaps the titlebar
+    //TODO: Make this automatic
+    m_Specification.TitleBarSettings.MainMenuBarExtraHeight = 10.546f;
+    m_Specification.TitleBarSettings.Height = 60.132f;
+
+    //Set the main menu bar callback
+    {
+        m_Specification.TitleBarSettings.MainMenuBarCallback = new std::function<void()>([&]() {
+            if (ImGui::BeginMenu("File")) {
+                if (ImGui::MenuItem("New")) {
+                    std::cout << "New" << std::endl;
+                }
+                if (ImGui::MenuItem("Open")) {
+                    std::cout << "Open" << std::endl;
+                }
+                if (ImGui::MenuItem("Save")) {
+                    std::cout << "Save" << std::endl;
+                }
+                if (ImGui::MenuItem("Exit")) {
+                    //Close the window
+                    ImGui_ImplVKGlfw_setShouldClose(true);
+                }
+
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("ImGui Widgets")) {
+                if (ImGui::MenuItem("showDemoWindow")) showDemoWindow = true;
+                if (ImGui::MenuItem("showAboutWindow")) showAboutWindow = true;
+                if (ImGui::MenuItem("showStyleEditor")) showStyleEditor = true;
+                if (ImGui::MenuItem("showMetricsWindow")) showMetricsWindow = true;
+                if (ImGui::MenuItem("showDebugLogWindow")) showDebugLogWindow = true;
+                if (ImGui::MenuItem("showIDStackToolWindow")) showIDStackToolWindow = true;
+                if (ImGui::MenuItem("showFontSelector")) showFontSelector = true;
+                if (ImGui::MenuItem("showUserGuide")) showUserGuide = true;
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Themes")) {
+                if(ImGui::MenuItem("ImGuiTheme_ImGuiColorsClassic"))
+                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_ImGuiColorsClassic);
+                if(ImGui::MenuItem("ImGuiTheme_ImGuiColorsDark"))
+                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_ImGuiColorsDark);
+                if(ImGui::MenuItem("ImGuiTheme_ImGuiColorsLight"))
+                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_ImGuiColorsLight);
+                if(ImGui::MenuItem("ImGuiTheme_MaterialFlat"))
+                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_MaterialFlat);
+                if(ImGui::MenuItem("ImGuiTheme_PhotoshopStyle"))
+                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_PhotoshopStyle);
+                if(ImGui::MenuItem("ImGuiTheme_GrayVariations"))
+                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_GrayVariations);
+                if(ImGui::MenuItem("ImGuiTheme_GrayVariations_Darker"))
+                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_GrayVariations_Darker);
+                if(ImGui::MenuItem("ImGuiTheme_MicrosoftStyle"))
+                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_MicrosoftStyle);
+                if(ImGui::MenuItem("ImGuiTheme_Cherry"))
+                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_Cherry);
+                if(ImGui::MenuItem("ImGuiTheme_Darcula"))
+                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_Darcula);
+                if(ImGui::MenuItem("ImGuiTheme_DarculaDarker"))
+                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_DarculaDarker);
+                if(ImGui::MenuItem("ImGuiTheme_LightRounded"))
+                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_LightRounded);
+                if(ImGui::MenuItem("ImGuiTheme_SoDark_AccentBlue"))
+                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentBlue);
+                if(ImGui::MenuItem("ImGuiTheme_SoDark_AccentYellow"))
+                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentYellow);
+                if(ImGui::MenuItem("ImGuiTheme_SoDark_AccentRed"))
+                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentRed);
+                if(ImGui::MenuItem("ImGuiTheme_BlackIsBlack"))
+                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_BlackIsBlack);
+                if(ImGui::MenuItem("ImGuiTheme_WhiteIsWhite"))
+                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_WhiteIsWhite);
+                if(ImGui::MenuItem("ImGuiTheme_Count"))
+                    KDB_ImGui::Themes::ApplyTheme( KDB_ImGui::Themes::ImGuiTheme_Count);
+                ImGui::EndMenu();
+            }
+        });
     }
 
-    if (ImGui::BeginMenu("Debug")) {
+    ImGui_ImplVKGlfw_setImplErrorCallback([&](int error, const char *description) {
+        std::cout << "GLFWVULKANIMPL::errorCallback() error: " << error << " description: " << description << std::endl;
+    });
 
-      ImGui::EndMenu();
+    ImGui_ImplVKGlfw_init(m_Specification);
+
+    //log
+    {
     }
 
-    if (ImGui::BeginMenu("Theme")) {
-
-      ImGui::EndMenu();
+    //Set theme
+    {
+        KDB_ImGui::Themes::ApplyTheme(KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentBlue);
     }
 
-    if (ImGui::BeginMenu("Window")) {
-      if (ImGui::MenuItem("Center")) {
-      }
-      if (ImGui::MenuItem("Resize")) {
-      }
-      ImGui::EndMenu();
+    //load font(s)
+    {
+        ImFontConfig fontConfig;
+        fontConfig.RasterizerDensity = 3.0f;
+
+        KDB_ImGui::FontManager::addFont("Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf",
+                                        "JetBrainsMonoNerdFontPropo-Regular", 16.0f, fontConfig);
     }
 
-    if (ImGui::BeginMenu("Window Decorations")) {
-      if (ImGui::MenuItem("Decorated")) {
-      }
-      if (ImGui::MenuItem("Undecorated")) {
-      }
-      ImGui::EndMenu();
-    }
-
-    if (ImGui::BeginMenu("Window Resizeable")) {
-      if (ImGui::MenuItem("Resizeable")) {
-      }
-      if (ImGui::MenuItem("Unresizeable")) {
-      }
-      ImGui::EndMenu();
-    }
-
-    if (ImGui::BeginMenu("Window Floating")) {
-      if (ImGui::MenuItem("Floating")) {
-      }
-      if (ImGui::MenuItem("Unfloating")) {
-      }
-      ImGui::EndMenu();
-    }
-
-    if (ImGui::BeginMenu("ImGui Widgets")) {
-      if (ImGui::MenuItem("showDemoWindow")) showDemoWindow = true;
-      if (ImGui::MenuItem("showAboutWindow")) showAboutWindow = true;
-      if (ImGui::MenuItem("showStyleEditor")) showStyleEditor = true;
-      if (ImGui::MenuItem("showMetricsWindow")) showMetricsWindow = true;
-      if (ImGui::MenuItem("showDebugLogWindow")) showDebugLogWindow = true;
-      if (ImGui::MenuItem("showIDStackToolWindow")) showIDStackToolWindow = true;
-      if (ImGui::MenuItem("showFontSelector")) showFontSelector = true;
-      if (ImGui::MenuItem("showUserGuide")) showUserGuide = true;
-      ImGui::EndMenu();
-    }
-
-    if (ImGui::BeginMenu("Addons")) {
-
-#ifdef KDB_IMGUI_ADDONS_CODE_EDITOR
-      if (ImGui::MenuItem("KDB_IMGUI_ADDONS_CODE_EDITOR")) {
-      }
-#endif
-
-#ifdef KDB_IMGUI_ADDONS_NOTIFY
-      if (ImGui::MenuItem("KDB_IMGUI_ADDONS_NOTIFY")) {
-      }
-#endif
-
-#ifdef KDB_IMGUI_ADDONS_DATE_CHOOSER
-      if (ImGui::MenuItem("KDB_IMGUI_ADDONS_DATE_CHOOSER")) {
-      }
-#endif
-
-#ifdef KDB_IMGUI_ADDONS_FILE_DIALOG
-      if (ImGui::MenuItem("KDB_IMGUI_ADDONS_FILE_DIALOG")) {
-      }
-#endif
-
-#ifdef KDB_IMGUI_ADDONS_STYLE_SERIALIZER
-      if (ImGui::MenuItem("KDB_IMGUI_ADDONS_STYLE_SERIALIZER")) {
-      }
-#endif
-      ImGui::EndMenu();
-    }
-  });
-
-  ImGui_ImplVKGlfw_setImplErrorCallback([&](int error, const char *description) {
-    std::cout << "GLFWVULKANIMPL::errorCallback() error: " << error << " description: " << description << std::endl;
-  });
-
-  ImGui_ImplVKGlfw_init(m_Specification);
-
-  //log
-  std::cout << "----------Application Specification---------------------------------------------------------------------" << std::endl;
-  std::cout << "GLFWVULKANIMPL::init() finished" << std::endl;
-  std::cout << "GLFWVULKANIMPL::getApplicationSpecification().Name: " << ImGui_ImplVKGlfw_getApplicationSpecification().Name << std::endl;
-  std::cout << "----------Window Specification--------------------------------------------------------------------------" << std::endl;
-  std::cout << "GLFWVULKANIMPL::getApplicationSpecification().Width: " << ImGui_ImplVKGlfw_getWindowSettings().Width << std::endl;
-  std::cout << "GLFWVULKANIMPL::getApplicationSpecification().Height: " << ImGui_ImplVKGlfw_getWindowSettings().Height << std::endl;
-  std::cout << "GLFWVULKANIMPL::getApplicationSpecification().WindowResizeable: " << ImGui_ImplVKGlfw_getWindowSettings().WindowResizeable << std::endl;
-  std::cout << "GLFWVULKANIMPL::getApplicationSpecification().WindowDecorated: " << ImGui_ImplVKGlfw_getWindowSettings().WindowDecorated << std::endl;
-  std::cout << "GLFWVULKANIMPL::getApplicationSpecification().CenterWindow: " << ImGui_ImplVKGlfw_getWindowSettings().CenterWindow << std::endl;
-  std::cout << "---------Title bar Specification------------------------------------------------------------------------" << std::endl;
-  std::cout << "GLFWVULKANIMPL::getApplicationSpecification().TitleBarSettings.WindowNoDefaultTitleBar: " << ImGui_ImplVKGlfw_getApplicationSpecification().TitleBarSettings.CustomTitleBar << std::endl;
-  std::cout << "--------------------------------------------------------------------------------------------------------" << std::endl;
-  ///////////
-
-  //load fonts
-  //  ImGui_ImplVKGlfw_addFont("JetBrainsMonoNerdFontPropo-Regular.ttf")
-//    {
-//        ImFontConfig fontConfig;
-//        fontConfig.OversampleH = 4;
-//        fontConfig.OversampleV = 4;
-//
-//        ImGui_ImplVKGlfw_addFont(
-//                "Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf",
-//                "JetBrainsMonoNerdFontPropo-Regular",
-//                14.0f,
-//                fontConfig, true);
-//    }
-
-  run();
+    run();
 }
 
 bool MainWindow::run() {
-  while (!ImGui_ImplVKGlfw_shouldClose()) {
-    render();
-  }
+    while (!ImGui_ImplVKGlfw_shouldClose()) {
+        render();
+    }
 
-  return true;
+    return true;
 }
 
 void MainWindow::render() {
-  ImGui_ImplVKGlfw_startRender();
-  if (showDemoWindow)
-    ImGui::ShowDemoWindow(&showDemoWindow);
-  if (showMetricsWindow)
-    ImGui::ShowMetricsWindow(&showMetricsWindow);
-  if (showDebugLogWindow)
-    ImGui::ShowDebugLogWindow(&showDebugLogWindow);
-  if (showIDStackToolWindow)
-    ImGui::ShowIDStackToolWindow(&showIDStackToolWindow);
-  if (showAboutWindow)
-    ImGui::ShowAboutWindow(&showAboutWindow);
-  if (showStyleEditor)
-    ImGui::ShowStyleEditor(&ImGui::GetStyle());
-  if (showFontSelector) {
-    ImGui::Begin("Font Selector");
-    ImGui::ShowFontSelector("Font Selector");
-    ImGui::End();
-  }
-  if (showUserGuide) {
-    ImGui::Begin("User Guide");
-    ImGui::ShowUserGuide();
-    ImGui::End();
-  }
+    ImGui_ImplVKGlfw_startRender();
+    if (showDemoWindow)
+        ImGui::ShowDemoWindow(&showDemoWindow);
+    if (showMetricsWindow)
+        ImGui::ShowMetricsWindow(&showMetricsWindow);
+    if (showDebugLogWindow)
+        ImGui::ShowDebugLogWindow(&showDebugLogWindow);
+    if (showIDStackToolWindow)
+        ImGui::ShowIDStackToolWindow(&showIDStackToolWindow);
+    if (showAboutWindow)
+        ImGui::ShowAboutWindow(&showAboutWindow);
+    if (showStyleEditor)
+        ImGui::ShowStyleEditor(&ImGui::GetStyle());
+    if (showFontSelector) {
+        ImGui::Begin("Font Selector");
+        ImGui::ShowFontSelector("Font Selector");
+        ImGui::End();
+    }
+    if (showUserGuide) {
+        ImGui::Begin("User Guide");
+        ImGui::ShowUserGuide();
+        ImGui::End();
+    }
 
-  ImguiGlfwVulkanDebugger::render();
+    ImguiGlfwVulkanDebugger::render();
 
-  ImGui_ImplVKGlfw_endRender();
+    ImGui_ImplVKGlfw_endRender();
 }
 
 void MainWindow::shutdown() {
-  ImGui_ImplVKGlfw_shutdown();
+    ImGui_ImplVKGlfw_shutdown();
 }

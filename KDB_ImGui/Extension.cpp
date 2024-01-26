@@ -84,8 +84,8 @@ namespace KDB_ImGui {
 
       Extension::getTempData()->CenteredTitleStartWindow = titleStartScreen;
       Extension::getTempData()->CenteredTitleEndWindow = {titleStartScreen.x + titleSize.x, titleStartScreen.y + titleSize.y};
-
-      fgDrawList->AddText(titleStartScreen, ImColor(255, 255, 255, 255), appTitle.c_str());
+      const ImColor textColor = ImGui::GetStyleColorVec4(ImGuiCol_Text);
+      fgDrawList->AddText(titleStartScreen, textColor, appTitle.c_str());
     }
     //draw menu bar
     {
