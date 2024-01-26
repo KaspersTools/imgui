@@ -63,6 +63,10 @@ namespace KDB_ImGui {
         posStart = {start.x, end.y};
         posEnd = {start.x + textSize.x, end.y + textSize.y};
         break;
+      case ImGuiDir_None:
+        posStart = {start.x, start.y};
+        posEnd = {start.x + textSize.x, start.y + textSize.y};
+        break;
     }
     ImVec2 windowSize = ImGui::GetWindowSize();
     ImVec2 windowLocation = ImGui::GetWindowPos();
