@@ -325,9 +325,9 @@ namespace ImGuiMiniGames {
         bool LMBclick = false, RMBclick = false, isPclicked = false;
         if (isFocused && isHovered && !mustReInit) {
             LMBclick = ImGui::IsMouseClicked(0);
-            RMBclick = ImGui::IsMouseReleased(1);
-            isPclicked = ImGui::IsKeyPressed(style.keyPause,false);
-            if (isPclicked && gamePhase == GP_Playing) paused=!paused;
+        RMBclick = ImGui::IsMouseReleased(1);
+        isPclicked = ImGui::IsKeyPressed(style.keyPause,false);
+        if (isPclicked && gamePhase == GP_Playing) paused=!paused;
         }
 
         // Zoom / Scale window
@@ -1089,7 +1089,7 @@ namespace ImGuiMiniGames {
             if (isFocused && isHovered && !mustReInit) {
                 LMBclick = ImGui::IsMouseClicked(0);
                 RMBclick = ImGui::IsMouseReleased(1);
-                isPclicked = ImGui::IsKeyPressed(style.keyPause,false);
+                isPclicked = ImGui::IsKeyPressed(ImGuiKey_P, false);
                 if (isPclicked && gamePhase == GP_Playing) paused=!paused;
             }
 
@@ -1668,7 +1668,7 @@ namespace ImGuiMiniGames {
             if (isFocused && isHovered && !mustReInit) {
                 LMBclick = ImGui::IsMouseClicked(0);
                 RMBclick = ImGui::IsMouseReleased(1);
-                isPclicked = ImGui::IsKeyPressed(style.keyPause,false);
+                isPclicked = ImGui::IsKeyPressed(ImGuiKey_P,false);
                 if (isPclicked && gamePhase == GP_Playing) paused=!paused;
             }
 

@@ -5,7 +5,6 @@
 #include <filesystem>
 #include <vulkan/vulkan.h>
 
-
 enum class ImageFormat
 {
 None = 0,

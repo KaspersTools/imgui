@@ -28,7 +28,6 @@ class MainWindow {
     bool showDebugLogWindow = false;
     bool showIDStackToolWindow = false;
     bool showFontSelector = false;
-    bool showStyleSelector = false;
     bool showUserGuide = false;
 };
 

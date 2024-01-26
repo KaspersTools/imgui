@@ -6,6 +6,7 @@
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_vulkan.h"
+
 #include <KDB_ImGui/Extension.h>
 #include <misc/stb_image/stb_image.h>
 
@@ -568,7 +569,7 @@ void ImGui_ImplVKGlfw_init(ApplicationSpecification specification) {
     style.WindowRounding = 0.0f;
     style.Colors[ImGuiCol_WindowBg].w = 1.0f;
   }
-
+  ImVec2 cv = {};
   // Setup Platform/Renderer backends
   ImGui_ImplGlfw_InitForVulkan(m_WindowHandle, true);
   ImGui_ImplVulkan_InitInfo init_info = {};
@@ -959,7 +960,7 @@ bool ImGui_ImplVKGlfw_ShowStyleSelector(const char *label, bool *p_open) {
 }
 
 #include <KDB_ImGui/fonts/FontManager.h>
-bool ImGui_ImplVKGlfw_addFont(const std::filesystem::path &path, const std::string &name,
+const bool ImGui_ImplVKGlfw_addFont(const std::filesystem::path &path, const std::string &name,
                               const float &size,
                               const ImFontConfig &config,
                               const bool &defaultFont) {
@@ -974,6 +975,4 @@ bool ImGui_ImplVKGlfw_addFont(const std::filesystem::path &path, const std::stri
 }
 
 ImFont *ImGui_ImplVKGlfw_getFont(const std::string &name) {
-//  return false;
-  //  return KDB_ImGui::FontManager::getFont(name);
 }

@@ -27,7 +27,6 @@
 #include <imguistyleserializer.h>
 #endif
 
-
 void MainWindow::init() {
 
   ApplicationSpecification m_Specification;
@@ -121,7 +120,6 @@ void MainWindow::init() {
       if (ImGui::MenuItem("showDebugLogWindow")) showDebugLogWindow = true;
       if (ImGui::MenuItem("showIDStackToolWindow")) showIDStackToolWindow = true;
       if (ImGui::MenuItem("showFontSelector")) showFontSelector = true;
-      if (ImGui::MenuItem("showStyleSelector")) showStyleSelector = true;
       if (ImGui::MenuItem("showUserGuide")) showUserGuide = true;
       ImGui::EndMenu();
     }
@@ -160,7 +158,6 @@ void MainWindow::init() {
     std::cout << "GLFWVULKANIMPL::errorCallback() error: " << error << " description: " << description << std::endl;
   });
 
-
   ImGui_ImplVKGlfw_init(m_Specification);
 
   //log
@@ -180,15 +177,18 @@ void MainWindow::init() {
 
   //load fonts
   //  ImGui_ImplVKGlfw_addFont("JetBrainsMonoNerdFontPropo-Regular.ttf")
-  ImFontConfig fontConfig;
-  fontConfig.OversampleH = 4;
-  fontConfig.OversampleV = 4;
+//    {
+//        ImFontConfig fontConfig;
+//        fontConfig.OversampleH = 4;
+//        fontConfig.OversampleV = 4;
+//
+//        ImGui_ImplVKGlfw_addFont(
+//                "Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf",
+//                "JetBrainsMonoNerdFontPropo-Regular",
+//                14.0f,
+//                fontConfig, true);
+//    }
 
-  ImGui_ImplVKGlfw_addFont(
-          "Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf",
-          "JetBrainsMonoNerdFontPropo-Regular",
-          14.0f,
-          fontConfig, true);
   run();
 }
 
@@ -196,6 +196,8 @@ bool MainWindow::run() {
   while (!ImGui_ImplVKGlfw_shouldClose()) {
     render();
   }
+
+  return true;
 }
 
 void MainWindow::render() {
@@ -217,9 +219,6 @@ void MainWindow::render() {
     ImGui::ShowFontSelector("Font Selector");
     ImGui::End();
   }
-  if (showStyleSelector) {
-    ImGui_ImplVKGlfw_ShowStyleSelector("Style Selector", &showStyleSelector);
-  }
   if (showUserGuide) {
     ImGui::Begin("User Guide");
     ImGui::ShowUserGuide();
@@ -227,6 +226,7 @@ void MainWindow::render() {
   }
 
   ImguiGlfwVulkanDebugger::render();
+
   ImGui_ImplVKGlfw_endRender();
 }
 
