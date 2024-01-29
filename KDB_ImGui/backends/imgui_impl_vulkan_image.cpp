@@ -5,11 +5,11 @@
 
 #include "imgui.h"
 #include "backends/imgui_impl_vulkan.h"
-
 #include "imgui_impl_glfw_vulkan_window.h"
 
-#define STB_IMAGE_IMPLEMENTATION
+#include <iostream>
 
+#define STB_IMAGE_IMPLEMENTATION
 #include <misc/stb_image/stb_image.h>
 
 

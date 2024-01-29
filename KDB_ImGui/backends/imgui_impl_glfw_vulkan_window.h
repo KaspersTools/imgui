@@ -4,18 +4,11 @@
 
 #pragma once
 
-#include <functional>
-#include <iostream>
-#include <map>
-#include <memory>
-#include <string>
-#include <vector>
-
-#include "vulkan/vulkan.h"
+#include <GLFW/glfw3.h>
 #include <imgui.h>
-#include <KDB_ImGui/backends/imgui_impl_vulkan_image.h>
-#include <filesystem>
-#include <imgui_internal.h>
+#include <string>
+
+#include "imgui_impl_vulkan_image.h"
 
 struct ApplicationTitleBarDebugInfo {
   std::string label;
@@ -93,6 +86,9 @@ IMGUI_IMPL_API const ApplicationWindowSettings &ImGui_ImplVKGlfw_getWindowSettin
 IMGUI_IMPL_API const ApplicationTitleBarSettings &ImGui_ImplVKGlfw_getTitleBarSpecification();
 
 //Glfw
+IMGUI_IMPL_API GLFWmonitor *ImGui_ImplVKGlfw_getCurrentMonitor();
+IMGUI_IMPL_API ImVec2 ImGui_ImplVKGlfw_getCurrentMonitorContentScale();
+
 IMGUI_IMPL_API ImVec2 ImGui_ImplVKGlfw_getWindowSize();
 
 IMGUI_IMPL_API float ImGui_ImplVKGlfw_getMonitorWidth();
@@ -106,6 +102,9 @@ IMGUI_IMPL_API bool ImGui_ImplVKGlfw_isWindowMaximized();
 IMGUI_IMPL_API bool ImGui_ImplVKGlfw_shouldClose();
 
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_setShouldClose(const bool value);
+
+
+
 
 
 //Vulkan

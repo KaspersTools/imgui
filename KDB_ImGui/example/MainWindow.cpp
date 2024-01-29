@@ -9,6 +9,8 @@
 #include <KDB_ImGui/themes/Themes.h>
 #include <KDB_ImGui/fonts/FontManager.h>
 
+#include <iostream>
+
 void MainWindow::init() {
 
     ApplicationSpecification m_Specification;
@@ -177,7 +179,7 @@ void MainWindow::render() {
     }
 
     ImguiGlfwVulkanDebugger::render();
-
+    auto scale = ImGui_ImplVKGlfw_getCurrentMonitorContentScale();
     ImGui_ImplVKGlfw_endRender();
 }
 
