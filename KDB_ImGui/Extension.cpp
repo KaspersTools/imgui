@@ -388,6 +388,7 @@ namespace HBUI {
     ImVec2 textSize = ImGui::CalcTextSize(text.c_str()).HalfSize();
     ImVec2 windowCenter = calculateCenteredWindowPos();
     ImVec2 textStart = windowCenter - textSize;
+    ImGui::SetCursorPos(textStart);
     ImGui::TextColored(color, text.c_str());
   }
 

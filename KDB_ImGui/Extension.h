@@ -1,5 +1,6 @@
 //#include <imgui.h>
 //#include <KDB_ImGui/backends/imgui_impl_glfw_vulkan_window.h>
+#pragma once
 
 #include <functional>
 #include <vulkan/vulkan.h>
