@@ -410,9 +410,11 @@ namespace HBUI {
     }
 
     ImGui::SameLine(text_indentation);
+    ImGui::PushStyleColor(ImGuiCol_Text, color);
     ImGui::PushTextWrapPos(win_width - text_indentation);
     ImGui::TextWrapped(text.c_str());
     ImGui::PopTextWrapPos();
+    ImGui::PopStyleColor();
   }
 
   ImVec2
