@@ -281,6 +281,8 @@ if (IMGUI_IMPL_VULKAN)
                 ${KDB_IMGUI_DIR}/themes/Themes.h
                 ${KDB_IMGUI_DIR}/themes/Themes.cpp
 
+                ${KDB_IMGUI_DIR}/math/ImVec2.h
+                ${KDB_IMGUI_DIR}/math/MathOperations.h
         )
         target_link_libraries(imgui-vulkan INTERFACE imgui ${Vulkan_LIBRARIES})
         target_include_directories(imgui-vulkan SYSTEM INTERFACE
@@ -295,9 +297,7 @@ if (IMGUI_EXAMPLES)
     set(IMGUI_EXAM_SRC
             KDB_ImGui/example/main.cpp
             KDB_ImGui/example/MainWindow.h
-            KDB_ImGui/example/MainWindow.cpp
-            KDB_ImGui/math/ImVec2.h
-            KDB_ImGui/math/MathOperations.h)
+            KDB_ImGui/example/MainWindow.cpp)
     add_executable(KDB_ImGui ${IMGUI_EXAM_SRC})
     target_link_libraries(KDB_ImGui PUBLIC imgui imgui-glfw imgui-vulkan)
     # Copying resources from source to build

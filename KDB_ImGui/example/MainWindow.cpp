@@ -8,6 +8,7 @@
 #include <KDB_ImGui/backends/imgui_impl_glfw_vulkan_window.h>
 #include <KDB_ImGui/themes/Themes.h>
 #include <KDB_ImGui/fonts/FontManager.h>
+#include <KDB_ImGui/Extension.h>
 
 #include <iostream>
 
@@ -177,6 +178,11 @@ void MainWindow::render() {
         ImGui::ShowUserGuide();
         ImGui::End();
     }
+
+    ImGui::Begin("Centered text");
+    HBUI::textCentered("This is centered text", ImVec4(1, 0, 0, 1));
+    ImGui::End();
+
 
     ImguiGlfwVulkanDebugger::render();
     auto scale = ImGui_ImplVKGlfw_getCurrentMonitorContentScale();

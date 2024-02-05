@@ -156,6 +156,10 @@ namespace HBUI {
    */
   void textCentered(const std::string &text, const ImVec4 &color);
 
+  /**
+   * @brief render centered multiline (colored text)
+   */
+  void textCenteredMultiline(const std::string &text, const ImVec4 &color);
 
   class Extension {
 public:
