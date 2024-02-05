@@ -7,12 +7,12 @@
 #include <string>
 #include <vector>
 
-namespace KDB_ImGui {
+namespace HBUI {
   namespace Themes {
 
     extern ThemeInfo gThemeInfos[];
-    int KDB_ImGui::Themes::ThemeManager::currentThemeIDX = 0;
-    ImGuiTweakedTheme KDB_ImGui::Themes::ThemeManager::tweakedTheme = {};
+    int HBUI::Themes::ThemeManager::currentThemeIDX = 0;
+    ImGuiTweakedTheme HBUI::Themes::ThemeManager::tweakedTheme = {};
 
     void ThemeManager::showThemeManager(bool *p_open) {
       ImGui::Begin("Theme Manager", p_open, ImGuiWindowFlags_MenuBar);

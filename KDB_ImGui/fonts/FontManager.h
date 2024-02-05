@@ -8,7 +8,7 @@
 #include <string>
 #include <filesystem>
 
-namespace KDB_ImGui {
+namespace HBUI {
 
   class FontManager {
 public:

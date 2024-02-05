@@ -5,7 +5,7 @@
 #pragma once
 #include <imgui.h>
 
-namespace KDB_ImGui {
+namespace HBUI {
   namespace Themes {
     enum ImGuiTheme_ {
       ImGuiTheme_ImGuiColorsClassic = 0,

@@ -1,10 +1,13 @@
-#include "KDB_ImGui/backends/imgui_impl_glfw_vulkan_window.h"
+//#include <imgui.h>
+//#include <KDB_ImGui/backends/imgui_impl_glfw_vulkan_window.h>
+
 #include <functional>
-#include <imgui.h>
-#include <imgui_internal.h>
 #include <vulkan/vulkan.h>
 
-namespace KDB_ImGui {
+struct ApplicationTitleBarDebugInfo;
+struct ImGuiWindow;
+
+namespace HBUI {
   struct TempData {
     /**
      * @brief The current reset window position.
@@ -61,7 +64,6 @@ namespace KDB_ImGui {
       TitleBarHeight = 0.0f;
     }
   };
-
   /**
      * @brief beginTitleBar handles the beginning of rendering a custom title bar.
      * @param drawTitleCentered Whether to draw the title centered.
@@ -143,6 +145,16 @@ namespace KDB_ImGui {
      */
   void renderWindowOuterBorders(ImGuiWindow *window);
 
+  /**
+   * @brief calculate center of window/childwindow
+   */
+  ImVec2 calculateCenteredWindowPos();
+
+  /**
+   * @brief render centered (colored text)
+   */
+  void textCentered(const std::string &text, const ImVec4 &color);
+
 
   class Extension {
 public:
@@ -190,4 +202,4 @@ private:
      */
     inline static TempData *s_tempData = {};
   };
-}// namespace KDB_ImGui
+}// namespace HBUI

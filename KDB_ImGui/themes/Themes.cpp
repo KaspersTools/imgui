@@ -11,7 +11,7 @@
 
 #include "Themes.h"
 
-namespace KDB_ImGui::Themes {
+namespace HBUI::Themes {
     namespace ThemeTweakImpl {
         void ApplyRounding(ImGuiStyle &io_style, float rounding, float scrollbar_ratio) {
             io_style.WindowRounding = rounding;

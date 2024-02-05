@@ -52,5 +52,5 @@ cd bin
 
 11. Run the program
 ```bash
-./KDB_ImGui
+./HBUI
 ```

@@ -1,14 +1,16 @@
 //
 // Created by Kasper de Bruin on 19/01/2024.
 //
-
 #pragma once
 
-#include <GLFW/glfw3.h>
-#include <imgui.h>
-#include <string>
+#include <imconfig.h>
 
-#include "imgui_impl_vulkan_image.h"
+#include <imgui_internal.h>
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_vulkan.h>
+
+#include <KDB_ImGui/backends/imgui_impl_vulkan_image.h>
 
 struct ApplicationTitleBarDebugInfo {
   std::string label;

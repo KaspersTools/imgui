@@ -1,8 +1,12 @@
+
+#include <KDB_ImGui/backends/imgui_impl_glfw_vulkan_window.h>
+
 #include "Extension.h"
+
 #include <optional>
 #include <string>
 
-namespace KDB_ImGui {
+namespace HBUI {
   /*
    * @brief drawDebugRectWithLabel draws a debug rect with a label.
    * @param label The label of the debug rect.
@@ -376,6 +380,18 @@ namespace KDB_ImGui {
   }
 
   ImVec2
+  calculateCenteredWindowPos() {
+    return ImGui::GetContentRegionAvail().HalfSize();
+  }
+
+  void textCentered(const std::string &text, const ImVec4 color) {
+    ImVec2 textSize = ImGui::CalcTextSize(text.c_str()).HalfSize();
+    ImVec2 windowCenter = calculateCenteredWindowPos();
+    ImVec2 textStart = windowCenter - textSize;
+    ImGui::TextColored(color, text.c_str());
+  }
+
+  ImVec2
   screenToWindowSpace(const ImVec2 &screenPos) {
     ImGuiWindow *window = ImGui::GetCurrentWindow();
     ImVec2 windowPos = window->Pos;
@@ -385,7 +401,8 @@ namespace KDB_ImGui {
     return windowSpacePos;
   }
 
-  ImVec2 windowToScreenSpace(const ImVec2 &screenPos) {
+  ImVec2
+  windowToScreenSpace(const ImVec2 &screenPos) {
     ImGuiWindow *window = ImGui::GetCurrentWindow();
     ImVec2 windowPos = window->Pos;
     ImVec2 windowMin = windowPos;
@@ -403,4 +420,4 @@ namespace KDB_ImGui {
   }
 
 
-}// namespace KDB_ImGui
+}// namespace HBUI

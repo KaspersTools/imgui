@@ -8,8 +8,6 @@
 #include "imgui_impl_glfw_vulkan_window.h"
 
 #include <iostream>
-
-#define STB_IMAGE_IMPLEMENTATION
 #include <misc/stb_image/stb_image.h>
 
 

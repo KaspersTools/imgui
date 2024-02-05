@@ -77,41 +77,41 @@ void MainWindow::init() {
               if (ImGui::MenuItem("Show Style Editor"))
                 showStyleEditor = true;
               if(ImGui::MenuItem("ImGuiTheme_ImGuiColorsClassic"))
-                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_ImGuiColorsClassic);
+                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_ImGuiColorsClassic);
               if(ImGui::MenuItem("ImGuiTheme_ImGuiColorsDark"))
-                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_ImGuiColorsDark);
+                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_ImGuiColorsDark);
               if(ImGui::MenuItem("ImGuiTheme_ImGuiColorsLight"))
-                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_ImGuiColorsLight);
+                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_ImGuiColorsLight);
               if(ImGui::MenuItem("ImGuiTheme_MaterialFlat"))
-                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_MaterialFlat);
+                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_MaterialFlat);
               if(ImGui::MenuItem("ImGuiTheme_PhotoshopStyle"))
-                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_PhotoshopStyle);
+                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_PhotoshopStyle);
               if(ImGui::MenuItem("ImGuiTheme_GrayVariations"))
-                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_GrayVariations);
+                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_GrayVariations);
               if(ImGui::MenuItem("ImGuiTheme_GrayVariations_Darker"))
-                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_GrayVariations_Darker);
+                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_GrayVariations_Darker);
               if(ImGui::MenuItem("ImGuiTheme_MicrosoftStyle"))
-                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_MicrosoftStyle);
+                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_MicrosoftStyle);
               if(ImGui::MenuItem("ImGuiTheme_Cherry"))
-                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_Cherry);
+                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_Cherry);
               if(ImGui::MenuItem("ImGuiTheme_Darcula"))
-                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_Darcula);
+                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_Darcula);
               if(ImGui::MenuItem("ImGuiTheme_DarculaDarker"))
-                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_DarculaDarker);
+                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_DarculaDarker);
               if(ImGui::MenuItem("ImGuiTheme_LightRounded"))
-                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_LightRounded);
+                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_LightRounded);
               if(ImGui::MenuItem("ImGuiTheme_SoDark_AccentBlue"))
-                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentBlue);
+                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_SoDark_AccentBlue);
               if(ImGui::MenuItem("ImGuiTheme_SoDark_AccentYellow"))
-                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentYellow);
+                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_SoDark_AccentYellow);
               if(ImGui::MenuItem("ImGuiTheme_SoDark_AccentRed"))
-                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentRed);
+                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_SoDark_AccentRed);
               if(ImGui::MenuItem("ImGuiTheme_BlackIsBlack"))
-                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_BlackIsBlack);
+                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_BlackIsBlack);
               if(ImGui::MenuItem("ImGuiTheme_WhiteIsWhite"))
-                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_WhiteIsWhite);
+                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_WhiteIsWhite);
               if(ImGui::MenuItem("ImGuiTheme_Count"))
-                KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_Count);
+                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_Count);
               ImGui::EndMenu();
             }
         });
@@ -129,7 +129,7 @@ void MainWindow::init() {
 
     //Set theme
     {
-      KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentBlue);
+      HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_SoDark_AccentBlue);
     }
 
     //load font(s)
@@ -137,7 +137,7 @@ void MainWindow::init() {
         ImFontConfig fontConfig;
         fontConfig.RasterizerDensity = 3.0f;
 
-        KDB_ImGui::FontManager::addFont("Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf",
+        HBUI::FontManager::addFont("Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf",
                                         "JetBrainsMonoNerdFontPropo-Regular", 16.0f, fontConfig);
     }
 
@@ -165,7 +165,7 @@ void MainWindow::render() {
     if (showAboutWindow)
         ImGui::ShowAboutWindow(&showAboutWindow);
     if (showStyleEditor) {
-      KDB_ImGui::Themes::ThemeManager::showThemeManager(&showStyleEditor);
+      HBUI::Themes::ThemeManager::showThemeManager(&showStyleEditor);
     }
     if (showFontSelector) {
         ImGui::Begin("Font Selector");

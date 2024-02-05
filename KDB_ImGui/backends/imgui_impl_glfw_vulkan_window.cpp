@@ -1,27 +1,37 @@
 //
 // Adapted from Dear ImGui Vulkan example
 //
-
-
 #include <map>
 #include <stdio.h> // printf, fprintf
 #include <stdlib.h>// abort
 
-#define GLFW_INCLUDE_NONE
-#define GLFW_INCLUDE_VULKAN
+
+#define GLFW_INCLUDE_NONE  // GLFW including its own vulkan will break the build
+#define GLFW_INCLUDE_VULKAN// GLFW including its own vulkan will break the build
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 
+#include <imconfig.h>
+#include <imgui.h>
 
-#include "imgui_impl_glfw_vulkan_window.h"
+#include <imgui_internal.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_vulkan.h>
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_vulkan.h"
 
-#include <KDB_ImGui/Extension.h>
-#include <misc/stb_image/stb_image.h>
+#ifndef STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#include "misc/stb_image/stb_image.h"
+#endif
 
+#include <KDB_ImGui/Extension.h>
+#include <KDB_ImGui/backends/imgui_impl_glfw_vulkan_window.h>
+
+#include <KDB_ImGui/themes/ThemeManager.h>
 #include <KDB_ImGui/themes/Themes.h>
+
 #include <mutex>
 #include <queue>
 #include <thread>
@@ -433,7 +443,7 @@ static void renderFullScreenDockspace() {
     ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(50, 50, 50, 255));
     // Draw window border if the window is not maximized
     if (!isMaximized)
-      KDB_ImGui::renderWindowOuterBorders(ImGui::GetCurrentWindow());
+      HBUI::renderWindowOuterBorders(ImGui::GetCurrentWindow());
 
     ImGui::PopStyleColor();// ImGuiCol_Border
   }
@@ -441,7 +451,7 @@ static void renderFullScreenDockspace() {
   if (titleBarSettings.CustomTitleBar) {
 
 
-    KDB_ImGui::beginTitleBar(
+    HBUI::beginTitleBar(
             titleBarSettings.DrawTitleCentered,
             appSpec.Name,
             titleBarSettings.HasLogo,
@@ -453,14 +463,14 @@ static void renderFullScreenDockspace() {
             titleBarSettings.MainMenuBarExtraHeight,
             isMaximized,
             titleBarSettings.DebugInfo);
-    KDB_ImGui::beginMainMenuBar();
+    HBUI::beginMainMenuBar();
 
     //render itemsi
     if (titleBarSettings.MainMenuBarCallback != nullptr)
       (*titleBarSettings.MainMenuBarCallback)();
 
-    KDB_ImGui::endMainMenuBar();
-    KDB_ImGui::endTitleBar();
+    HBUI::endMainMenuBar();
+    HBUI::endTitleBar();
   }
 
   //  KDB::IMGUI::endMainMenuBar();
@@ -579,7 +589,7 @@ void ImGui_ImplVKGlfw_init(ApplicationSpecification specification) {
   ImGui::StyleColorsDark();
 
   // Style
-  KDB_ImGui::Themes::ThemeManager::applyTheme(KDB_ImGui::Themes::ImGuiTheme_SoDark_AccentBlue);
+  HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_SoDark_AccentBlue);
 
   // Setup Platform/Renderer backends
   ImGui_ImplGlfw_InitForVulkan(m_WindowHandle, true);
