@@ -131,3 +131,5 @@ IMGUI_IMPL_API void ImGui_ImplVKGlfw_startRender();
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_endRender();
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_shutdown();
 
+IMGUI_IMPL_API ImGuiContext* ImGui_ImplVKGlfw_getCurrentContext();
+

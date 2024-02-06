@@ -1001,3 +1001,7 @@ void ImGui_ImplVKGlfw_setWindowSize(const ImVec2 &size) {
 void ImGui_ImplVKGlfw_setWindowPos(const ImVec2 &pos) {
   glfwSetWindowPos(m_WindowHandle, pos.x, pos.y);
 }
+
+IMGUI_IMPL_API ImGuiContext* ImGui_ImplVKGlfw_getCurrentContext(){
+  return ImGui::GetCurrentContext();
+}
