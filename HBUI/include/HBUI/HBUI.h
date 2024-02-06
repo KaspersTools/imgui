@@ -5,7 +5,9 @@
 #ifndef HUMMINGBIRD_HBUI_H
 #define HUMMINGBIRD_HBUI_H
 
-#include <imgui.h>
+//all includes
+#include <HBUI/UIWindow.h>
+#include <HBUI/WindowManager.h>
 
 namespace HBUI {
   class HBUI {
