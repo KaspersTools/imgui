@@ -51,10 +51,11 @@ target_sources(imgui-extension INTERFACE PUBLIC
         ${HBUI_HEADERS}
 )
 
-file(GLOB SUB_FOLDERS LIST_DIRECTORIES true "*")
-list(FILTER SUB_FOLDERS EXCLUDE REGEX "sub_dir_z")
-target_include_directories(imgui-extension PRIVATE ${SUB_FOLDERS})
-target_include_directories(imgui-extension PUBLIC ${IMGUI_ROOT_DIR})
-
+#if there is no target imgui
+if(NOT TARGET imgui)
+    file(GLOB SUB_FOLDERS LIST_DIRECTORIES true "*")
+    list(FILTER SUB_FOLDERS EXCLUDE REGEX "sub_dir_z")
+    target_include_directories(imgui-extension PRIVATE ${SUB_FOLDERS})
+    target_include_directories(imgui-extension PUBLIC ${IMGUI_ROOT_DIR})
+endif ()
 target_include_directories(imgui-extension PUBLIC ${HBUI_DIR}/include)
-
