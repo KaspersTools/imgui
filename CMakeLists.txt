@@ -291,6 +291,16 @@ if (IMGUI_IMPL_VULKAN)
 endif ()
 
 ###############################################################################
+# Extension
+set(HBUI_DIR ${IMGUI_ROOT_DIR}/HBUI)
+add_library(imgui-extension INTERFACE)
+target_sources(imgui-extension INTERFACE PUBLIC
+        ${HBUI_DIR}/include/HBUI/HBUI.h
+)
+target_link_libraries(imgui-extension INTERFACE imgui)
+target_include_directories(imgui-extension SYSTEM INTERFACE ${HBUI_DIR}/include)
+
+###############################################################################
 # Examples
 ###############################################################################
 if (IMGUI_EXAMPLES)
