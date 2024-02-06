@@ -8,7 +8,7 @@
 struct ApplicationTitleBarDebugInfo;
 struct ImGuiWindow;
 
-namespace HBUI {
+namespace KDB_IMGUI {
   struct TempData {
     /**
      * @brief The current reset window position.

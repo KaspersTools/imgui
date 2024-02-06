@@ -78,41 +78,41 @@ void MainWindow::init() {
               if (ImGui::MenuItem("Show Style Editor"))
                 showStyleEditor = true;
               if(ImGui::MenuItem("ImGuiTheme_ImGuiColorsClassic"))
-                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_ImGuiColorsClassic);
+                KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_ImGuiColorsClassic);
               if(ImGui::MenuItem("ImGuiTheme_ImGuiColorsDark"))
-                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_ImGuiColorsDark);
+                KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_ImGuiColorsDark);
               if(ImGui::MenuItem("ImGuiTheme_ImGuiColorsLight"))
-                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_ImGuiColorsLight);
+                KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_ImGuiColorsLight);
               if(ImGui::MenuItem("ImGuiTheme_MaterialFlat"))
-                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_MaterialFlat);
+                KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_MaterialFlat);
               if(ImGui::MenuItem("ImGuiTheme_PhotoshopStyle"))
-                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_PhotoshopStyle);
+                KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_PhotoshopStyle);
               if(ImGui::MenuItem("ImGuiTheme_GrayVariations"))
-                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_GrayVariations);
+                KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_GrayVariations);
               if(ImGui::MenuItem("ImGuiTheme_GrayVariations_Darker"))
-                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_GrayVariations_Darker);
+                KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_GrayVariations_Darker);
               if(ImGui::MenuItem("ImGuiTheme_MicrosoftStyle"))
-                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_MicrosoftStyle);
+                KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_MicrosoftStyle);
               if(ImGui::MenuItem("ImGuiTheme_Cherry"))
-                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_Cherry);
+                KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_Cherry);
               if(ImGui::MenuItem("ImGuiTheme_Darcula"))
-                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_Darcula);
+                KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_Darcula);
               if(ImGui::MenuItem("ImGuiTheme_DarculaDarker"))
-                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_DarculaDarker);
+                KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_DarculaDarker);
               if(ImGui::MenuItem("ImGuiTheme_LightRounded"))
-                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_LightRounded);
+                KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_LightRounded);
               if(ImGui::MenuItem("ImGuiTheme_SoDark_AccentBlue"))
-                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_SoDark_AccentBlue);
+                KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_SoDark_AccentBlue);
               if(ImGui::MenuItem("ImGuiTheme_SoDark_AccentYellow"))
-                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_SoDark_AccentYellow);
+                KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_SoDark_AccentYellow);
               if(ImGui::MenuItem("ImGuiTheme_SoDark_AccentRed"))
-                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_SoDark_AccentRed);
+                KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_SoDark_AccentRed);
               if(ImGui::MenuItem("ImGuiTheme_BlackIsBlack"))
-                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_BlackIsBlack);
+                KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_BlackIsBlack);
               if(ImGui::MenuItem("ImGuiTheme_WhiteIsWhite"))
-                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_WhiteIsWhite);
+                KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_WhiteIsWhite);
               if(ImGui::MenuItem("ImGuiTheme_Count"))
-                HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_Count);
+                KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_Count);
               ImGui::EndMenu();
             }
         });
@@ -130,7 +130,7 @@ void MainWindow::init() {
 
     //Set theme
     {
-      HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_SoDark_AccentBlue);
+      KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_SoDark_AccentBlue);
     }
 
     //load font(s)
@@ -138,7 +138,7 @@ void MainWindow::init() {
         ImFontConfig fontConfig;
         fontConfig.RasterizerDensity = 3.0f;
 
-        HBUI::FontManager::addFont("Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf",
+        KDB_IMGUI::FontManager::addFont("Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf",
                                         "JetBrainsMonoNerdFontPropo-Regular", 16.0f, fontConfig);
     }
 
@@ -166,7 +166,7 @@ void MainWindow::render() {
     if (showAboutWindow)
         ImGui::ShowAboutWindow(&showAboutWindow);
     if (showStyleEditor) {
-      HBUI::Themes::ThemeManager::showThemeManager(&showStyleEditor);
+      KDB_IMGUI::Themes::ThemeManager::showThemeManager(&showStyleEditor);
     }
     if (showFontSelector) {
         ImGui::Begin("Font Selector");
@@ -180,7 +180,7 @@ void MainWindow::render() {
     }
 
     ImGui::Begin("Centered text");
-    HBUI::textCentered("This is centered text", ImVec4(1, 0, 0, 1));
+    KDB_IMGUI::textCentered("This is centered text", ImVec4(1, 0, 0, 1));
     ImGui::End();
 
 

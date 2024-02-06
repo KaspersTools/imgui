@@ -6,7 +6,7 @@
 #include <optional>
 #include <string>
 
-namespace HBUI {
+namespace KDB_IMGUI {
   /*
    * @brief drawDebugRectWithLabel draws a debug rect with a label.
    * @param label The label of the debug rect.

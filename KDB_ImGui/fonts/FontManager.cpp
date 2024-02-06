@@ -6,7 +6,7 @@
 #include <iostream>
 #include <unordered_map>
 
-namespace HBUI {
+namespace KDB_IMGUI {
     static std::unordered_map<std::string, ImFont *> fonts;
 
     bool

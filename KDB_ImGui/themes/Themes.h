@@ -14,7 +14,7 @@
 #include "ThemeManager.h"
 #include <string>
 
-namespace HBUI {
+namespace KDB_IMGUI {
   namespace Themes {
 
     const char *ImGuiTheme_Name(ImGuiTheme_ theme);

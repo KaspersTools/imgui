@@ -443,7 +443,7 @@ static void renderFullScreenDockspace() {
     ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(50, 50, 50, 255));
     // Draw window border if the window is not maximized
     if (!isMaximized)
-      HBUI::renderWindowOuterBorders(ImGui::GetCurrentWindow());
+      KDB_IMGUI::renderWindowOuterBorders(ImGui::GetCurrentWindow());
 
     ImGui::PopStyleColor();// ImGuiCol_Border
   }
@@ -451,7 +451,7 @@ static void renderFullScreenDockspace() {
   if (titleBarSettings.CustomTitleBar) {
 
 
-    HBUI::beginTitleBar(
+    KDB_IMGUI::beginTitleBar(
             titleBarSettings.DrawTitleCentered,
             appSpec.Name,
             titleBarSettings.HasLogo,
@@ -463,14 +463,14 @@ static void renderFullScreenDockspace() {
             titleBarSettings.MainMenuBarExtraHeight,
             isMaximized,
             titleBarSettings.DebugInfo);
-    HBUI::beginMainMenuBar();
+    KDB_IMGUI::beginMainMenuBar();
 
     //render itemsi
     if (titleBarSettings.MainMenuBarCallback != nullptr)
       (*titleBarSettings.MainMenuBarCallback)();
 
-    HBUI::endMainMenuBar();
-    HBUI::endTitleBar();
+    KDB_IMGUI::endMainMenuBar();
+    KDB_IMGUI::endTitleBar();
   }
 
   //  KDB::IMGUI::endMainMenuBar();
@@ -589,7 +589,7 @@ void ImGui_ImplVKGlfw_init(ApplicationSpecification specification) {
   ImGui::StyleColorsDark();
 
   // Style
-  HBUI::Themes::ThemeManager::applyTheme(HBUI::Themes::ImGuiTheme_SoDark_AccentBlue);
+  KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_SoDark_AccentBlue);
 
   // Setup Platform/Renderer backends
   ImGui_ImplGlfw_InitForVulkan(m_WindowHandle, true);
