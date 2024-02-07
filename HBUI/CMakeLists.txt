@@ -10,55 +10,51 @@
 #   imgui-extension
 
 cmake_minimum_required(VERSION 3.13)
-project(imgui)
-
-# CMake: 3.13: option() honors normal variables. Sufficiently new CMake and this policy allow user to configure library
-cmake_policy(SET CMP0077 NEW)
-
-# Tidy up build dir, but only if user has not configured it yet.
-if (NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-endif ()
-if (NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-endif ()
-if (NOT DEFINED CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-endif ()
+project(imgui-extension)
 
 # Minimal supported C++ standard.
 if (NOT DEFINED CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 23)
 endif ()
 
-if(NOT DEFINED ${IMGUI_ROOT_DIR})
-    set(IMGUI_ROOT_DIR ../)
-endif()
-
-set(HBUI_DIR ${IMGUI_ROOT_DIR}/HBUI)
+set(HBUI_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(imgui-extension STATIC)
 
 set(HBUI_SOURCES
-        ${HBUI_DIR}/src/WindowManager.cpp)
+        ${HBUI_DIR}/src/HBUI.cpp
+        ${HBUI_DIR}/src/WindowManager.cpp
+)
 
 set(HBUI_HEADERS
         ${HBUI_DIR}/include/HBUI/HBUI.h
         ${HBUI_DIR}/include/HBUI/UIWindow.h
         ${HBUI_DIR}/include/HBUI/WindowManager.h)
 
-target_sources(imgui-extension INTERFACE PUBLIC
-        ${HBUI_SOURCES}
-        ${HBUI_HEADERS}
+set(IMGUI_ROOT_DIR ${HBUI_DIR}/../)
+set(IMGUI_SOURCE_FILES
+        ${IMGUI_ROOT_DIR}/imgui.cpp
+        ${IMGUI_ROOT_DIR}/imgui.h
 )
 
-#if there is no target imgui
-if(NOT TARGET imgui)
-    file(GLOB SUB_FOLDERS LIST_DIRECTORIES true "*")
-    list(FILTER SUB_FOLDERS EXCLUDE REGEX "sub_dir_z")
-    target_include_directories(imgui-extension PRIVATE ${SUB_FOLDERS})
-    target_include_directories(imgui-extension PUBLIC ${IMGUI_ROOT_DIR})
+target_sources(imgui-extension PUBLIC
+        ${HBUI_SOURCES}
+        ${IMGUI_SOURCE_FILES}
+)
+
+message(STATUS "HBUI_SOURCES: ${IMGUI_ROOT_DIR}")
+
+#check if target imgui already excitst
+if (NOT TARGET imgui)
+    set(IMGUI_ENABLE_STDLIB_SUPPORT OFF CACHE BOOL "" FORCE)
+    set(IMGUI_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(IMGUI_DEMO OFF CACHE BOOL "" FORCE)
+    set(IMGUI_ENABLE_FREETYPE OFF CACHE BOOL "" FORCE)
+    set(IMGUI_IMPL_GLFW OFF CACHE BOOL "" FORCE)
+    set(IMGUI_IMPL_VULKAN OFF CACHE BOOL "" FORCE)
+    set(IMGUI_EXTENSION OFF CACHE BOOL "" FORCE)
+    set(IMGUI_USER_CONFIG OFF CACHE BOOL "" FORCE)
+    add_subdirectory(${IMGUI_ROOT_DIR} ${CMAKE_BINARY_DIR}/imgui)
 endif ()
 
+target_link_libraries(imgui-extension PRIVATE imgui)
 target_include_directories(imgui-extension PUBLIC ${HBUI_DIR}/include)
-target_include_directories(imgui-extension PRIVATE ../)
-

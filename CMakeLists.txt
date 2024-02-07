@@ -48,7 +48,6 @@ cmake_policy(SET CMP0077 NEW)
 ###############################################################################
 option(IMGUI_EXAMPLES "Build ImGui examples" ON)
 option(IMGUI_DEMO "Include the ImGui demo window implementation in library" ON)
-
 option(IMGUI_DISABLE_OBSOLETE_FUNCTIONS "Disable deprecated functions" ON)
 option(IMGUI_DISABLE_OBSOLETE_KEYIO "Disable legacy input handling" ON)
 option(IMGUI_DISABLE_FILE_FUNCTIONS "Disable use of file functions" OFF)
@@ -56,9 +55,10 @@ option(IMGUI_ENABLE_STDLIB_SUPPORT "Enable extra functions taking stdlib types" 
 option(IMGUI_ENABLE_COVERAGE "Enable coverage testing for supported compilers" OFF)
 option(IMGUI_ENABLE_ASAN "Enable compiler-based sanitizers" OFF)
 option(IMGUI_ENABLE_FREETYPE "Enable FreeType font rasterizer" ON)
-
 option(IMGUI_IMPL_GLFW "Build the GLFW implementation (only if supported)" ON)
 option(IMGUI_IMPL_VULKAN "Build the Vulkan implementation (only if supported)" ON)
+option(IMGUI_EXTENSION "Build the Vulkan implementation (only if supported)" ON)
+option(IMGUI_USER_CONFIG "Build the Vulkan implementation (only if supported)" OFF)
 
 set(IMGUI_GLFW_TARGET "" CACHE STRING "A custom GLFW target name that will be used for linking to examples.")
 set(IMGUI_GLUT_TARGET "" CACHE STRING "A custom GLFW target name that will be used for linking to examples.")
@@ -144,10 +144,14 @@ if (NOT IMGUI_DEMO)
 endif ()
 #define custom user config file
 
-add_library(imgui INTERFACE)
-target_link_libraries(imgui INTERFACE ${CMAKE_DL_LIBS})
-target_sources(imgui INTERFACE ${IMGUI_SOURCE_FILES})
-target_compile_definitions(imgui INTERFACE -DIMGUI_USER_CONFIG_KDBIMGUI=<KDB_ImGui/KDBConfig.h>)
+add_library(imgui SHARED)
+target_link_libraries(imgui PRIVATE ${CMAKE_DL_LIBS})
+target_sources(imgui PUBLIC ${IMGUI_SOURCE_FILES})
+
+
+if (IMGUI_USER_CONFIG)
+    target_compile_definitions(imgui PRIVATE -DIMGUI_USER_CONFIG_KDBIMGUI=<KDB_ImGui/KDBConfig.h>)
+endif ()
 
 if (IMGUI_DISABLE_OBSOLETE_FUNCTIONS)
     target_compile_definitions(imgui INTERFACE -DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1)
@@ -161,7 +165,6 @@ endif ()
 if (IMGUI_USER_CONFIG)
     target_compile_definitions(imgui INTERFACE "-DIMGUI_USER_CONFIG=<${IMGUI_USER_CONFIG}>")
 endif ()
-target_include_directories(imgui INTERFACE ${IMGUI_ROOT_DIR})
 if (NOT IMGUI_DEMO)
     target_compile_definitions(imgui INTERFACE -DIMGUI_DISABLE_DEMO_WINDOWS=1)
 endif ()
@@ -189,7 +192,7 @@ if (IMGUI_ENABLE_FREETYPE)
             ${IMGUI_MISC_DIR}/freetype/imgui_freetype.h
             ${IMGUI_MISC_DIR}/freetype/imgui_freetype.cpp
     )
-
+    target_include_directories(imgui-freetype INTERFACE ${IMGUI_ROOT_DIR})
     find_package(Freetype)
     if (FREETYPE_FOUND)
         target_include_directories(imgui-freetype INTERFACE ${FREETYPE_INCLUDE_DIRS})
@@ -253,6 +256,7 @@ if (IMGUI_IMPL_GLFW)
 endif ()
 
 if (IMGUI_IMPL_VULKAN)
+    message(STATUS "IMGUI_IMPL_VULKAN set to ON")
     find_package(Vulkan QUIET)
     if (CMAKE_CXX_STANDARD EQUAL 98)
         message(STATUS "IMGUI_IMPL_VULKAN set to ON but Vulkan SDK requires at least C++11.")
@@ -291,23 +295,20 @@ if (IMGUI_IMPL_VULKAN)
         target_link_libraries(imgui-vulkan INTERFACE imgui ${Vulkan_LIBRARIES})
         target_include_directories(imgui-vulkan SYSTEM INTERFACE
                 ${Vulkan_INCLUDE_DIRS} ${IMGUI_BACKENDS_DIR})
+        target_include_directories(imgui-vulkan INTERFACE ${IMGUI_ROOT_DIR})
     endif ()
 endif ()
 
 ###############################################################################
 # Extension
 ###############################################################################
-
-set(HBUI_DIR ${IMGUI_ROOT_DIR}/HBUI)
-add_library(imgui-extension INTERFACE)
-target_sources(imgui-extension INTERFACE PUBLIC
-        ${HBUI_DIR}/include/HBUI/HBUI.h
-        ${HBUI_DIR}/include/HBUI/UIWindow.h
-        ${HBUI_DIR}/include/HBUI/WindowManager.h
-        ${HBUI_DIR}/src/WindowManager.cpp
-)
-target_link_libraries(imgui-extension INTERFACE imgui)
-target_include_directories(imgui-extension SYSTEM INTERFACE ${HBUI_DIR}/include)
+if (IMGUI_EXTENSION)
+    set(HBUI_DIR ${IMGUI_ROOT_DIR}/HBUI)
+    add_subdirectory(${HBUI_DIR})
+    message("With HBUI")
+else ()
+    message("Without HBUI")
+endif ()
 
 ###############################################################################
 # Examples
@@ -319,7 +320,6 @@ if (IMGUI_EXAMPLES)
             KDB_ImGui/example/MainWindow.cpp)
     add_executable(KDB_ImGui ${IMGUI_EXAM_SRC})
     target_link_libraries(KDB_ImGui PUBLIC imgui imgui-glfw imgui-vulkan)
-    # Copying resources from source to build
     message("Copying resources from ${CMAKE_CURRENT_SOURCE_DIR}/Assets to ${CMAKE_CURRENT_BINARY_DIR}/bin/Assets§")
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endif ()

@@ -3,10 +3,8 @@
 //
 
 #pragma once
-#include <imgui.h>
-#include <iostream>
-#include <chrono>
-#include <map>
+#include <HBUI/HBUI.h>
+
 
 // Define a UI window structure
 namespace HummingBirdCore {
