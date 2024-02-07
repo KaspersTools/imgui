@@ -1,3 +1,0 @@
-[submodule "addons/imguifiledialog"]
-	path = addons/imguifiledialog
-	url = git@github.com:aiekick/ImGuiFileDialog.git
