@@ -12,7 +12,7 @@
 //// Call IMGUI_CHECKVERSION() from your .cpp file to verify that the data structures your files are using are matching the ones imgui.cpp is using.
 ////-----------------------------------------------------------------------------
 //
-#pragma once
+//#pragma once
 //
 //
 //#ifndef IMGUI_DEFINE_MATH_OPERATORS

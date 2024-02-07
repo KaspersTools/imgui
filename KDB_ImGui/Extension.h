@@ -2,6 +2,9 @@
 //#include <KDB_ImGui/backends/imgui_impl_glfw_vulkan_window.h>
 #pragma once
 
+//#ifdef IMGUI_USER_CONFIG_KDBIMGUI
+#include <KDB_ImGui/KDBConfig.h>
+//#endif
 #include <functional>
 #include <vulkan/vulkan.h>
 

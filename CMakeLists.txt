@@ -46,7 +46,7 @@ cmake_policy(SET CMP0077 NEW)
 ###############################################################################
 # Supported build parameters
 ###############################################################################
-option(IMGUI_EXAMPLES "Build ImGui examples" ON)
+option(IMGUI_EXAMPLES "Build kdb ImGui examples" OFF)
 option(IMGUI_DEMO "Include the ImGui demo window implementation in library" ON)
 option(IMGUI_DISABLE_OBSOLETE_FUNCTIONS "Disable deprecated functions" ON)
 option(IMGUI_DISABLE_OBSOLETE_KEYIO "Disable legacy input handling" ON)
@@ -55,8 +55,8 @@ option(IMGUI_ENABLE_STDLIB_SUPPORT "Enable extra functions taking stdlib types" 
 option(IMGUI_ENABLE_COVERAGE "Enable coverage testing for supported compilers" OFF)
 option(IMGUI_ENABLE_ASAN "Enable compiler-based sanitizers" OFF)
 option(IMGUI_ENABLE_FREETYPE "Enable FreeType font rasterizer" ON)
-option(IMGUI_IMPL_GLFW "Build the GLFW implementation (only if supported)" ON)
-option(IMGUI_IMPL_VULKAN "Build the Vulkan implementation (only if supported)" ON)
+option(IMGUI_IMPL_GLFW "Build the GLFW implementation (only if supported)" OFF)
+option(IMGUI_IMPL_VULKAN "Build the Vulkan implementation (only if supported)" PFF)
 option(IMGUI_EXTENSION "Build the Vulkan implementation (only if supported)" ON)
 option(IMGUI_USER_CONFIG "Build the Vulkan implementation (only if supported)" OFF)
 
@@ -147,11 +147,11 @@ endif ()
 add_library(imgui SHARED)
 target_link_libraries(imgui PRIVATE ${CMAKE_DL_LIBS})
 target_sources(imgui PUBLIC ${IMGUI_SOURCE_FILES})
+#target_include_directories(imgui PRIVATE ${IMGUI_ROOT_DIR})
 
-
-if (IMGUI_USER_CONFIG)
+if(IMGUI_USER_CONFIG)
     target_compile_definitions(imgui PRIVATE -DIMGUI_USER_CONFIG_KDBIMGUI=<KDB_ImGui/KDBConfig.h>)
-endif ()
+endif()
 
 if (IMGUI_DISABLE_OBSOLETE_FUNCTIONS)
     target_compile_definitions(imgui INTERFACE -DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1)
@@ -192,7 +192,7 @@ if (IMGUI_ENABLE_FREETYPE)
             ${IMGUI_MISC_DIR}/freetype/imgui_freetype.h
             ${IMGUI_MISC_DIR}/freetype/imgui_freetype.cpp
     )
-    target_include_directories(imgui-freetype INTERFACE ${IMGUI_ROOT_DIR})
+    target_include_directories(imgui-freetype  INTERFACE ${IMGUI_ROOT_DIR})
     find_package(Freetype)
     if (FREETYPE_FOUND)
         target_include_directories(imgui-freetype INTERFACE ${FREETYPE_INCLUDE_DIRS})
@@ -306,9 +306,9 @@ if (IMGUI_EXTENSION)
     set(HBUI_DIR ${IMGUI_ROOT_DIR}/HBUI)
     add_subdirectory(${HBUI_DIR})
     message("With HBUI")
-else ()
+else()
     message("Without HBUI")
-endif ()
+endif()
 
 ###############################################################################
 # Examples
@@ -318,8 +318,8 @@ if (IMGUI_EXAMPLES)
             KDB_ImGui/example/main.cpp
             KDB_ImGui/example/MainWindow.h
             KDB_ImGui/example/MainWindow.cpp)
-    add_executable(KDB_ImGui ${IMGUI_EXAM_SRC})
-    target_link_libraries(KDB_ImGui PUBLIC imgui imgui-glfw imgui-vulkan)
+    add_executable(KDB_ImGui_Example ${IMGUI_EXAM_SRC})
+    target_link_libraries(KDB_ImGui_Example PUBLIC imgui imgui-glfw imgui-vulkan)
     message("Copying resources from ${CMAKE_CURRENT_SOURCE_DIR}/Assets to ${CMAKE_CURRENT_BINARY_DIR}/bin/Assets§")
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endif ()

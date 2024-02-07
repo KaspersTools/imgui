@@ -5,6 +5,5 @@
 #include <iostream>
 
 void HBUI::initialize() {
-	std::cout << "HBUI initialized" << std::endl;
-	ImGui::Text("jaosd");
+  ImGui::Text("jaosd");
 }
