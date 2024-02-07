@@ -33,5 +33,5 @@ target_sources(imgui-extension PUBLIC
         ${HBUI_SOURCES}
 )
 
-target_link_libraries(imgui-extension PUBLIC imgui)
+target_link_libraries(imgui-extension PUBLIC imgui imgui-stdlib)
 target_include_directories(imgui-extension PUBLIC ${HBUI_DIR}/include)

@@ -10358,6 +10358,11 @@ void ImGui::ItemSize(const ImVec2& size, float text_baseline_y)
         SameLine();
 }
 
+//TODO: Added by kasper for imgui::inputtext to work with dlls
+void ImGui::ItemSize(const ImRect& bb, float text_baseline_y){
+    ItemSize(bb.GetSize(), text_baseline_y);
+}
+
 // Declare item bounding box for clipping and interaction.
 // Note that the size can be different than the one provided to ItemSize(). Typically, widgets that spread over available surface
 // declare their minimum size requirement to ItemSize() and provide a larger region to ItemAdd() which is used drawing/interaction.

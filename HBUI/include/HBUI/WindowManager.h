@@ -11,13 +11,14 @@
 namespace HummingBirdCore::UI {
   class WindowManager {
 public:
-    WindowManager();
+    WindowManager() = default;
 
     ~WindowManager() = default;
 
     void addWindow(const std::string &name, const int addition, std::shared_ptr<UIWindow> uiWindow);
     void render();
     static WindowManager *getInstance();
+    static void setInstance(WindowManager *instance);
 
 private:
     // UIWindows
