@@ -224,7 +224,7 @@ target_sources(imgui-stdlib INTERFACE
 set(CMAKE_REQUIRED_QUIET ON)
 include(CheckIncludeFile)
 
-# PkgConfig will be needed for SDL and glfw on some platforms.
+# PkgConfig will be needed for glfw on some platforms.
 find_package(PkgConfig QUIET)
 
 if (IMGUI_IMPL_GLFW)
@@ -257,7 +257,10 @@ endif ()
 
 if (IMGUI_IMPL_VULKAN)
     message(STATUS "IMGUI_IMPL_VULKAN set to ON")
-    find_package(Vulkan QUIET)
+    find_package(Vulkan REQUIRED)
+    if(NOT Vulkan_FOUND)
+        message(FATAL_ERROR "Vulkan not found")
+    endif()
     if (CMAKE_CXX_STANDARD EQUAL 98)
         message(STATUS "IMGUI_IMPL_VULKAN set to ON but Vulkan SDK requires at least C++11.")
     elseif (NOT Vulkan_FOUND)
