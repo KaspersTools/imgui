@@ -12,7 +12,7 @@
 //// Call IMGUI_CHECKVERSION() from your .cpp file to verify that the data structures your files are using are matching the ones imgui.cpp is using.
 ////-----------------------------------------------------------------------------
 //
-//#pragma once
+#pragma once
 //
 //
 //#ifndef IMGUI_DEFINE_MATH_OPERATORS
@@ -148,3 +148,22 @@
 //    void MyFunction(const char* name, MyMatrix44* mtx);
 //}
 //*/
+
+#ifndef IMGUI_DEFINE_MATH_OPERATORS
+#define IMGUI_DEFINE_MATH_OPERATORS
+#endif
+
+#ifndef IM_VEC2_CLASS_EXTRA
+#define IM_VEC2_CLASS_EXTRA \
+ImVec2 HalfSize() const { return ImVec2(x / 2, y / 2); } \
+ImVec2 DoubleSize() const { return ImVec2(x * 2, y * 2); }
+#endif
+
+#ifndef IM_VEC4_CLASS_EXTRA
+#define IM_VEC4_CLASS_EXTRA
+#endif
+#define IMGUI_DISABLE_WIN32_DEFAULT_CLIPBOARD_FUNCTIONS   // [Win32] Don't implement default clipboard handler. Won't use and link with OpenClipboard/GetClipboardData/CloseClipboard etc. (user32.lib/.a, kernel32.lib/.a)
+#define IMGUI_ENABLE_WIN32_DEFAULT_IME_FUNCTIONS          // [Win32] [Default with Visual Studio] Implement default IME handler (require imm32.lib/.a, auto-link for Visual Studio, -limm32 on command-line for MinGW)
+#define IMGUI_DISABLE_WIN32_DEFAULT_IME_FUNCTIONS         // [Win32] [Default with non-Visual Studio compilers] Don't implement default IME handler (won't require imm32.lib/.a)
+#define IMGUI_DISABLE_WIN32_FUNCTIONS                     // [Win32] Won't use and link with any Win32 function (clipboard, IME).
+
