@@ -142,9 +142,13 @@ file(GLOB IMGUI_SOURCE_FILES ${IMGUI_ROOT_DIR}/*.h ${IMGUI_ROOT_DIR}/*.cpp)
 if (NOT IMGUI_DEMO)
     list(REMOVE_ITEM IMGUI_SOURCE_FILES ${IMGUI_ROOT_DIR}/imgui_demo.cpp)
 endif ()
+#define custom user config file
+
 add_library(imgui INTERFACE)
 target_link_libraries(imgui INTERFACE ${CMAKE_DL_LIBS})
 target_sources(imgui INTERFACE ${IMGUI_SOURCE_FILES})
+target_compile_definitions(imgui INTERFACE -DIMGUI_USER_CONFIG_KDBIMGUI=<KDB_ImGui/KDBConfig.h>)
+
 if (IMGUI_DISABLE_OBSOLETE_FUNCTIONS)
     target_compile_definitions(imgui INTERFACE -DIMGUI_DISABLE_OBSOLETE_FUNCTIONS=1)
 endif ()
@@ -292,10 +296,15 @@ endif ()
 
 ###############################################################################
 # Extension
+###############################################################################
+
 set(HBUI_DIR ${IMGUI_ROOT_DIR}/HBUI)
 add_library(imgui-extension INTERFACE)
 target_sources(imgui-extension INTERFACE PUBLIC
         ${HBUI_DIR}/include/HBUI/HBUI.h
+        ${HBUI_DIR}/include/HBUI/UIWindow.h
+        ${HBUI_DIR}/include/HBUI/WindowManager.h
+        ${HBUI_DIR}/src/WindowManager.cpp
 )
 target_link_libraries(imgui-extension INTERFACE imgui)
 target_include_directories(imgui-extension SYSTEM INTERFACE ${HBUI_DIR}/include)

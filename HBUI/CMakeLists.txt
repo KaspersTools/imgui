@@ -58,4 +58,7 @@ if(NOT TARGET imgui)
     target_include_directories(imgui-extension PRIVATE ${SUB_FOLDERS})
     target_include_directories(imgui-extension PUBLIC ${IMGUI_ROOT_DIR})
 endif ()
+
 target_include_directories(imgui-extension PUBLIC ${HBUI_DIR}/include)
+target_include_directories(imgui-extension PRIVATE ../)
+
