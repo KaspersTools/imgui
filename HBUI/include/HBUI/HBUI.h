@@ -11,5 +11,8 @@
 
 namespace HBUI {
 	[[maybe_unused]]void initialize();
+
+    [[maybe_unused]]ImVec2 getMainScreenSize();
+    [[maybe_unused]]ImVec2 getMainScreenPos();
 }// namespace HBUI
 #endif//HUMMINGBIRD_HBUI_H

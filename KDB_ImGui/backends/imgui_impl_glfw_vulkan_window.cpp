@@ -14,9 +14,9 @@
 #include <imconfig.h>
 #include <imgui.h>
 
-#include <imgui_internal.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_vulkan.h>
+#include <imgui_internal.h>
 
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_vulkan.h"
@@ -412,7 +412,13 @@ static void renderFullScreenDockspace() {
   ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
 
   ImGuiViewport *viewport = ImGui::GetMainViewport();
-  ImGui::SetNextWindowPos(viewport->Pos);
+
+  ImGuiStyle &style = ImGui::GetStyle();
+  float minWinSizeX = style.WindowMinSize.x;
+  style.WindowMinSize.x = 370.0f;
+
+  ImGui::SetNextWindowPos(
+          {viewport->Pos.x, viewport->Pos.y});
   ImGui::SetNextWindowSize(viewport->Size);
   ImGui::SetNextWindowViewport(viewport->ID);
 
@@ -429,11 +435,13 @@ static void renderFullScreenDockspace() {
   }
 
   const bool isMaximized = ImGui_ImplVKGlfw_isWindowMaximized();
+  const auto &windowSettings = ImGui_ImplVKGlfw_getWindowSettings();
+  const auto &wStyle = windowSettings.StyleSettings;
 
-  ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, isMaximized ? ImVec2(6.0f, 6.0f) : ImVec2(1.0f, 1.0f));
-  ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, isMaximized ? wStyle.WindowPaddingMaximized : wStyle.WindowPaddingNormal);
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, wStyle.WindowBorderSize);
+  ImGui::PushStyleColor(ImGuiCol_MenuBarBg, wStyle.MenuBarBG);
 
-  ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4{0.0f, 0.0f, 0.0f, 0.0f});
   ImGui::Begin("DockSpaceWindow", nullptr, window_flags);
   ImGui::PopStyleColor();// MenuBarBg
   ImGui::PopStyleVar(2);
@@ -473,13 +481,13 @@ static void renderFullScreenDockspace() {
     KDB_IMGUI::endTitleBar();
   }
 
-  //  KDB::IMGUI::endMainMenuBar();
-  ImGuiStyle &style = ImGui::GetStyle();
-  float minWinSizeX = style.WindowMinSize.x;
-  style.WindowMinSize.x = 370.0f;
   ImGui::DockSpace(ImGui::GetID("MyDockspace"));
 
-  style.WindowMinSize.x = minWinSizeX;
+//  if(isMaximized)
+//    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, wStyle.ChildRoundingDocked);
+//  else
+//    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, wStyle.ChildRounding);
+
 }
 
 static void endFullScreenDockSpace() {
@@ -523,6 +531,8 @@ void ImGui_ImplVKGlfw_init(ApplicationSpecification specification) {
   glfwGetMonitorPos(primaryMonitor, &monitorX, &monitorY);
 
   glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+
+  //  GLFWwindow* window = glfwCreateWindow(mode->width, mode->height, "My Title", monitor, NULL);
 
   m_WindowHandle = glfwCreateWindow(ImGui_ImplVKGlfw_getWindowSettings().Width,
                                     ImGui_ImplVKGlfw_getWindowSettings().Height, m_Specification.Name.c_str(), NULL,
@@ -964,6 +974,12 @@ ImVec2 ImGui_ImplVKGlfw_getWindowSize() {
   return ImVec2(width, height);
 }
 
+ImVec2 ImGui_ImplVKGlfw_getWindowPos() {
+  int x, y;
+  glfwGetWindowPos(m_WindowHandle, &x, &y);
+  return ImVec2(x, y);
+}
+
 GLFWmonitor *ImGui_ImplVKGlfw_getCurrentMonitor() {
   return glfwGetWindowMonitor(m_WindowHandle);
 }
@@ -972,11 +988,11 @@ GLFWmonitor *ImGui_ImplVKGlfw_getCurrentMonitor() {
 ImVec2 ImGui_ImplVKGlfw_getCurrentMonitorContentScale() {
   float xscale, yscale;
   auto monitor = glfwGetPrimaryMonitor();
-  if(monitor == nullptr)
+  if (monitor == nullptr)
     return ImVec2(1.0f, 1.0f);
 
   auto mode = glfwGetVideoMode(monitor);
-  if(mode == nullptr)
+  if (mode == nullptr)
     return ImVec2(1.0f, 1.0f);
 
   int widthMM, heightMM;
@@ -988,12 +1004,6 @@ ImVec2 ImGui_ImplVKGlfw_getCurrentMonitorContentScale() {
   return ImVec2(dpiX, dpiY);
 }
 
-ImVec2 ImGui_ImplVKGlfw_getWindowPos() {
-  int x, y;
-  glfwGetWindowPos(m_WindowHandle, &x, &y);
-  return ImVec2(x, y);
-}
-
 void ImGui_ImplVKGlfw_setWindowSize(const ImVec2 &size) {
   glfwSetWindowSize(m_WindowHandle, size.x, size.y);
 }
@@ -1002,6 +1012,6 @@ void ImGui_ImplVKGlfw_setWindowPos(const ImVec2 &pos) {
   glfwSetWindowPos(m_WindowHandle, pos.x, pos.y);
 }
 
-IMGUI_IMPL_API ImGuiContext* ImGui_ImplVKGlfw_getCurrentContext(){
+IMGUI_IMPL_API ImGuiContext *ImGui_ImplVKGlfw_getCurrentContext() {
   return ImGui::GetCurrentContext();
 }

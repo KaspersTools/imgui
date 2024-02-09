@@ -5,11 +5,11 @@
 
 #include <imconfig.h>
 
-#include <imgui_internal.h>
-#include <imgui.h>
-#include <imconfig.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_vulkan.h>
+#include <imconfig.h>
+#include <imgui.h>
+#include <imgui_internal.h>
 
 #include <KDB_ImGui/backends/imgui_impl_vulkan_image.h>
 
@@ -29,54 +29,64 @@ struct ApplicationTitleBarDebugInfo {
   ImGuiDir_ textDir = ImGuiDir_Right;
 };
 
+struct ApplicationWindowStyleSettings {
+  ImVec2 WindowPaddingNormal = ImVec2(1.0f, 1.0f);
+  ImVec2 WindowPaddingMaximized = ImVec2(6.0f, 6.0f);
+
+  float WindowBorderSize = 0.0f;
+  ImVec4 MenuBarBG = {0.0f, 0.0f, 0.0f, 0.0f};
+};
+
 struct ApplicationTitleBarSettings {
-    bool CustomTitleBar = false;
+  bool CustomTitleBar = false;
 
-    float Height = 50.f;
+  float Height = 50.f;
 
-    ImVec4 StartMaximized = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-    ImVec4 StartWindowed = ImVec4(64.0f, 0.0f, 0.0f, 0.0f);
+  ImVec4 StartMaximized = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
+  ImVec4 StartWindowed = ImVec4(64.0f, 0.0f, 0.0f, 0.0f);
 
-    bool HasLogo = false;
-    ImVec2 LogoDrawSize = ImVec2(45.0f, 45.0f);
-    std::shared_ptr<Image> Logo = nullptr;
-    std::filesystem::path LogoPath = "";
+  bool HasLogo = false;
+  ImVec2 LogoDrawSize = ImVec2(45.0f, 45.0f);
+  std::shared_ptr<Image> Logo = nullptr;
+  std::filesystem::path LogoPath = "";
 
-    float ImageZoom = 1.5f;
-    float MainMenuBarExtraHeight = 8.558f;
+  float ImageZoom = 1.5f;
+  float MainMenuBarExtraHeight = 8.558f;
 
-    bool DrawTitleCentered = false;
+  bool DrawTitleCentered = false;
 
-    ///DONT CALL BEGIN MAIN MENU BAR IN YOUR CODE
-    std::function<void()> *MainMenuBarCallback = nullptr;
+  ///DONT CALL BEGIN MAIN MENU BAR IN YOUR CODE
+  std::function<void()> *MainMenuBarCallback = nullptr;
 
-    std::shared_ptr<ApplicationTitleBarDebugInfo> DebugInfo = std::make_shared<ApplicationTitleBarDebugInfo>();
+  std::shared_ptr<ApplicationTitleBarDebugInfo> DebugInfo = std::make_shared<ApplicationTitleBarDebugInfo>();
 };
 
 struct ApplicationWindowSettings {
-    uint32_t Width = 1600;
-    uint32_t Height = 900;
+  uint32_t Width = 1600;
+  uint32_t Height = 900;
 
-    bool WindowResizeable = true;
-    bool WindowDecorated = true;
-    bool CenterWindow = false;
+  bool WindowResizeable = true;
+  bool WindowDecorated = true;
+  bool CenterWindow = false;
 
-    bool CreateDefaultDockSpace = true;
+  bool CreateDefaultDockSpace = true;
+
+  ApplicationWindowStyleSettings StyleSettings = {};
 };
 
 struct ApplicationSpecification {
-    std::string Name = "Walnut App";
-    ApplicationWindowSettings WindowSettings;
-    ApplicationTitleBarSettings TitleBarSettings;
+  std::string Name = "Walnut App";
+  ApplicationWindowSettings WindowSettings;
+  ApplicationTitleBarSettings TitleBarSettings;
 
-    ImVec2 MenuBarStartWindow;
-    ImVec2 CurrentResetWindowPos;
+  ImVec2 MenuBarStartWindow;
+  ImVec2 CurrentResetWindowPos;
 
-    ImVec2 CenteredTitleStartScreenPos;
-    ImVec2 CenteredTitleEndScreenPos;
+  ImVec2 CenteredTitleStartScreenPos;
+  ImVec2 CenteredTitleEndScreenPos;
 
-    float MenuBarWidth;
-    float MenuBarHeight;
+  float MenuBarWidth;
+  float MenuBarHeight;
 };
 
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_init(ApplicationSpecification m_Specification);
@@ -93,6 +103,7 @@ IMGUI_IMPL_API GLFWmonitor *ImGui_ImplVKGlfw_getCurrentMonitor();
 IMGUI_IMPL_API ImVec2 ImGui_ImplVKGlfw_getCurrentMonitorContentScale();
 
 IMGUI_IMPL_API ImVec2 ImGui_ImplVKGlfw_getWindowSize();
+IMGUI_IMPL_API ImVec2 ImGui_ImplVKGlfw_getWindowPos();
 
 IMGUI_IMPL_API float ImGui_ImplVKGlfw_getMonitorWidth();
 
@@ -105,9 +116,6 @@ IMGUI_IMPL_API bool ImGui_ImplVKGlfw_isWindowMaximized();
 IMGUI_IMPL_API bool ImGui_ImplVKGlfw_shouldClose();
 
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_setShouldClose(const bool value);
-
-
-
 
 
 //Vulkan
@@ -132,5 +140,4 @@ IMGUI_IMPL_API void ImGui_ImplVKGlfw_startRender();
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_endRender();
 IMGUI_IMPL_API void ImGui_ImplVKGlfw_shutdown();
 
-IMGUI_IMPL_API ImGuiContext* ImGui_ImplVKGlfw_getCurrentContext();
-
+IMGUI_IMPL_API ImGuiContext *ImGui_ImplVKGlfw_getCurrentContext();

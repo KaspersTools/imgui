@@ -129,9 +129,9 @@ void MainWindow::init() {
     }
 
     //Set theme
-    {
-      KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_SoDark_AccentBlue);
-    }
+//    {
+//      KDB_IMGUI::Themes::ThemeManager::applyTheme(KDB_IMGUI::Themes::ImGuiTheme_SoDark_AccentBlue);
+//    }
 
     //load font(s)
     {
@@ -185,7 +185,7 @@ void MainWindow::render() {
 
 
     ImguiGlfwVulkanDebugger::render();
-    auto scale = ImGui_ImplVKGlfw_getCurrentMonitorContentScale();
+
     ImGui_ImplVKGlfw_endRender();
 }
 

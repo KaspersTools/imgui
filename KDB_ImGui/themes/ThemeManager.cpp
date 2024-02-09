@@ -64,19 +64,19 @@ namespace KDB_IMGUI {
 
       ImGuiStyle style = ThemeToStyle(theme);
       currentThemeIDX = theme;
-      style.WindowPadding = ImVec2(10.0f, 10.0f);
-      style.FramePadding = ImVec2(8.0f, 6.0f);
-      style.ItemSpacing = ImVec2(6.0f, 6.0f);
-      style.ChildRounding = 6.0f;
-      style.PopupRounding = 6.0f;
-      style.FrameRounding = 6.0f;
-      style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
-
+//
       auto io = ImGui::GetIO();
       // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
       if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-        style.WindowRounding = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+        style.WindowPadding = ImVec2(10.0f, 10.0f);
+        style.FramePadding = ImVec2(8.0f, 6.0f);
+        style.ItemSpacing = ImVec2(6.0f, 6.0f);
+        style.PopupRounding = 6.0f;
+        style.FrameRounding = 6.0f;
+        style.ChildRounding = 0;
+        style.WindowRounding = 6;
+        style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
       }
 
       ImGui::GetStyle() = style;

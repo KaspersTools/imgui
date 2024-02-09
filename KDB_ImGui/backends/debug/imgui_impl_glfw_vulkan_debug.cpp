@@ -85,7 +85,6 @@ void ImguiGlfwVulkanDebugger::render() {
   }
 
   ImGui::Separator();
-
   ImGui::Text("WindowSettings");
   ImGui::Text("Width: %d", windowSetting.Width);
   ImGui::Text("Height: %d", windowSetting.Height);
@@ -93,8 +92,8 @@ void ImguiGlfwVulkanDebugger::render() {
   ImGui::Text("WindowDecorated: %d", windowSetting.WindowDecorated);
   ImGui::Text("CenterWindow: %d", windowSetting.CenterWindow);
   ImGui::Text("CreateDefaultDockSpace: %d", windowSetting.CreateDefaultDockSpace);
-  ImGui::Separator();
 
+  ImGui::Separator();
   ImGui::Text("TitleBarSettings");
   ImGui::Checkbox("CustomTitleBar", &titleBarSetting.CustomTitleBar);
   ImGui::SliderFloat("Height", &titleBarSetting.Height, 0.0f, 100.0f);
@@ -106,11 +105,18 @@ void ImguiGlfwVulkanDebugger::render() {
   ImGui::Checkbox("DrawTitleCentered", &titleBarSetting.DrawTitleCentered);
   ImGui::Text("MainMenuBarCallback: %s", titleBarSetting.MainMenuBarCallback == nullptr ? "nullptr" : titleBarSetting.MainMenuBarCallback->target_type().name());
   ImGui::SliderFloat("MainMenuBarExtraHeightOffset", &titleBarSetting.MainMenuBarExtraHeight, 0.0f, 100.0f);
-  ImGui::Separator();
+
   ImGui::Separator();
   ImGui::Text("ImGui_ImplVKGlfw_getApplicationSpecification");
   ImGui::Text("Centered Title Bar: %f %f", applicationSetting.CenteredTitleStartScreenPos.x, applicationSetting.CenteredTitleStartScreenPos.y);
+
   ImGui::Separator();
+  ImGui::Text("Style");
+  ApplicationWindowStyleSettings &style = windowSetting.StyleSettings;
+  ImGui::SliderFloat2("WindowPaddingNormal", &style.WindowPaddingNormal.x, -100.0f, 100.0f);
+  ImGui::SliderFloat2("WindowPaddingMaximized", &style.WindowPaddingMaximized.x, -100.0f, 100.0f);
+  ImGui::SliderFloat("WindowBorderSize", &style.WindowBorderSize, -100.0f, 100.0f);
+  ImGui::ColorEdit4("MenuBarBG", &style.MenuBarBG.x);
   ImGui::End();
 }
 
