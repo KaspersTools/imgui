@@ -428,35 +428,36 @@ bool initPlatformBackend(HBUIContext *context, void *errorCallback) {
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
   MainWindowFlags flags = context->mainWindowSettings->flags;
-  if (flags & HBUI_MAIN_WINDOW_FLAG_TRANSPARENT) {
+
+
+//  if (flags & HBUI_MAIN_WINDOW_FLAG_TRANSPARENT) {
     glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
-  } else {
-    glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_FALSE);
-  }
-
-  if (flags & HBUI_MAIN_WINDOW_FLAG_DECORATED) {
-    glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
-  } else {
+//  } else {
+//    glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_FALSE);
+//  }
+  if (flags & HBUI_MAIN_WINDOW_FLAG_NO_DECORATION) {
     glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+  } else {
+    glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
   }
 
-  if (flags & HBUI_MAIN_WINDOW_FLAG_RESIZABLE) {
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-  } else {
+  if (flags & HBUI_MAIN_WINDOW_FLAG_NO_RESIZE){
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+  } else {
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
   }
 
-  if (flags & HBUI_MAIN_WINDOW_FLAG_CENTER_WINDOW) {
+//  if (flags & HBUI_MAIN_WINDOW_FLAG_CENTER_WINDOW) {
     glfwWindowHint(GLFW_CENTER_CURSOR, GLFW_TRUE);
-  } else {
-    glfwWindowHint(GLFW_CENTER_CURSOR, GLFW_FALSE);
-  }
+//  } else {
+//    glfwWindowHint(GLFW_CENTER_CURSOR, GLFW_FALSE);
+//  }
 
-  if (flags & HBUI_MAIN_WINDOW_FLAG_TITLEBAR) {
-    glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
-  } else {
-    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-  }
+//  if (flags & HBUI_MAIN_WINDOW_FLAG_TITLEBAR) {
+//    glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
+//  } else {
+//    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+//  }
 
   GLFWmonitor *primaryMonitor = glfwGetPrimaryMonitor();
   const GLFWvidmode *videoMode = glfwGetVideoMode(primaryMonitor);
@@ -477,10 +478,10 @@ bool initPlatformBackend(HBUIContext *context, void *errorCallback) {
 
   glfwShowWindow(g_ImVKData->window);
 
-  if (flags & HBUI_MAIN_WINDOW_FLAG_TITLEBAR) {
-    glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_TRUE);
-  } else {
+  if (flags & HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR) {
     glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_FALSE);
+  } else {
+    glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_TRUE);
   }
 //  glfwMakeContextCurrent(g_ImVKData->window);
   return true;

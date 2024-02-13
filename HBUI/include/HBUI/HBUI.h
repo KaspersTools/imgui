@@ -13,9 +13,12 @@
 #include <memory>
 #include <vector>
 
-typedef int MainWindowFlags; // -> enum ImGuiWindowFlags_     // Flags: for Begin(), BeginChild()
-typedef int HBMenuBarFlags;  // -> enum HBMenuBarFlags_  // Flags for MenuBar
-typedef int HBDockSpaceFlags;// -> enum HBDockSpaceFlags_  // Flags for DockSpace
+
+//-----------------------------------------------------------------------------
+// [SECTION] Forward Declarations
+//-----------------------------------------------------------------------------
+typedef int MainWindowFlags;// -> enum ImGuiWindowFlags_     // Flags: for Begin(), BeginChild()
+typedef int TitleBarFlags;  // -> enum ImGuiWindowFlags_     // Flags: for Begin(), BeginChild()
 
 //-----------------------------------------------------------------------------
 // [SECTION] Flags & Enumerations
@@ -27,38 +30,71 @@ enum HBButtonDrawType {
 };
 
 enum MainWindowFlags_ {
+//  HBUI_MAIN_WINDOW_FLAG_NONE = 0,
+//  HBUI_MAIN_WINDOW_FLAG_RESIZABLE = 1 << 0,
+//  HBUI_MAIN_WINDOW_FLAG_DECORATED = 1 << 1,
+//  HBUI_MAIN_WINDOW_FLAG_TITLEBAR = 1 << 2,//fixme: implement but not with glfwWindowHint, only with glfwSetWindowAttrib
+//  HBUI_MAIN_WINDOW_FLAG_TRANSPARENT = 1 << 3,
+//  HBUI_MAIN_WINDOW_FLAG_CENTER_WINDOW = 1 << 4,
+//  HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE = 1 << 5,
+//  HBUI_MAIN_WINDOW_FLAG_DEFAULT =
+//          HBUI_MAIN_WINDOW_FLAG_RESIZABLE |
+//          HBUI_MAIN_WINDOW_FLAG_DECORATED |
+//          HBUI_MAIN_WINDOW_FLAG_TITLEBAR |
+//          HBUI_MAIN_WINDOW_FLAG_TRANSPARENT |
+//          HBUI_MAIN_WINDOW_FLAG_CENTER_WINDOW |
+//          HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE,
+//
   HBUI_MAIN_WINDOW_FLAG_NONE = 0,
-  HBUI_MAIN_WINDOW_FLAG_RESIZABLE = 1 << 0,
-  HBUI_MAIN_WINDOW_FLAG_DECORATED = 1 << 1,
-  HBUI_MAIN_WINDOW_FLAG_TITLEBAR = 1 << 2,//fixme: implement but not with glfwWindowHint, only with glfwSetWindowAttrib
-  HBUI_MAIN_WINDOW_FLAG_TRANSPARENT = 1 << 3,
-  HBUI_MAIN_WINDOW_FLAG_CENTER_WINDOW = 1 << 4,
-  //  HBUI_MAIN_WINDOW_FLAGS_VSYNC = 1 << 5, //todo: implement VSYNC
+  HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR = 1 << 0,
+  HBUI_MAIN_WINDOW_FLAG_NO_DECORATION = 1 << 1,
+  HBUI_MAIN_WINDOW_FLAG_NO_RESIZE = 1 << 2,
+  HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE = 1 << 3,
+  HBUI_MAIN_WINDOW_FULLDOCK = HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR |
+                              HBUI_MAIN_WINDOW_FLAG_NO_DECORATION |
+                              HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE,
+  //default
+};
+
+enum TitleBarFlags_ {
+  TitleBarFlag_None = 0,
+  TitleBarFlag_Horizontal = 1 << 0,
+  TitleBarFlag_Vertical = 1 << 1,
+};
+
+struct TitleBarSettings {
+  TitleBarFlags flags = 0;
+  ImVec2 size = ImVec2(0, 0);
+  ImVec2 pos = ImVec2(0, 0);
+  ImColor color = ImColor(0, 0, 0, 0);
 };
 
 struct MainWindowSettings {
   std::string title = "ImVK";
-
   int width = 1280;
   int height = 720;
 
-  MainWindowFlags flags =
-          HBUI_MAIN_WINDOW_FLAG_RESIZABLE |
-          HBUI_MAIN_WINDOW_FLAG_DECORATED |
-          HBUI_MAIN_WINDOW_FLAG_TITLEBAR |
-          HBUI_MAIN_WINDOW_FLAG_TRANSPARENT |
-          HBUI_MAIN_WINDOW_FLAG_CENTER_WINDOW;
+  //Flags
+  MainWindowFlags flags = 0;
+
+  //TitleBar
+  TitleBarFlags titleBarFlags = 0;
+  TitleBarSettings titleBarSettings = {};
+
 
   //default constructor
-  MainWindowSettings() = default;
-
-  //copy constructor
-  MainWindowSettings(const MainWindowSettings &other) = default;
+  MainWindowSettings(const std::string &title, int width, int height, MainWindowFlags flags = 0,
+                      TitleBarFlags titleBarFlags = 0, const TitleBarSettings titlebarSettings = {}) : width(width), height(height), flags(flags), titleBarFlags(titleBarFlags) {
+  }
 
   //constructor
   MainWindowSettings(const std::string &title, int width, int height) : title(title), width(width), height(height) {}
 };
 
+
+//-----------------------------------------------------------------------------
+// [SECTION] HBUIContext
+//-----------------------------------------------------------------------------
 struct HBUIContext {
   public:
   //MainWindow

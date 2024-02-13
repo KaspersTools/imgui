@@ -15,15 +15,7 @@ namespace HBUI {
     if (g_HBUICTX == NULL) {
       g_HBUICTX = new HBUIContext();
     }
-    auto *settings = new MainWindowSettings();
-    settings->width = 1280;
-    settings->height = 720;
-    settings->flags =
-            HBUI_MAIN_WINDOW_FLAG_RESIZABLE |
-            HBUI_MAIN_WINDOW_FLAG_TRANSPARENT |
-            HBUI_MAIN_WINDOW_FLAG_CENTER_WINDOW;
-
-    settings->title = "ImVK";
+    auto *settings = new MainWindowSettings("HBUI Example", 1280, 720, HBUI_MAIN_WINDOW_FULLDOCK);
     g_HBUICTX->mainWindowSettings = settings;
     if (!initPlatformBackend(g_HBUICTX)) {
       std::cerr << "Failed to initialize platform backend" << std::endl;
