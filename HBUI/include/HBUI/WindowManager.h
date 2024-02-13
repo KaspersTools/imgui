@@ -3,10 +3,9 @@
 //
 
 #pragma once
+
+#include <HBUI/HBUI.h>
 #include <HBUI/UIWindow.h>
-#include <iostream>
-#include <map>
-#include <memory>
 
 namespace HummingBirdCore::UI {
   class WindowManager {

@@ -2,8 +2,9 @@
 // (headers)
 
 #pragma once
-#include <imgui.h>
 #ifndef IMGUI_DISABLE
+
+#include "imgui.h"      // IMGUI_API
 
 // Forward declarations
 struct ImFontAtlas;
