@@ -84,14 +84,16 @@ void check_vk_result(VkResult err) {
     abort();
 }
 
-static bool IsExtensionAvailable(const ImVector<VkExtensionProperties> &properties, const char *extension) {
+static bool
+IsExtensionAvailable(const ImVector<VkExtensionProperties> &properties, const char *extension) {
   for (const VkExtensionProperties &p: properties)
     if (strcmp(p.extensionName, extension) == 0)
       return true;
   return false;
 }
 
-static VkPhysicalDevice SetupVulkan_SelectPhysicalDevice() {
+static VkPhysicalDevice
+SetupVulkan_SelectPhysicalDevice() {
   uint32_t gpu_count;
   VkResult err = vkEnumeratePhysicalDevices(g_ImVKData->g_Instance, &gpu_count, nullptr);
   check_vk_result(err);
@@ -279,7 +281,8 @@ static void SetupVulkanWindow(ImGui_ImplVulkanH_Window *wd, VkSurfaceKHR surface
                                          width, height, g_ImVKData->g_MinImageCount);
 }
 
-static void CleanupVulkan() {
+static void
+CleanupVulkan() {
   vkDestroyDescriptorPool(g_ImVKData->g_Device, g_ImVKData->g_DescriptorPool, g_ImVKData->g_Allocator);
 
 #ifdef IMGUI_VULKAN_DEBUG_REPORT
@@ -292,13 +295,15 @@ static void CleanupVulkan() {
   vkDestroyInstance(g_ImVKData->g_Instance, g_ImVKData->g_Allocator);
 }
 
-static void CleanupVulkanWindow() {
+static void
+CleanupVulkanWindow() {
   ImGui_ImplVulkanH_DestroyWindow(g_ImVKData->g_Instance, g_ImVKData->g_Device, &g_ImVKData->g_MainWindowData,
                                   g_ImVKData->g_Allocator);
 }
 
 //ImGui Helper Functions
-static void FrameRender(ImGui_ImplVulkanH_Window *wd, ImDrawData *draw_data) {
+static void
+FrameRender(ImGui_ImplVulkanH_Window *wd, ImDrawData *draw_data) {
   VkResult err;
 
   VkSemaphore image_acquired_semaphore = wd->FrameSemaphores[wd->SemaphoreIndex].ImageAcquiredSemaphore;
@@ -410,7 +415,8 @@ static void FramePresent(ImGui_ImplVulkanH_Window *wd) {
  ***********************************
  ***********************************/
 //ImVK API
-bool initPlatformBackend(HBUIContext *context, void *errorCallback) {
+IMVK_IMPL_API bool
+initPlatformBackend(HBUIContext *context, void *errorCallback) {
   g_ImVKData = new ImVKDATA();
   if (errorCallback != nullptr) {
     g_ImVKData->g_GlfwErrorCallback = (GLFWerrorfun) errorCallback;
@@ -430,34 +436,34 @@ bool initPlatformBackend(HBUIContext *context, void *errorCallback) {
   MainWindowFlags flags = context->mainWindowSettings->flags;
 
 
-//  if (flags & HBUI_MAIN_WINDOW_FLAG_TRANSPARENT) {
-    glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
-//  } else {
-//    glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_FALSE);
-//  }
+  //  if (flags & HBUI_MAIN_WINDOW_FLAG_TRANSPARENT) {
+  glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+  //  } else {
+  //    glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_FALSE);
+  //  }
   if (flags & HBUI_MAIN_WINDOW_FLAG_NO_DECORATION) {
     glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
   } else {
     glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
   }
 
-  if (flags & HBUI_MAIN_WINDOW_FLAG_NO_RESIZE){
+  if (flags & HBUI_MAIN_WINDOW_FLAG_NO_RESIZE) {
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
   } else {
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
   }
 
-//  if (flags & HBUI_MAIN_WINDOW_FLAG_CENTER_WINDOW) {
-    glfwWindowHint(GLFW_CENTER_CURSOR, GLFW_TRUE);
-//  } else {
-//    glfwWindowHint(GLFW_CENTER_CURSOR, GLFW_FALSE);
-//  }
+  //  if (flags & HBUI_MAIN_WINDOW_FLAG_CENTER_WINDOW) {
+  glfwWindowHint(GLFW_CENTER_CURSOR, GLFW_TRUE);
+  //  } else {
+  //    glfwWindowHint(GLFW_CENTER_CURSOR, GLFW_FALSE);
+  //  }
 
-//  if (flags & HBUI_MAIN_WINDOW_FLAG_TITLEBAR) {
-//    glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
-//  } else {
-//    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-//  }
+  //  if (flags & HBUI_MAIN_WINDOW_FLAG_TITLEBAR) {
+  //    glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
+  //  } else {
+  //    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+  //  }
 
   GLFWmonitor *primaryMonitor = glfwGetPrimaryMonitor();
   const GLFWvidmode *videoMode = glfwGetVideoMode(primaryMonitor);
@@ -483,14 +489,12 @@ bool initPlatformBackend(HBUIContext *context, void *errorCallback) {
   } else {
     glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_TRUE);
   }
-//  glfwMakeContextCurrent(g_ImVKData->window);
+  //  glfwMakeContextCurrent(g_ImVKData->window);
   return true;
 }
 
-//disable warning -Wunused-parameter
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-bool initGraphicsBackend(HBUIContext *context) {
+IMVK_IMPL_API bool
+initGraphicsBackend(HBUIContext *context) {
   if (!glfwVulkanSupported()) {
     (g_ImVKData->g_GlfwErrorCallback)(900, "GLFW: Vulkan Not Supported");
     return false;
@@ -578,10 +582,9 @@ bool initGraphicsBackend(HBUIContext *context) {
 
   return true;
 }
-#pragma clang diagnostic pop
 
-
-void startRenderBackend() {
+IMVK_IMPL_API void
+startRenderBackend() {
   // Poll and handle events (inputs, window resize, etc.)
   // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
   // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
@@ -623,7 +626,8 @@ void startRenderBackend() {
   ImGui::NewFrame();
 }
 
-void endRenderBackend() {
+IMVK_IMPL_API void
+endRenderBackend() {
   ImGuiIO &io = ImGui::GetIO();
   ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
   ImGui_ImplVulkanH_Window *wd = g_ImVKData->g_wd;
@@ -651,15 +655,67 @@ void endRenderBackend() {
     std::this_thread::sleep_for(std::chrono::milliseconds(5));
 }
 
-void setWindowShouldCloseBackend() {
+IMVK_IMPL_API void
+setWindowShouldCloseBackend() {
   glfwSetWindowShouldClose(g_ImVKData->window, GLFW_TRUE);
 }
 
-bool windowShouldCloseBackend() {
+IMVK_IMPL_API bool
+getWindowShouldCloseBackend() {
   return glfwWindowShouldClose(g_ImVKData->window);
 }
 
-void shutdownBackend() {
+IMVK_IMPL_API ImVec2
+getWindowSize() {
+  int width, height;
+  glfwGetWindowSize(g_ImVKData->window, &width, &height);
+  return ImVec2(width, height);
+}
+
+IMVK_IMPL_API ImVec2
+getWindowFrameSize() {
+  int width, height;
+  glfwGetFramebufferSize(g_ImVKData->window, &width, &height);
+  return ImVec2(width, height);
+}
+
+IMVK_IMPL_API ImVec2
+getMonitorSize() {
+  GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+  if (monitor == nullptr) {
+    return ImVec2(0, 0);
+  }
+
+  const GLFWvidmode *mode = glfwGetVideoMode(monitor);
+  if (mode == nullptr) {
+    return ImVec2(0, 0);
+  }
+
+  return ImVec2(mode->width, mode->height);
+}
+
+IMVK_IMPL_API float
+getMonitorHeight() {
+  return getMonitorSize().y;
+}
+
+IMVK_IMPL_API float
+getMonitorWidth() {
+  return getMonitorSize().x;
+}
+
+IMVK_IMPL_API bool
+isMaximized() {
+  ImVec2 size = getWindowSize();
+  ImVec2 frameSize = getWindowFrameSize();
+
+  return (size.x + frameSize.x == getMonitorWidth() &&
+          size.y + frameSize.y == getMonitorHeight());
+}
+
+
+IMVK_IMPL_API void
+shutdownBackend() {
   // Cleanup
   VkResult err = vkDeviceWaitIdle(g_ImVKData->g_Device);
   check_vk_result(err);

@@ -15,14 +15,46 @@ struct HBUIContext;
 #define IMVK_IMPL_API
 #endif
 
-IMVK_IMPL_API bool initPlatformBackend(HBUIContext *context, void *errorCallback = nullptr);
-IMVK_IMPL_API bool initGraphicsBackend(HBUIContext* context);
-IMVK_IMPL_API void startRenderBackend();
-IMVK_IMPL_API void endRenderBackend();
+IMVK_IMPL_API bool
+initPlatformBackend(HBUIContext *context, void *errorCallback = nullptr);
 
-IMVK_IMPL_API void shutdownBackend();
+IMVK_IMPL_API bool
+initGraphicsBackend(HBUIContext *context);
 
-IMVK_IMPL_API void setWindowShouldCloseBackend();
-IMVK_IMPL_API bool windowShouldCloseBackend();
+IMVK_IMPL_API void
+startRenderBackend();
+
+IMVK_IMPL_API void
+endRenderBackend();
+
+IMVK_IMPL_API void
+shutdownBackend();
+
+IMVK_IMPL_API bool
+isMaximized();
+
+IMVK_IMPL_API void
+setWindowShouldCloseBackend();
+
+IMVK_IMPL_API bool
+getWindowShouldCloseBackend();
+
+IMVK_IMPL_API ImVec2
+getWindowSize();
+
+IMVK_IMPL_API ImVec2
+getMonitorSize();
+
+IMVK_IMPL_API ImVec2
+getWindowFrameSize();
+
+IMVK_IMPL_API float
+getMonitorHeight();
+
+IMVK_IMPL_API float
+getMonitorWidth();
+
+IMVK_IMPL_API void
+shutdownBackend();
 
 #endif//HBUI_BACKEND_H

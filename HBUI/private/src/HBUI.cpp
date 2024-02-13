@@ -47,16 +47,27 @@ namespace HBUI {
   HBUI_API void
   startFrame() {
     startRenderBackend();
+    const auto windowFlags = g_HBUICTX->windowF();
+    const auto titleBSetting = g_HBUICTX->titleBarS();
+    const auto titleBFlags = g_HBUICTX->titleBarF();
+    const bool isFullscreen = isMaximized();
+
+    if(windowFlags & HBUI_MAIN_WINDOW_FULLDOCK){
+      beginFullScreenDockspace(isFullscreen);
+    }
   }
 
   HBUI_API void
   endFrame() {
+    if(g_HBUICTX->windowF() & HBUI_MAIN_WINDOW_FULLDOCK){
+      endFullScreenDockspace();
+    }
     endRenderBackend();
   }
 
   HBUI_API bool
   wantToClose() {
-    return windowShouldCloseBackend();
+    return getWindowShouldCloseBackend();
   }
 
   HBUI_API void

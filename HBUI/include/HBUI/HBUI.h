@@ -30,21 +30,20 @@ enum HBButtonDrawType {
 };
 
 enum MainWindowFlags_ {
-//  HBUI_MAIN_WINDOW_FLAG_NONE = 0,
-//  HBUI_MAIN_WINDOW_FLAG_RESIZABLE = 1 << 0,
-//  HBUI_MAIN_WINDOW_FLAG_DECORATED = 1 << 1,
-//  HBUI_MAIN_WINDOW_FLAG_TITLEBAR = 1 << 2,//fixme: implement but not with glfwWindowHint, only with glfwSetWindowAttrib
-//  HBUI_MAIN_WINDOW_FLAG_TRANSPARENT = 1 << 3,
-//  HBUI_MAIN_WINDOW_FLAG_CENTER_WINDOW = 1 << 4,
-//  HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE = 1 << 5,
-//  HBUI_MAIN_WINDOW_FLAG_DEFAULT =
-//          HBUI_MAIN_WINDOW_FLAG_RESIZABLE |
-//          HBUI_MAIN_WINDOW_FLAG_DECORATED |
-//          HBUI_MAIN_WINDOW_FLAG_TITLEBAR |
-//          HBUI_MAIN_WINDOW_FLAG_TRANSPARENT |
-//          HBUI_MAIN_WINDOW_FLAG_CENTER_WINDOW |
-//          HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE,
-//
+  //  HBUI_MAIN_WINDOW_FLAG_NONE = 0,
+  //  HBUI_MAIN_WINDOW_FLAG_RESIZABLE = 1 << 0,
+  //  HBUI_MAIN_WINDOW_FLAG_DECORATED = 1 << 1,
+  //  HBUI_MAIN_WINDOW_FLAG_TITLEBAR = 1 << 2,//fixme: implement but not with glfwWindowHint, only with glfwSetWindowAttrib
+  //  HBUI_MAIN_WINDOW_FLAG_TRANSPARENT = 1 << 3,
+  //  HBUI_MAIN_WINDOW_FLAG_CENTER_WINDOW = 1 << 4,
+  //  HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE = 1 << 5,
+  //  HBUI_MAIN_WINDOW_FLAG_DEFAULT =
+  //          HBUI_MAIN_WINDOW_FLAG_RESIZABLE |
+  //          HBUI_MAIN_WINDOW_FLAG_DECORATED |
+  //          HBUI_MAIN_WINDOW_FLAG_TITLEBAR |
+  //          HBUI_MAIN_WINDOW_FLAG_TRANSPARENT |
+  //          HBUI_MAIN_WINDOW_FLAG_CENTER_WINDOW |
+  //          HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE,
   HBUI_MAIN_WINDOW_FLAG_NONE = 0,
   HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR = 1 << 0,
   HBUI_MAIN_WINDOW_FLAG_NO_DECORATION = 1 << 1,
@@ -55,6 +54,7 @@ enum MainWindowFlags_ {
                               HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE,
   //default
 };
+
 
 enum TitleBarFlags_ {
   TitleBarFlag_None = 0,
@@ -84,7 +84,7 @@ struct MainWindowSettings {
 
   //default constructor
   MainWindowSettings(const std::string &title, int width, int height, MainWindowFlags flags = 0,
-                      TitleBarFlags titleBarFlags = 0, const TitleBarSettings titlebarSettings = {}) : width(width), height(height), flags(flags), titleBarFlags(titleBarFlags) {
+                     TitleBarFlags titleBarFlags = 0, const TitleBarSettings titlebarSettings = {}) : width(width), height(height), flags(flags), titleBarFlags(titleBarFlags) {
   }
 
   //constructor
@@ -97,8 +97,26 @@ struct MainWindowSettings {
 //-----------------------------------------------------------------------------
 struct HBUIContext {
   public:
+  MainWindowFlags &
+  windowF() const {
+    return mainWindowSettings->flags;
+  }
+
+  TitleBarSettings &
+  titleBarS() const {
+    return mainWindowSettings->titleBarSettings;
+  }
+
+  TitleBarFlags &
+  titleBarF() const {
+    return mainWindowSettings->titleBarFlags;
+  }
+
+
+  public:
   //MainWindow
   MainWindowSettings *mainWindowSettings = nullptr;
+
   //Implementation Data
   void *implementationData = nullptr;
 
@@ -228,10 +246,13 @@ namespace HBUI {
                         ImDrawList *drawList);
 
   HBUI_API void
-  beginDockspaceWindow(ImGuiViewport *viewport, ImGuiStyle &style, const bool isMaximized);
+  beginFullScreenDockspace(const bool isMaximized);
 
   HBUI_API void
-  endDockspaceWindow();
+  endFullScreenDockspace();
+
+  HBUI_API void
+  beginVerticalMenuBar();
 
   HBUI_API void
   endVerticalMenuBar();

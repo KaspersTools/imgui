@@ -1,8 +1,6 @@
 //
 // Created by Kasper de Bruin on 10/02/2024.
 //
-
-#include <imgui_internal.h>
 #include <HBUI/HBUI.h>
 
 /**
@@ -76,11 +74,12 @@ namespace HBUI {
  * ******************
  *
  */
-  void beginDockspaceWindow(ImGuiViewport* viewport, ImGuiStyle& style, const bool isMaximized) {
-    auto vp = ImGui::GetMainViewport();
+  HBUI_API void
+  beginFullScreenDockspace(const bool isMaximized){
+    auto viewport = ImGui::GetMainViewport();
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
 
-    float minWinSizeX = style.WindowMinSize.x;
+    ImGuiStyle &style = ImGui::GetStyle();
     style.WindowMinSize.x = 370.0f;
 
     ImGui::SetNextWindowPos({viewport->WorkPos.x, viewport->WorkPos.y});
@@ -112,12 +111,11 @@ namespace HBUI {
     ImGui::PopStyleVar(2);
     ImGui::PopStyleVar(1);
 
-    //ImGui::SetCursorPos({0, 0});
-
     ImGui::DockSpace(ImGui::GetID("MyDockspace"));
   }
 
-  void endDockspaceWindow() {
+  HBUI_API void
+  endFullScreenDockspace() {
     ImGui::End();
   }
 }// namespace HBUI
