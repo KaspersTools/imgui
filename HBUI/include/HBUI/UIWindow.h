@@ -160,6 +160,7 @@ public:
           ImGui::Begin(m_name.c_str(), &m_isOpen, m_flags);
         }
       }
+
       render();
       endFrame();
     }

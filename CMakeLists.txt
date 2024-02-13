@@ -40,20 +40,18 @@ file(GLOB headers *.h)
 message(STATUS "IMGUI_DIR: ${IMGUI_DIR}")
 message(STATUS "sources: ${sources}")
 
-add_library(imgui SHARED
-)
+add_library(imgui SHARED)
 target_include_directories(imgui PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-
-target_sources(imgui PRIVATE ${sources})
+target_sources(imgui PRIVATE ${sources} misc/cpp/imgui_stdlib.cpp)
 
 ################################################################################
 # HBUI
 ################################################################################
-add_subdirectory(HBUI)
+#add_subdirectory(HBUI)
 
 ###############################################################################
 # EXAMPLE
 ###############################################################################
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/example/ ${CMAKE_BINARY_DIR}/example)
-target_link_libraries(ImVk-example PRIVATE HBUI)
+#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/example/ ${CMAKE_BINARY_DIR}/example)
+#target_link_libraries(ImVk-example PRIVATE HBUI)
 
