@@ -3,35 +3,57 @@
 # =================================
 #
 #   # Link Dear ImGui to your application:
-#   #  imgui-extension - a main library target
-#   target_link_libraries(YourApplication PRIVATE imgui-extension)
+#   #  HBUI - a main library target
+#   target_link_libraries(YourApplication PRIVATE HBUI)
 #
 # A list of defined targets:
-#   imgui-extension
-
+#   HBUI
 cmake_minimum_required(VERSION 3.13)
-project(imgui)
+project(HBUI)
+###############################################################################
+# options
+###############################################################################
+option(HBUI_GLFW "Use VULKAN WITH GLFW" ON)
 
-# Minimal supported C++ standard.
-if (NOT DEFINED CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 23)
-endif ()
-
+###############################################################################
+# ImVk
+###############################################################################
 set(HBUI_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-add_library(imgui-extension STATIC)
+add_library(HBUI SHARED
+        private/headers/Backend.h)
 
 set(HBUI_SOURCES
-        ${HBUI_DIR}/src/HBUI.cpp
-        ${HBUI_DIR}/src/WindowManager.cpp
+        ${HBUI_DIR}/private/src/HBUI.cpp
+        ${HBUI_DIR}/private/src/WindowManager.cpp
+        ${HBUI_DIR}/private/src/UIWindow.cpp
+        ${HBUI_DIR}/private/src/HBWidgets.cpp
 )
-
 set(HBUI_HEADERS
         ${HBUI_DIR}/include/HBUI/HBUI.h
         ${HBUI_DIR}/include/HBUI/UIWindow.h
-        ${HBUI_DIR}/include/HBUI/WindowManager.h)
-target_sources(imgui-extension PUBLIC
-        ${HBUI_SOURCES}
+        ${HBUI_DIR}/include/HBUI/WindowManager.h
 )
 
-target_link_libraries(imgui-extension PUBLIC imgui imgui-stdlib)
-target_include_directories(imgui-extension PUBLIC ${HBUI_DIR}/include)
+target_sources(HBUI PRIVATE ${HBUI_SOURCES})
+target_sources(HBUI PUBLIC  ${HBUI_HEADERS})
+
+target_include_directories(HBUI PUBLIC ${HBUI_DIR}/include)
+target_include_directories(HBUI PUBLIC ${HBUI_DIR}/include/imgui)
+
+target_include_directories(HBUI PRIVATE ${HBUI_DIR}/private)
+
+#target_include_directories(HBUI PUBLIC ${HBUI_DIR}/../imgui)
+###############################################################################
+# ImVk
+###############################################################################
+
+if (HBUI_GLFW)
+    add_subdirectory(../ImVK ${CMAKE_BINARY_DIR}/ImVK)
+    target_link_libraries(HBUI PRIVATE ImVk)
+    target_include_directories(HBUI PRIVATE ${HBUI_DIR}/../ImVK/include)
+endif ()
+
+###############################################################################
+# imgui
+###############################################################################
+target_link_libraries(HBUI PUBLIC imgui)
