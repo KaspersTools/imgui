@@ -486,6 +486,9 @@ bool initPlatformBackend(HBUIContext *context, void *errorCallback) {
   return true;
 }
 
+//disable warning -Wunused-parameter
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 bool initGraphicsBackend(HBUIContext *context) {
   if (!glfwVulkanSupported()) {
     (g_ImVKData->g_GlfwErrorCallback)(900, "GLFW: Vulkan Not Supported");
@@ -517,7 +520,7 @@ bool initGraphicsBackend(HBUIContext *context) {
 
   // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
-  ImGuiContext *imcontext = ImGui::CreateContext();
+  ImGui::CreateContext();
   ImGuiIO &io = ImGui::GetIO();
   (void) io;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;// Enable Keyboard Controls
@@ -572,15 +575,10 @@ bool initGraphicsBackend(HBUIContext *context) {
     check_vk_result(err);
   }
 
-  //set swap interval
-//  if(context->mainWindowSettings->flags & HBUI_MAIN_WINDOW_FLAGS_VSYNC){
-//    glfwSwapInterval(1);
-//  }else{
-//    glfwSwapInterval(0);
-//  }
-
   return true;
 }
+#pragma clang diagnostic pop
+
 
 void startRenderBackend() {
   // Poll and handle events (inputs, window resize, etc.)

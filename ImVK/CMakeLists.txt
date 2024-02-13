@@ -58,6 +58,10 @@ list(APPEND ImVk_PRIVATE_INCLUDE_DIRS
 ###############################################################################
 #glfw
 if (NOT TARGET glfw)
+    #-Wunused-parameter]
+    #disable warnings for glfw
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-parameter")
+
     set(GLFW_DIR ../../glfw) # Set this to point to an up-to-date GLFW repo
     option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
     option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
