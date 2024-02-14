@@ -5,6 +5,8 @@
 #ifndef HBUI_BACKEND_H
 #define HBUI_BACKEND_H
 
+#include <imgui.h>
+
 struct HBUIContext;
 
 //-----------------------------------------------------------------------------

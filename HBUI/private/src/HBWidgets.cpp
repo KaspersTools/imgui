@@ -2,7 +2,6 @@
 // Created by Kasper de Bruin on 10/02/2024.
 //
 #include <HBUI/HBUI.h>
-
 /**
  *
  * ******************
@@ -75,7 +74,7 @@ namespace HBUI {
  *
  */
   HBUI_API void
-  beginFullScreenDockspace(const bool isMaximized){
+  beginFullScreenDockspace(const bool isMaximized, const bool isCustomTitleBar) {
     auto viewport = ImGui::GetMainViewport();
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
 
@@ -111,11 +110,32 @@ namespace HBUI {
     ImGui::PopStyleVar(2);
     ImGui::PopStyleVar(1);
 
-    ImGui::DockSpace(ImGui::GetID("MyDockspace"));
+    ImGui::DockSpace(ImGui::GetID("MyDockspace"));//fixme: when custom title bar call this manually
+    if (!isCustomTitleBar) {}
+    ImGui::End();
   }
 
   HBUI_API void
   endFullScreenDockspace() {
     ImGui::End();
+  }
+
+  /**
+ *
+ * ******************
+ * MenuBar
+ * ******************
+ *
+ */
+
+  HBUI_API void
+  beginMainMenuBar() {
+    ImGui::BeginMainMenuBar();
+  }
+
+  HBUI_API void
+  endMainMenuBar() {
+    ImGui::EndMainMenuBar();
+    //    ImGui::SetCursorPos(g_HBUICTX->drawData.nextWindowPos);
   }
 }// namespace HBUI

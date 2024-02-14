@@ -437,7 +437,7 @@ initPlatformBackend(HBUIContext *context, void *errorCallback) {
 
 
   //  if (flags & HBUI_MAIN_WINDOW_FLAG_TRANSPARENT) {
-  glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+//  glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
   //  } else {
   //    glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_FALSE);
   //  }
@@ -455,15 +455,6 @@ initPlatformBackend(HBUIContext *context, void *errorCallback) {
 
   //  if (flags & HBUI_MAIN_WINDOW_FLAG_CENTER_WINDOW) {
   glfwWindowHint(GLFW_CENTER_CURSOR, GLFW_TRUE);
-  //  } else {
-  //    glfwWindowHint(GLFW_CENTER_CURSOR, GLFW_FALSE);
-  //  }
-
-  //  if (flags & HBUI_MAIN_WINDOW_FLAG_TITLEBAR) {
-  //    glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
-  //  } else {
-  //    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-  //  }
 
   GLFWmonitor *primaryMonitor = glfwGetPrimaryMonitor();
   const GLFWvidmode *videoMode = glfwGetVideoMode(primaryMonitor);

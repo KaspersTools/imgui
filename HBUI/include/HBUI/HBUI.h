@@ -7,6 +7,7 @@
 #endif
 
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <misc/cpp/imgui_stdlib.h>
 
 #include <iostream>
@@ -30,25 +31,12 @@ enum HBButtonDrawType {
 };
 
 enum MainWindowFlags_ {
-  //  HBUI_MAIN_WINDOW_FLAG_NONE = 0,
-  //  HBUI_MAIN_WINDOW_FLAG_RESIZABLE = 1 << 0,
-  //  HBUI_MAIN_WINDOW_FLAG_DECORATED = 1 << 1,
-  //  HBUI_MAIN_WINDOW_FLAG_TITLEBAR = 1 << 2,//fixme: implement but not with glfwWindowHint, only with glfwSetWindowAttrib
-  //  HBUI_MAIN_WINDOW_FLAG_TRANSPARENT = 1 << 3,
-  //  HBUI_MAIN_WINDOW_FLAG_CENTER_WINDOW = 1 << 4,
-  //  HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE = 1 << 5,
-  //  HBUI_MAIN_WINDOW_FLAG_DEFAULT =
-  //          HBUI_MAIN_WINDOW_FLAG_RESIZABLE |
-  //          HBUI_MAIN_WINDOW_FLAG_DECORATED |
-  //          HBUI_MAIN_WINDOW_FLAG_TITLEBAR |
-  //          HBUI_MAIN_WINDOW_FLAG_TRANSPARENT |
-  //          HBUI_MAIN_WINDOW_FLAG_CENTER_WINDOW |
-  //          HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE,
   HBUI_MAIN_WINDOW_FLAG_NONE = 0,
   HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR = 1 << 0,
   HBUI_MAIN_WINDOW_FLAG_NO_DECORATION = 1 << 1,
   HBUI_MAIN_WINDOW_FLAG_NO_RESIZE = 1 << 2,
   HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE = 1 << 3,
+  HBUI_MAIN_WINDOW_FLAG_CUSTOM_TITLEBAR = 1 << 4,
   HBUI_MAIN_WINDOW_FULLDOCK = HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR |
                               HBUI_MAIN_WINDOW_FLAG_NO_DECORATION |
                               HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE,
@@ -81,7 +69,6 @@ struct MainWindowSettings {
   TitleBarFlags titleBarFlags = 0;
   TitleBarSettings titleBarSettings = {};
 
-
   //default constructor
   MainWindowSettings(const std::string &title, int width, int height, MainWindowFlags flags = 0,
                      TitleBarFlags titleBarFlags = 0, const TitleBarSettings titlebarSettings = {}) : width(width), height(height), flags(flags), titleBarFlags(titleBarFlags) {
@@ -95,6 +82,10 @@ struct MainWindowSettings {
 //-----------------------------------------------------------------------------
 // [SECTION] HBUIContext
 //-----------------------------------------------------------------------------
+struct HBUIDrawData {
+  ImVec2 nextWindowPos = ImVec2(0, 0);
+};
+
 struct HBUIContext {
   public:
   MainWindowFlags &
@@ -112,7 +103,6 @@ struct HBUIContext {
     return mainWindowSettings->titleBarFlags;
   }
 
-
   public:
   //MainWindow
   MainWindowSettings *mainWindowSettings = nullptr;
@@ -122,6 +112,9 @@ struct HBUIContext {
 
   //ImGui Stuff
   ImGuiContext *imguiContext = nullptr;
+
+  //Draw Data
+  HBUIDrawData drawData = {};
 
   //Constructor
   HBUIContext() = default;
@@ -195,6 +188,7 @@ struct HBRect : HBUIItem {
 //-----------------------------------------------------------------------------
 // [SECTION] HBUI
 //-----------------------------------------------------------------------------
+
 namespace HBUI {
   HBUI_API HBUIContext *
   initialize();
@@ -245,18 +239,31 @@ namespace HBUI {
   drawCircleImageButton(const HBCircle &circle, const ImTextureID &texture, const ImColor &color,
                         ImDrawList *drawList);
 
+  //---------------------------------------------------------------------------------
+  // [SECTION] Dockspaces
+  //---------------------------------------------------------------------------------
   HBUI_API void
-  beginFullScreenDockspace(const bool isMaximized);
+  beginFullScreenDockspace(const bool isMaximized, const bool isCustomTitleBar = false);
 
   HBUI_API void
   endFullScreenDockspace();
 
+  //---------------------------------------------------------------------------------
+  // [SECTION] Main Window
+  //---------------------------------------------------------------------------------
+
+  //---------------------------------------------------------------------------------
+  // [SECTION] Menu Bars
+  //---------------------------------------------------------------------------------
   HBUI_API void
-  beginVerticalMenuBar();
+  beginMainMenuBar();
 
   HBUI_API void
-  endVerticalMenuBar();
+  endMainMenuBar();
 
+  //---------------------------------------------------------------------------------
+  // [SECTION] Rendering
+  //---------------------------------------------------------------------------------
   HBUI_API void
   startFrame();
 

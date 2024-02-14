@@ -2,26 +2,24 @@
 // Created by Kasper de Bruin on 06/02/2024.
 //
 
-#include <HBUI/HBUI.h>
 #include "../headers/Backend.h"
-
+#include <HBUI/HBUI.h>
 #ifndef g_HBUICTX
 HBUIContext *g_HBUICTX = NULL;
 #endif
-
 namespace HBUI {
   HBUIContext *
   initialize() {
     if (g_HBUICTX == NULL) {
       g_HBUICTX = new HBUIContext();
     }
-    auto *settings = new MainWindowSettings("HBUI Example", 1280, 720, HBUI_MAIN_WINDOW_FULLDOCK);
+    auto *settings = new MainWindowSettings("HBUI Example", 1280, 720, HBUI_MAIN_WINDOW_FLAG_NONE | HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE);
     g_HBUICTX->mainWindowSettings = settings;
     if (!initPlatformBackend(g_HBUICTX)) {
       std::cerr << "Failed to initialize platform backend" << std::endl;
     }
-    if (!initGraphicsBackend(g_HBUICTX)){
-        std::cerr << "Failed to initialize graphics backend" << std::endl;
+    if (!initGraphicsBackend(g_HBUICTX)) {
+      std::cerr << "Failed to initialize graphics backend" << std::endl;
     }
 
     return g_HBUICTX;
@@ -47,21 +45,10 @@ namespace HBUI {
   HBUI_API void
   startFrame() {
     startRenderBackend();
-    const auto windowFlags = g_HBUICTX->windowF();
-    const auto titleBSetting = g_HBUICTX->titleBarS();
-    const auto titleBFlags = g_HBUICTX->titleBarF();
-    const bool isFullscreen = isMaximized();
-
-    if(windowFlags & HBUI_MAIN_WINDOW_FULLDOCK){
-      beginFullScreenDockspace(isFullscreen);
-    }
   }
 
   HBUI_API void
   endFrame() {
-    if(g_HBUICTX->windowF() & HBUI_MAIN_WINDOW_FULLDOCK){
-      endFullScreenDockspace();
-    }
     endRenderBackend();
   }
 

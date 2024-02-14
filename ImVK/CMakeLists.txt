@@ -57,12 +57,25 @@ list(APPEND ImVk_PRIVATE_INCLUDE_DIRS
 # Dependencies
 ###############################################################################
 #glfw
+option(IMVK_DOWNLOAD_GLFW "Download GLFW" OFF)
 if (NOT TARGET glfw)
     #-Wunused-parameter]
     #disable warnings for glfw
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-parameter")
 
     set(GLFW_DIR ../../glfw) # Set this to point to an up-to-date GLFW repo
+
+    if(NOT EXISTS ../../glfw/CMakeLists.txt)
+        if(NOT IMVK_DOWNLOAD_GLFW)
+            message(FATAL_ERROR "The GLFW submodule was not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
+        else()
+            message(WARNING "The GLFW submodule was not found. Downloading GLFW from github.")
+            #downlaod from github
+            execute_process(COMMAND git clone https://github.com/KaspersTools/glfw.git ../../glfw
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+        endif()
+    endif()
+
     option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
     option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
     option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
@@ -134,3 +147,4 @@ message(STATUS "CMAKE_ARCHIVE_OUTPUT_DIRECTORY: ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 
 
+###############################################################################
