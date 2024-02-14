@@ -432,26 +432,24 @@ initPlatformBackend(HBUIContext *context, void *errorCallback) {
   }
 
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+  glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 
-  MainWindowFlags flags = context->mainWindowSettings->flags;
-
-
+  //  MainWindowFlags flags = context->mainWindowSettings->flags;
   //  if (flags & HBUI_MAIN_WINDOW_FLAG_TRANSPARENT) {
-//  glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
   //  } else {
   //    glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_FALSE);
   //  }
-  if (flags & HBUI_MAIN_WINDOW_FLAG_NO_DECORATION) {
-    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-  } else {
-    glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
-  }
-
-  if (flags & HBUI_MAIN_WINDOW_FLAG_NO_RESIZE) {
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-  } else {
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-  }
+  //  if (flags & HBUI_MAIN_WINDOW_FLAG_NO_DECORATION) {
+  //    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+  //  } else {
+  //    glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
+  //  }
+  //
+  //  if (flags & HBUI_MAIN_WINDOW_FLAG_NO_RESIZE) {
+  //    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+  //  } else {
+  //    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+  //  }
 
   //  if (flags & HBUI_MAIN_WINDOW_FLAG_CENTER_WINDOW) {
   glfwWindowHint(GLFW_CENTER_CURSOR, GLFW_TRUE);
@@ -474,13 +472,6 @@ initPlatformBackend(HBUIContext *context, void *errorCallback) {
 
 
   glfwShowWindow(g_ImVKData->window);
-
-  if (flags & HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR) {
-    glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_FALSE);
-  } else {
-    glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_TRUE);
-  }
-  //  glfwMakeContextCurrent(g_ImVKData->window);
   return true;
 }
 
@@ -592,7 +583,6 @@ startRenderBackend() {
       g_ImVKData->m_EventQueue.pop();
     }
   }
-
   // Resize swap chain?
   if (g_ImVKData->g_SwapChainRebuild) {
     int width, height;

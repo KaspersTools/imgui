@@ -58,5 +58,4 @@ getMonitorWidth();
 
 IMVK_IMPL_API void
 shutdownBackend();
-
 #endif//HBUI_BACKEND_H

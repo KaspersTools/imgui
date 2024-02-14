@@ -7,6 +7,7 @@
 #ifndef g_HBUICTX
 HBUIContext *g_HBUICTX = NULL;
 #endif
+
 namespace HBUI {
   HBUIContext *
   initialize() {
@@ -40,16 +41,52 @@ namespace HBUI {
   }
 
   /*********************************************
-	* Rendering
-	*********************************************/
+    * Updating
+    * *********************************************/
+  HBUI_API float
+  getDeltaTime() {
+    return g_HBUICTX->time.deltaTime;
+  }
+
+  HBUI_API float
+  getFrameTime() {
+    return g_HBUICTX->time.frameTime;
+  }
+
+  HBUI_API float
+  getTime() {
+    ImGui::GetTime();
+  }
+
+  void
+  update(float deltatime) {
+    for (auto updatable: g_HBUICTX->updatables) {
+      updatable->update(deltatime);
+    }
+  }
+
+  HBUI_API void
+  addUpdatable(std::shared_ptr<Updatable> updatable) {
+    g_HBUICTX->updatables.push_back(updatable);
+  }
+
+  /*********************************************
+    * Rendering
+    * *********************************************/
   HBUI_API void
   startFrame() {
+    float deltaTime = getTime() - g_HBUICTX->time.lastTime;
+    g_HBUICTX->time.deltaTime = deltaTime;
+    g_HBUICTX->time.lastTime = getTime();
+    update(deltaTime);
+
     startRenderBackend();
   }
 
   HBUI_API void
   endFrame() {
     endRenderBackend();
+    g_HBUICTX->time.frameTime = getTime() - g_HBUICTX->time.lastTime;
   }
 
   HBUI_API bool
@@ -67,15 +104,15 @@ namespace HBUI {
 
 
   /*********************************************
-	* INPUT
-	*********************************************/
-  bool
+    * Rendering
+    * *********************************************/
+  HBUI_API bool
   mouseOverRect(const ImVec2 &start, const ImVec2 &end) {
     ImVec2 mousePos = ImGui::GetMousePos();
     return mousePos.x > start.x && mousePos.x < end.x && mousePos.y > start.y && mousePos.y < end.y;
   }
 
-  bool
+  HBUI_API bool
   mouseOverCircle(const ImVec2 &center, float radius) {
     ImVec2 mousePos = ImGui::GetMousePos();
     return (mousePos.x - center.x) * (mousePos.x - center.x) + (mousePos.y - center.y) * (mousePos.y - center.y) <

@@ -1,6 +1,7 @@
 //
 // Created by Kasper de Bruin on 06/02/2024.
 //
+
 #pragma once
 #ifndef HBUI_API
 #define HBUI_API
@@ -21,9 +22,24 @@
 typedef int MainWindowFlags;// -> enum ImGuiWindowFlags_     // Flags: for Begin(), BeginChild()
 typedef int TitleBarFlags;  // -> enum ImGuiWindowFlags_     // Flags: for Begin(), BeginChild()
 
+struct HBUIContext;
+
+struct MainWindowSettings;
+struct TitleBarSettings;
+
+struct Time;
+
+struct HBUIDrawData;
+struct HBUIItem;
+struct HBCircle;
+struct HBRect;
+
+struct Updatable;
+
 //-----------------------------------------------------------------------------
 // [SECTION] Flags & Enumerations
 //-----------------------------------------------------------------------------
+//draw types
 enum HBButtonDrawType {
   Normal,
   Circle,
@@ -43,7 +59,7 @@ enum MainWindowFlags_ {
   //default
 };
 
-
+//titlebar
 enum TitleBarFlags_ {
   TitleBarFlag_None = 0,
   TitleBarFlag_Horizontal = 1 << 0,
@@ -57,6 +73,7 @@ struct TitleBarSettings {
   ImColor color = ImColor(0, 0, 0, 0);
 };
 
+//Main window
 struct MainWindowSettings {
   std::string title = "ImVK";
   int width = 1280;
@@ -78,16 +95,27 @@ struct MainWindowSettings {
   MainWindowSettings(const std::string &title, int width, int height) : title(title), width(width), height(height) {}
 };
 
+//-----------------------------------------------------------------------------
+// [SECTION] Time
+//-----------------------------------------------------------------------------
+struct Time {
+  float deltaTime = 0.0f;
+  float lastTime = 0.0f;
+  float frameTime = 0.0f;
+};
 
 //-----------------------------------------------------------------------------
 // [SECTION] HBUIContext
 //-----------------------------------------------------------------------------
 struct HBUIDrawData {
-  ImVec2 nextWindowPos = ImVec2(0, 0);
+  ImVec2 nextItemPos = ImVec2(0, 0);// Next item position
 };
 
 struct HBUIContext {
   public:
+  //=============================================================================
+  // [SECTION] Getters
+  //=============================================================================
   MainWindowFlags &
   windowF() const {
     return mainWindowSettings->flags;
@@ -104,9 +132,22 @@ struct HBUIContext {
   }
 
   public:
+  //=============================================================================
+  // [SECTION] Constructors
+  //=============================================================================
+  //Constructor
+  HBUIContext() = default;
+
+  public:
+  //=============================================================================
+  // [SECTION] Settings
+  //=============================================================================
   //MainWindow
   MainWindowSettings *mainWindowSettings = nullptr;
 
+  //=============================================================================
+  // [SECTION] Drawing and backend
+  //=============================================================================
   //Implementation Data
   void *implementationData = nullptr;
 
@@ -116,15 +157,29 @@ struct HBUIContext {
   //Draw Data
   HBUIDrawData drawData = {};
 
-  //Constructor
-  HBUIContext() = default;
-};
+  public:
+  //=============================================================================
+  // [SECTION] Update
+  //=============================================================================
+  //updatables
+  std::vector<std::shared_ptr<Updatable>> updatables = {};
 
+  //Time
+  Time time = {};
+};
 
 //-----------------------------------------------------------------------------
 // [SECTION] HBUIItem
 //-----------------------------------------------------------------------------
-struct HBUIItem {
+struct Updatable {
+  public:
+  Updatable() = default;
+
+  public:
+  virtual void update(float deltaTime) = 0;
+};
+
+struct HBUIItem : Updatable {
   public:
   HBUIItem(){};
 
@@ -221,7 +276,7 @@ namespace HBUI {
   mouseOverCircle(const ImVec2 &center, float radius);
 
   //---------------------------------------------------------------------------------
-  // [SECTION] Widgets Drawing
+  // [SECTION] Widgets & Drawing
   //---------------------------------------------------------------------------------
   HBUI_API HBCircle &
   drawCircle(const HBCircle &circle, ImDrawList *drawList, const ImColor &color);
@@ -238,6 +293,9 @@ namespace HBUI {
   HBUI_API bool
   drawCircleImageButton(const HBCircle &circle, const ImTextureID &texture, const ImColor &color,
                         ImDrawList *drawList);
+
+  HBUI_API void
+  addUpdatable(std::shared_ptr<Updatable> updatable);
 
   //---------------------------------------------------------------------------------
   // [SECTION] Dockspaces
@@ -262,6 +320,13 @@ namespace HBUI {
   endMainMenuBar();
 
   //---------------------------------------------------------------------------------
+  // [SECTION] Updating
+  //---------------------------------------------------------------------------------
+  HBUI_API float getDeltaTime();
+  HBUI_API float getFrameTime();
+  HBUI_API float getTime();
+
+  //---------------------------------------------------------------------------------
   // [SECTION] Rendering
   //---------------------------------------------------------------------------------
   HBUI_API void
@@ -275,4 +340,13 @@ namespace HBUI {
 
   HBUI_API void
   shutdown();
+
+  //---------------------------------------------------------------------------------
+  // [SECTION] Input
+  //---------------------------------------------------------------------------------
+  HBUI_API bool
+  mouseOverRect(const ImVec2 &start, const ImVec2 &end);
+
+  HBUI_API bool
+  mouseOverCircle(const ImVec2 &center, float radius);
 }// namespace HBUI
