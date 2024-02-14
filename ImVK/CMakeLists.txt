@@ -57,7 +57,10 @@ list(APPEND ImVk_PRIVATE_INCLUDE_DIRS
 # Dependencies
 ###############################################################################
 #glfw
-option(IMVK_DOWNLOAD_GLFW "Download GLFW" OFF)
+if(NOT DEFINED IMVK_DOWNLOAD_GLFW)
+    option(IMVK_DOWNLOAD_GLFW "Download GLFW" OFF)
+endif()
+
 if (NOT TARGET glfw)
     #-Wunused-parameter]
     #disable warnings for glfw
