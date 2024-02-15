@@ -53,8 +53,6 @@ namespace HBUI {
               {"ctx.mainWindowSettings.MainWindowFlags:   No Decoration                 ", HBUI_MAIN_WINDOW_FLAG_NO_DECORATION},
               {"ctx.mainWindowSettings.MainWindowFlags:   No Resize                     ", HBUI_MAIN_WINDOW_FLAG_NO_RESIZE},
               {"ctx.mainWindowSettings.MainWindowFlags:   No TitleBar                   ", HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR},
-              {"ctx.mainWindowSettings.MainWindowFlags:   With Custom TitleBar          ", HBUI_MAIN_WINDOW_FLAG_CUSTOM_TITLEBAR},
-              {"ctx.mainWindowSettings.MainWindowFlags:   Default DockSpace             ", HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE}
       };
 
       for(auto &flag : flagsMap){

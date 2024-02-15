@@ -6,7 +6,7 @@
 #include <HBUI/WindowManager.h>
 
 void MainWindow::init() {
-  HBUI::initialize("Hello, World!", 1280, 720, HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE | HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR);
+  HBUI::initialize("Hello, World!", 1280, 720, HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR);
   run();
 }
 
@@ -19,6 +19,14 @@ bool MainWindow::run() {
 
 void MainWindow::render() {
   HBUI::startFrame();
+
+  HBUI::beginFullScreenDockspace(HB_DOCKSPACE_FLAG_MENUBAR);
+  if(HBUI::beginMainMenuBar(HB_MAIN_MENU_BAR_FLAG_NONE)){
+    //render menu items
+
+    HBUI::endMainMenuBar();
+  }
+  HBUI::endFullScreenDockspace();
 
   ImGui::Begin("Hello, window from template");
   ImGui::Text("Hello, world!");

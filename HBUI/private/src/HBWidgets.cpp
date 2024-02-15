@@ -116,7 +116,7 @@ namespace HBUI {
    * Updatables
    * ******************
    */
-
+  //todo: add to updateables
 
   /**
  *
@@ -127,20 +127,19 @@ namespace HBUI {
  */
 
   HBUI_API void
-  beginFullScreenDockspace() {
+  beginFullScreenDockspace(DockspaceFlags flags) {
     const bool maximized = isMaximized();
-    const bool isCustomTitleBar     = (HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR & getCurrentContext()->io.mainWindowFlags);
     const bool mainWindowNoTitleBar = (HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR & getCurrentContext()->io.mainWindowFlags);
+    const bool hasMenuBar = (HB_DOCKSPACE_FLAG_MENUBAR & flags);
 
-    beginFullScreenDockspace(maximized, isCustomTitleBar, mainWindowNoTitleBar);
+    beginFullScreenDockspace(maximized, mainWindowNoTitleBar, hasMenuBar);
   }
-
 
   HBUI_API void
   beginFullScreenDockspace(const bool isMaximized,
-                           const bool hasCustomTitlebar,
-                           const bool mainWindowNoTitlebar) {
-        ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
+                           const bool mainWindowNoTitlebar,
+                           const bool hasMenuBar) {
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
     ImGuiViewport *viewport = ImGui::GetMainViewport();
 
     ImGuiStyle &style = ImGui::GetStyle();
@@ -157,13 +156,13 @@ namespace HBUI {
       ImGui::SetNextWindowViewport(viewport->ID);
     }
 
-    window_flags |= ImGuiWindowFlags_NoTitleBar   | ImGuiWindowFlags_NoCollapse            | ImGuiWindowFlags_NoResize  |
-                    ImGuiWindowFlags_NoMove       | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus|
-                    ImGuiWindowFlags_NoScrollbar  | ImGuiWindowFlags_NoScrollWithMouse;
+    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+                    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
+                    ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 
     window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoBackground;
 
-    ImVec2 WindowPaddingNormal    = ImVec2(1.0f, 1.0f);
+    ImVec2 WindowPaddingNormal = ImVec2(1.0f, 1.0f);
     ImVec2 WindowPaddingMaximized = ImVec2(6.0f, 6.0f);
 
     float windowRounding = 0;
@@ -178,19 +177,20 @@ namespace HBUI {
     ImGui::Begin("DockSpaceWindow", nullptr, window_flags);
     ImGui::PopStyleVar(3);
 
-    if(!isMaximized) {
+    if (!isMaximized) {
       ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(50, 50, 50, 255));
       // Draw window border if the window is not maximized
       renderWindowOuterBorders(ImGui::GetCurrentWindow());
       ImGui::PopStyleColor();// ImGuiCol_Border
     }
+  }
 
-    //TODO: Start Title/Side bar here
-    // {}
-
+  HBUI_API
+  void endFullScreenDockspace() {
     ImGui::DockSpace(ImGui::GetID("MyDockspace"), ImVec2(0.0f, 0.0f));
     ImGui::End();
   }
+
   /**
  *
  * ******************
@@ -198,15 +198,31 @@ namespace HBUI {
  * ******************
  *
  */
+  HBUI_API bool
+  beginMainMenuBar(MainMenuBarFlags flags) {
+    HBContext *ctx = HBUI::getCurrentContext();
+    ctx->drawData->mainMenuBarFlags = {flags};
+    return true;
+  }// create and append to a full screen menu-bar.
 
-  HBUI_API void
-  beginMainMenuBar() {
-    ImGui::BeginMainMenuBar();
-  }
-
-  HBUI_API void
+  IMGUI_API void
   endMainMenuBar() {
-    ImGui::EndMainMenuBar();
-    //    ImGui::SetCursorPos(g_HBUICTX->drawData.nextWindowPos);
+    //render main menubar
+    //render main menubar items
+  }// only call EndMainMenuBar() if BeginMainMenuBar() returns true!
+
+  IMGUI_API bool
+  beginMainMenuItem(const std::string &name) {
+    HBContext *ctx = HBUI::getCurrentContext();
+
+    const bool none = (HB_MAIN_MENU_BAR_FLAG_NONE & ctx->drawData->mainMenuBarFlags);
+    const bool vertical = (HB_MAIN_MENU_BAR_FLAG_VERTICAL & ctx->drawData->mainMenuBarFlags);
+    const bool horizontal = (HB_MAIN_MENU_BAR_FLAG_HORIZONTAL & ctx->drawData->mainMenuBarFlags);
+
+    //Default imgui titlebar
+    if (none) {
+
+    }
   }
+
 }// namespace HBUI

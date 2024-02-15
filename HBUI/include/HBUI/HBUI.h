@@ -19,108 +19,23 @@
 //-----------------------------------------------------------------------------
 // [SECTION] Forward Declarations
 //-----------------------------------------------------------------------------
-typedef int MainWindowFlags;// -> enum ImGuiWindowFlags_     // Flags: for Begin(), BeginChild()
-typedef int TitleBarFlags;  // -> enum ImGuiWindowFlags_     // Flags: for Begin(), BeginChild()
+typedef int MainWindowFlags;  // -> enum HBMainWindowFlags_
+typedef int DockspaceFlags;   // -> enum HBDockspaceFlags_
+typedef int MainMenuBarFlags; // -> enum HBMainMenuBarFlags_
 
 struct HBContext;
 
 struct HBMainWindowSettings;
-struct HBTitleBarSettings;
 
 struct HBTime;
 
-struct HBUIDrawData;
+struct HBDrawData;
 struct HBUIItem;
 struct HBCircle;
 struct HBRect;
 
 struct HBUpdatable;
 
-//-----------------------------------------------------------------------------
-// [SECTION] Time
-//-----------------------------------------------------------------------------
-
-struct HBTime {
-  float deltaTime = 0.0f;
-  float lastTime  = 0.0f;
-  float frameTime = 0.0f;
-};
-
-//-----------------------------------------------------------------------------
-// [SECTION] Flags & Enumerations
-//-----------------------------------------------------------------------------
-struct HBPadding{
-  float top     =   0;
-  float right   =   0;
-  float bottom  =   0;
-  float left    =   0;
-
-  HBPadding(float top, float right, float bottom, float left) : top(top), right(right), bottom(bottom), left(left) {}
-  HBPadding(float topBottom, float rightLeft) : top(topBottom), right(rightLeft), bottom(topBottom), left(rightLeft) {}
-  HBPadding(float all) : top(all), right(all), bottom(all), left(all) {}
-  HBPadding() = default;
-};
-
-struct HBStyle{
-  HBPadding firstItemPadding          = HBPadding(0, 0, 0, 0);//padding for the first item
-  HBPadding firstItemPaddingScreenMax = HBPadding(0, 0, 0, 0);//if the screen is maximized use this padding
-};
-
-
-//-----------------------------------------------------------------------------
-// [SECTION] MainWindowSettings
-//-----------------------------------------------------------------------------
-//titlebar
-enum HBTitleBarFlags_ {
-  TitleBarFlag_None       = 0,
-  TitleBarFlag_Horizontal = 1 << 0,
-  TitleBarFlag_Vertical   = 1 << 1,
-};
-
-struct HBTitleBarSettings {
-  TitleBarFlags   flags   = 0;
-  ImVec2          size    = ImVec2(0, 0);
-  ImVec2          pos     = ImVec2(0, 0);
-  ImColor         color   = ImColor(0, 0, 0, 0);
-};
-
-enum HBMainWindowFlags_ {
-  HBUI_MAIN_WINDOW_FLAG_NONE                =   0,
-  HBUI_MAIN_WINDOW_FLAG_NO_DECORATION       =   1 << 1,
-  HBUI_MAIN_WINDOW_FLAG_NO_RESIZE           =   1 << 2,
-  HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR         =   1 << 4,
-  HBUI_MAIN_WINDOW_FLAG_CUSTOM_TITLEBAR     =   1 << 5,
-  HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE   =   1 << 3,
-};
-
-struct HBMainWindowSettings {
-  TitleBarFlags         titleBarFlags         = 0;
-  HBTitleBarSettings    titleBarSettings      = {};
-};
-
-
-//-----------------------------------------------------------------------------
-// [SECTION] HBIO
-//-----------------------------------------------------------------------------
-struct HBIO{
-  std::string           title               = "ImVK";
-  int                   width               = 1280;
-  int                   height              = 720;
-
-  HBMainWindowSettings* mainWindowSettings  = {};
-  MainWindowFlags       mainWindowFlags     = HBUI_MAIN_WINDOW_FLAG_NONE;
-};
-
-//-----------------------------------------------------------------------------
-// [SECTION] HBUIContext
-//-----------------------------------------------------------------------------
-struct HBContext {
-  bool    initialized   = false;
-  HBIO    io            = {};
-  HBStyle style         = {};
-
-  HBTime  time          = {};
-};
 
 //-----------------------------------------------------------------------------
 // [SECTION] Drawables
@@ -133,7 +48,7 @@ enum HBButtonDrawType {
 
 struct HBUpdatable {
   public:
-      HBUpdatable() = default;
+  HBUpdatable() = default;
 
   public:
   virtual void update(float deltaTime) = 0;
@@ -200,7 +115,104 @@ struct HBRect : HBUIItem {
   ImVec2 EndPos() const override;
 };
 
+struct HBDrawData {
+  MainMenuBarFlags mainMenuBarFlags = {};
+};
 
+//-----------------------------------------------------------------------------
+// [SECTION] Time
+//-----------------------------------------------------------------------------
+struct HBTime {
+  float deltaTime = 0.0f;
+  float lastTime  = 0.0f;
+  float frameTime = 0.0f;
+};
+
+//-----------------------------------------------------------------------------
+// [SECTION] Flags & Enumerations
+//-----------------------------------------------------------------------------
+struct HBPadding{
+  float top     =   0;
+  float right   =   0;
+  float bottom  =   0;
+  float left    =   0;
+
+  HBPadding(float top, float right, float bottom, float left) : top(top), right(right), bottom(bottom), left(left) {}
+  HBPadding(float topBottom, float rightLeft) : top(topBottom), right(rightLeft), bottom(topBottom), left(rightLeft) {}
+  HBPadding(float all) : top(all), right(all), bottom(all), left(all) {}
+  HBPadding() = default;
+};
+
+struct HBStyle{
+  //main window
+  HBPadding firstItemPadding          = HBPadding(0, 0, 0, 0);//padding for the first item
+  HBPadding firstItemPaddingScreenMax = HBPadding(0, 0, 0, 0);//if the screen is maximized use this padding
+
+  //menuitems
+  ImVec2    menuItemSizeButton        = ImVec2(32, 32);
+};
+
+//-----------------------------------------------------------------------------
+// [SECTION] Main menubar
+//-----------------------------------------------------------------------------
+enum HBMainMenuBarFlags_ {
+  HB_MAIN_MENU_BAR_FLAG_NONE       = 0,
+  HB_MAIN_MENU_BAR_FLAG_HORIZONTAL = 1 << 0,
+  HB_MAIN_MENU_BAR_FLAG_VERTICAL   = 1 << 1,
+};
+
+struct HBMainMenuItem{
+  HBUIItem *item;
+  std::string name;
+  //todo: add image
+};
+
+//-----------------------------------------------------------------------------
+// [SECTION] Dockspace
+//-----------------------------------------------------------------------------
+enum HBDockspaceFlags_ {
+  HB_DOCKSPACE_FLAG_None      = 0,
+  HB_DOCKSPACE_FLAG_MENUBAR   = 1 << 0,
+};
+
+//-----------------------------------------------------------------------------
+// [SECTION] MainWindowSettings
+//-----------------------------------------------------------------------------
+enum HBMainWindowFlags_ {
+  HBUI_MAIN_WINDOW_FLAG_NONE                =   0,
+  HBUI_MAIN_WINDOW_FLAG_NO_DECORATION       =   1 << 1,
+  HBUI_MAIN_WINDOW_FLAG_NO_RESIZE           =   1 << 2,
+  HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR         =   1 << 4
+};
+
+struct HBMainWindowSettings {
+};
+
+//-----------------------------------------------------------------------------
+// [SECTION] HBIO
+//-----------------------------------------------------------------------------
+struct HBIO{
+  std::string           title               = "ImVK";
+  int                   width               = 1280;
+  int                   height              = 720;
+
+  HBMainWindowSettings* mainWindowSettings  = {};
+  MainWindowFlags       mainWindowFlags     = HBUI_MAIN_WINDOW_FLAG_NONE;
+};
+
+//-----------------------------------------------------------------------------
+// [SECTION] HBUIContext
+//-----------------------------------------------------------------------------
+struct HBContext {
+  bool    initialized   = false;
+  HBIO    io            = {};
+  HBStyle style         = {};
+
+  HBTime  time          = {};
+
+  //Draw Data
+  std::shared_ptr<HBDrawData> drawData = std::make_shared<HBDrawData>();
+};
 
 //-----------------------------------------------------------------------------
 // [SECTION] HBUI
@@ -265,20 +277,26 @@ namespace HBUI {
   // [SECTION] Dockspaces
   //---------------------------------------------------------------------------------
   HBUI_API void
-  beginFullScreenDockspace();
+  beginFullScreenDockspace(DockspaceFlags flags = HB_DOCKSPACE_FLAG_None);
 
   HBUI_API void
   beginFullScreenDockspace(const bool isMaximized,
-                           const bool hasCustomTitlebar,
-                           const bool mainWindowNoTitlebar);
-          //---------------------------------------------------------------------------------
+                           const bool mainWindowNoTitlebar,
+                           const bool hasMenuBar);
+
+  HBUI_API void endFullScreenDockspace();
+
+  //---------------------------------------------------------------------------------
   // [SECTION] Menu Bars
   //---------------------------------------------------------------------------------
-  HBUI_API void
-  beginMainMenuBar();
+  HBUI_API bool
+  beginMainMenuBar(MainMenuBarFlags flags);                           // create and append to a full screen menu-bar.
 
-  HBUI_API void
-  endMainMenuBar();
+  IMGUI_API void
+  endMainMenuBar();                                                   // only call EndMainMenuBar() if BeginMainMenuBar() returns true!
+
+  IMGUI_API bool
+  beginMainMenuItem(const std::string &name);
 
   //---------------------------------------------------------------------------------
   // [SECTION] Sample/Debug Windows
@@ -317,9 +335,11 @@ namespace HBUI {
   HBUI_API bool
   mouseOverCircle(const ImVec2 &center, float radius);
 
-  HBUI_API bool isFlagSet(int *flags, int flag);
+  HBUI_API bool
+  isFlagSet(int *flags, int flag);
 
-  HBUI_API void toggleFlag(int flag);
+  HBUI_API void
+  toggleFlag(int flag);
 
 
 }// namespace HBUI

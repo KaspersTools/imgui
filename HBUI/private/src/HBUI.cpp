@@ -101,10 +101,6 @@ namespace HBUI {
     update(deltaTime);
 
     startRenderBackend();
-
-    if (isFlagSet(&g_HBUICTX->io.mainWindowFlags, HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE)) {
-      beginFullScreenDockspace();
-    }
   }
 
   HBUI_API void
