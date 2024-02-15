@@ -25,7 +25,10 @@ void MainWindow::render() {
   ImGui::Text("This is some useful text.");
   ImGui::End();
 
+#ifdef HBUI_WITH_DEBUG_WINDOW
   HBUI::showDebugWindow();
+#endif
+
   HummingBirdCore::UI::WindowManager::getInstance()->render();
 
   HBUI::endFrame();

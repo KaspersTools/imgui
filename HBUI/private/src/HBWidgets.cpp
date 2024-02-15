@@ -147,12 +147,6 @@ namespace HBUI {
     float minWinSizeX = style.WindowMinSize.x;
     style.WindowMinSize.x = 370.0f;
 
-    ImVec2 pos = viewport->Pos;
-    ImVec2 size = viewport->Size;
-
-    ImVec2 workPos = viewport->WorkPos;
-    ImVec2 workSize = viewport->WorkSize;
-
     if (mainWindowNoTitlebar) {
       ImGui::SetNextWindowPos(viewport->Pos);
       ImGui::SetNextWindowSize(viewport->Size);

@@ -31,9 +31,6 @@ option(HBUI_GLFW "Use VULKAN WITH GLFW" OFF)
 ###############################################################################
 # HBUI
 ###############################################################################
-
-option(HBUI_WITH_DEBUG_WIDGET "HBUI_WITH_DEBUG_WIDGET" ON)
-
 set(HBUI_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(HBUI SHARED
 )
@@ -45,12 +42,13 @@ list(APPEND HBUI_SOURCES
         ${HBUI_DIR}/private/src/HBWidgets.cpp
 )
 
-if(HBUI_WITH_DEBUG_WINDOW)
+option(HBUI_WITH_DEBUG_WINDOW "HBUI_WITH_DEBUG_WINDOW" ON)
+if (HBUI_WITH_DEBUG_WINDOW)
     list(APPEND HBUI_SOURCES
             ${HBUI_DIR}/private/src/HBDebugWidget.cpp
     )
-    target_compile_definitions(HBUI PRIVATE HBUI_WITH_DEBUG_WIDGET)
-endif()
+    target_compile_definitions(HBUI PUBLIC HBUI_WITH_DEBUG_WINDOW)
+endif ()
 
 set(HBUI_HEADERS
         ${HBUI_DIR}/include/HBUI/HBUI.h
@@ -63,7 +61,7 @@ list(APPEND HBUI_PRIVATE_HEADERS
 )
 
 target_sources(HBUI PRIVATE ${HBUI_SOURCES} ${HBUI_PRIVATE_HEADERS})
-target_sources(HBUI PUBLIC  ${HBUI_HEADERS})
+target_sources(HBUI PUBLIC ${HBUI_HEADERS})
 
 target_compile_definitions(HBUI PUBLIC HBUI_VERSION="${PROJECT_VERSION}")
 
