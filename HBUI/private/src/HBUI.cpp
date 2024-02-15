@@ -45,7 +45,15 @@ namespace HBUI {
   }
 
   void
-  clearContext() {
+  clearContext() {//todo: implement
+  }
+
+  HBUI_API HBStyle& getStyle(){
+    return getCurrentContext()->style;
+  }
+
+  HBUI_API HBIO&   getIO() {
+    return getCurrentContext()->io;
   }
 
   /*********************************************

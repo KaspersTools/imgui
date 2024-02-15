@@ -48,7 +48,6 @@ enum HBDrawType_ {
 struct HBUpdatable {
   public:
   HBUpdatable() {
-    std::cout << "HBUpdatable created" << std::endl;
   };
 
   public:
@@ -59,11 +58,10 @@ struct HBUIItem   : HBUpdatable {
   public:
   HBUIItem(const ImColor color) :
                                       Color(color){
-//    std::cout << "HBUIItem created" << std::endl;
   };
-    ~HBUIItem() {
-//        std::cout << "HBUIItem destroyed" << std::endl;
-    };
+  ~HBUIItem() {
+  };
+
   //ID
   std::string ID = "kasper123";
 
@@ -89,8 +87,8 @@ struct HBRect     : HBUIItem {
   ImVec2 start = {};
   ImVec2 end   = {};
 
-  void draw(ImDrawList *drawList) override;
-  void update(float deltaTime)                   override;
+  void  draw(ImDrawList *drawList) override;
+  void  update(float deltaTime)    override;
 
   ImVec2 StartPos()                 const ;
   ImVec2 EndPos()                   const ;
@@ -129,7 +127,7 @@ struct HBMenuItem : HBUIItem{
 
 struct HBMainMenuBar : HBRect {
   HBMainMenuBar (MainMenuBarFlags flags, const ImColor color = ImColor(-1,-1,-1,-1)) :
-                                                               flags(flags), HBRect(color){
+                                                                flags(flags), HBRect(color){
 
   }
   ~HBMainMenuBar(){};
@@ -185,9 +183,12 @@ struct HBStyle {
   HBPadding firstItemPadding          = HBPadding(0, 0, 0, 0);         //padding for the first item
   HBPadding firstItemPaddingScreenMax = HBPadding(0, 0, 0, 0);//if the screen is maximized use this padding
 
-  //Menu
+  //Colors
   ImColor menuBarColor               = ImColor(-1, -1, -1, 255);
-  ImVec2  menuItemSizeButton         = ImVec2(32, 32);
+
+  //Sizes
+  ImVec2  menuBarSize                = ImVec2(70, 70);
+  ImVec2  menuItemSize               = ImVec2(32, 32);
 };
 
 //-----------------------------------------------------------------------------
@@ -251,6 +252,12 @@ namespace HBUI {
 
   HBUI_API void
   clearContext();
+
+  HBUI_API HBStyle&
+  getStyle();
+
+  HBUI_API HBIO&
+  getIO();
 
   //---------------------------------------------------------------------------------
   // [SECTION] Main Window

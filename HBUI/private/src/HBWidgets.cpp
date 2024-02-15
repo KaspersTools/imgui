@@ -4,6 +4,9 @@
 #include <HBUI/HBUI.h>
 
 
+//-----------------------------------------------------------------------------
+// [SECTION] Helper functions
+//-----------------------------------------------------------------------------
 void renderWindowOuterBorders(ImGuiWindow *window) {
   struct ImGuiResizeBorderDef {
     ImVec2 InnerDir;
@@ -46,7 +49,6 @@ void renderWindowOuterBorders(ImGuiWindow *window) {
   };
 }
 
-
 /**
  *
  * ******************
@@ -88,25 +90,34 @@ void HBMenuItem::update(float deltaTime) {
 // [SECTION] MenuBar
 //-----------------------------------------------------------------------------
 void HBMainMenuBar::draw(ImDrawList *drawList) {
-  //  ImDrawList *drawList = ImGui::GetWindowDrawList();
   ImGui::SetCursorPos(ImVec2(0, 0));
 
-  //todo: calculate all items size
-  float height = 50;
-  float width = ImGui::GetMainViewport()->Size.x;
+  if (HBUIItem::Color.Value == ImColor(-1, -1, -1, -1)) { HBUIItem::Color = ImGui::GetStyle().Colors[ImGuiCol_MenuBarBg]; }
 
-  HBRect::start = ImGui::GetCursorScreenPos();
-  HBRect::end = ImVec2(HBRect::start.x + width,
-                       HBRect::start.y + height);
+  const bool horizontal = (HB_MAIN_MENU_BAR_FLAG_HORIZONTAL & flags) ||
+                          (HB_MAIN_MENU_BAR_FLAG_NONE & flags);
+  const bool vertical = (HB_MAIN_MENU_BAR_FLAG_VERTICAL & flags);
 
-  if (HBUIItem::Color.Value == ImColor(-1, -1, -1, -1))
-    HBUIItem::Color = ImGui::GetStyle().Colors[ImGuiCol_MenuBarBg];
+  if (horizontal) {
+    float height =  HBUI::getStyle().menuBarSize.y;
+    float width = ImGui::GetMainViewport()->Size.x;
+
+    HBRect::start = ImGui::GetCursorScreenPos();
+    HBRect::end = ImVec2(HBRect::start.x + width, HBRect::start.y + height);
+    ImGui::SetCursorScreenPos({HBRect::start.x, HBRect::end.y});
+  } else {
+    float height = ImGui::GetMainViewport()->Size.y;
+    float width  = HBUI::getStyle().menuBarSize.x;
+
+    HBRect::start = ImGui::GetCursorScreenPos();
+    HBRect::end = ImVec2(HBRect::start.x + width, HBRect::start.y + height);
+    ImGui::SetCursorScreenPos({HBRect::end.x, HBRect::start.y});
+  }
 
   HBRect::draw(drawList);
 
-  auto drawData = HBUI::getCurrentContext()->drawData;
-  ImGui::SetCursorScreenPos({HBRect::start.x, HBRect::end.y});
 }
+
 void HBMainMenuBar::update(float deltaTime) {
 }
 
@@ -160,7 +171,7 @@ namespace HBUI {
 
     window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoBackground;
 
-    ImVec2 WindowPaddingNormal = ImVec2(1.0f, 1.0f);
+    ImVec2 WindowPaddingNormal = ImVec2(0.0f, 0.0f);
     ImVec2 WindowPaddingMaximized = ImVec2(6.0f, 6.0f);
 
     float windowRounding = 0;
@@ -205,9 +216,7 @@ namespace HBUI {
 
     if (col.Value == ImColor(-1, -1, -1, 255))
       col = ImGui::GetStyle().Colors[ImGuiCol_MenuBarBg];
-
     ctx->drawData->mainMenuBar = std::make_shared<HBMainMenuBar>(flags, col);
-
     return true;
   }// create and append to a full screen menu-bar.
 
@@ -216,10 +225,6 @@ namespace HBUI {
     HBContext *ctx = HBUI::getCurrentContext();
 
     ctx->drawData->mainMenuBar->draw(ImGui::GetForegroundDrawList());
-
-    ctx->drawData->firstItemStart = {
-            ctx->drawData->mainMenuBar->start.x,
-            ctx->drawData->mainMenuBar->end.y};
   }// only call EndMainMenuBar() if BeginMainMenuBar() returns true!
 
   void drawHorizontalMenuBar() {
@@ -233,7 +238,7 @@ namespace HBUI {
       return false;
     }
     if (type == Normal) { type = Square; }
-    if (size == ImVec2(0, 0)) { size = HBUI::getCurrentContext()->style.menuItemSizeButton; }
+    if (size == ImVec2(0, 0)) { size = HBUI::getCurrentContext()->style.menuItemSize; }
 
     HBContext *ctx = HBUI::getCurrentContext();
 

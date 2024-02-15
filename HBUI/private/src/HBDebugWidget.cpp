@@ -71,20 +71,32 @@ namespace HBUI {
       ImGui::Text("Style");
       ImGui::Spacing();
 
-      HBStyle &style = HBUI::getCurrentContext()->style;
+      HBStyle &style = getStyle();
+
       if(ImGui::BeginTabBar("StyleTabBar")) {
+
+        if(ImGui::BeginTabItem("HBUII sizes")){
+          ImGui::SliderFloat2("MenuBarSize", (float *) &style.menuBarSize, 0, 100);
+          ImGui::SliderFloat2("MenuItemSizeButton", (float *) &style.menuItemSize, 0, 100);
+
+          ImGui::EndTabItem();
+        }
+
         if (ImGui::BeginTabItem("Colors")) {
-          ImGui::Text("Colors");
-          ImGui::Spacing();
-
           ImGui::ColorEdit4("WindowBg", (float *) &style.menuBarColor);
-
           ImGui::SameLine();
           if(ImGui::Button("reset")){
             style.menuBarColor = ImVec4(-1,-1,-1,255);
           }
           ImGui::EndTabItem();
         }
+
+        if(ImGui::BeginTabItem("ImGuiStyle")){
+          ImGui::ShowStyleEditor();
+          ImGui::EndTabItem();
+        }
+
+
         ImGui::EndTabBar();
       }
 
