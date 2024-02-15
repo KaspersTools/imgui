@@ -47,7 +47,7 @@ namespace HBUI {
               "These flags are used by the backends (ImVK) to specify their capabilities.\n");
 
       ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "ctx.backendFlags:");
-      ImGui::TextColored(ImVec4(1.f,  0.5f, 0.5f, 1.0f), "Best to set these before window creation but they are here for testing purposes only!:");
+      ImGui::TextColored(ImVec4(1.f, 0.5f, 0.5f, 1.0f), "Best to set these before window creation but they are here for testing purposes only!:");
 
       std::map<std::string, MainWindowFlags> flagsMap = {
               {"ctx.mainWindowSettings.MainWindowFlags:   No Decoration                 ", HBUI_MAIN_WINDOW_FLAG_NO_DECORATION},
@@ -55,16 +55,41 @@ namespace HBUI {
               {"ctx.mainWindowSettings.MainWindowFlags:   No TitleBar                   ", HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR},
       };
 
-      for(auto &flag : flagsMap){
+      for (auto &flag: flagsMap) {
         bool flagSet = HBUI::isFlagSet(&ctx->io.mainWindowFlags, flag.second);
 
-        if(ImGui::Checkbox(flag.first.c_str(), &flagSet)){
+        if (ImGui::Checkbox(flag.first.c_str(), &flagSet)) {
           HBUI::toggleFlag(flag.second);
         }
       }
 
       ImGui::TreePop();
       ImGui::Spacing();
+    }
+
+    if (ImGui::TreeNode("Style")) {
+      ImGui::Text("Style");
+      ImGui::Spacing();
+
+      HBStyle &style = HBUI::getCurrentContext()->style;
+      if(ImGui::BeginTabBar("StyleTabBar")) {
+        if (ImGui::BeginTabItem("Colors")) {
+          ImGui::Text("Colors");
+          ImGui::Spacing();
+
+          ImGui::ColorEdit4("WindowBg", (float *) &style.menuBarColor);
+
+          ImGui::SameLine();
+          if(ImGui::Button("reset")){
+            style.menuBarColor = ImVec4(-1,-1,-1,255);
+          }
+          ImGui::EndTabItem();
+        }
+        ImGui::EndTabBar();
+      }
+
+
+      ImGui::TreePop();
     }
     ImGui::End();
   }

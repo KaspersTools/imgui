@@ -95,6 +95,8 @@ namespace HBUI {
     * *********************************************/
   HBUI_API void
   startFrame() {
+    g_HBUICTX->drawData = std::make_shared<HBDrawData>();
+
     float deltaTime = getTime() - g_HBUICTX->time.lastTime;
     g_HBUICTX->time.deltaTime = deltaTime;
     g_HBUICTX->time.lastTime = getTime();
@@ -106,6 +108,7 @@ namespace HBUI {
   HBUI_API void
   endFrame() {
     endRenderBackend();
+
     g_HBUICTX->time.frameTime = getTime() - g_HBUICTX->time.lastTime;
   }
 

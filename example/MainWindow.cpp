@@ -23,10 +23,14 @@ void MainWindow::render() {
   HBUI::beginFullScreenDockspace(HB_DOCKSPACE_FLAG_MENUBAR);
   if(HBUI::beginMainMenuBar(HB_MAIN_MENU_BAR_FLAG_NONE)){
     //render menu items
-
+    if(HBUI::beginMainMenuItem("File", HBDrawType_::Square)){
+      HBUI::EndMainMenuItem();
+    }
     HBUI::endMainMenuBar();
   }
   HBUI::endFullScreenDockspace();
+
+  ImGui::ShowDemoWindow(&showDemoWindow);
 
   ImGui::Begin("Hello, window from template");
   ImGui::Text("Hello, world!");

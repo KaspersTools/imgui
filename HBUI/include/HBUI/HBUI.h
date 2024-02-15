@@ -19,13 +19,13 @@
 //-----------------------------------------------------------------------------
 // [SECTION] Forward Declarations
 //-----------------------------------------------------------------------------
-typedef int MainWindowFlags;  // -> enum HBMainWindowFlags_
-typedef int DockspaceFlags;   // -> enum HBDockspaceFlags_
-typedef int MainMenuBarFlags; // -> enum HBMainMenuBarFlags_
+typedef int MainWindowFlags; // -> enum HBMainWindowFlags_
+typedef int DockspaceFlags;  // -> enum HBDockspaceFlags_
+typedef int MainMenuBarFlags;// -> enum HBMainMenuBarFlags_
+
+typedef int HBDrawType;      // -> enum HBDrawType_
 
 struct HBContext;
-
-struct HBMainWindowSettings;
 
 struct HBTime;
 
@@ -36,87 +36,119 @@ struct HBRect;
 
 struct HBUpdatable;
 
-
 //-----------------------------------------------------------------------------
 // [SECTION] Drawables
 //-----------------------------------------------------------------------------
-enum HBButtonDrawType {
-  Normal,
-  Circle,
-  Square
+enum HBDrawType_ {
+  Normal = 0,
+  Circle = 1,
+  Square = 2
 };
 
 struct HBUpdatable {
   public:
-  HBUpdatable() = default;
+  HBUpdatable() {
+    std::cout << "HBUpdatable created" << std::endl;
+  };
 
   public:
   virtual void update(float deltaTime) = 0;
 };
 
-struct HBUIItem : HBUpdatable {
+struct HBUIItem   : HBUpdatable {
   public:
-  HBUIItem(){};
-
-  public:
+  HBUIItem(const ImColor color) :
+                                      Color(color){
+//    std::cout << "HBUIItem created" << std::endl;
+  };
+    ~HBUIItem() {
+//        std::cout << "HBUIItem destroyed" << std::endl;
+    };
   //ID
-  std::string ID;
+  std::string ID = "kasper123";
 
   //Color
-  ImColor Color = {};
-
-  //Scrolling
-  float MinMouseScroll;
-  float MaxMouseScroll;
-  float CurrentMouseScroll;
+  ImColor Color   = {};
 
   //Children
   std::vector<std::shared_ptr<HBUIItem>> Children = {};
 
-  std::shared_ptr<HBUIItem> getChild(const std::string &id);
+  public:
+  virtual void draw(ImDrawList *drawList) = 0;
+//  void update(float deltaTime)                          override;
+};
 
-  std::shared_ptr<HBUIItem> getLastChild();
+struct HBRect     : HBUIItem {
+  HBRect(const ImColor color) :
+                                HBUIItem(color){
+  }
+  ~HBRect(){
+  }
 
-  std::shared_ptr<HBUIItem> getLastYPos();
+  //Position
+  ImVec2 start = {};
+  ImVec2 end   = {};
+
+  void draw(ImDrawList *drawList) override;
+  void update(float deltaTime)                   override;
+
+  ImVec2 StartPos()                 const ;
+  ImVec2 EndPos()                   const ;
+};
+
+
+//-----------------------------------------------------------------------------
+// [SECTION] Main menubar
+//-----------------------------------------------------------------------------
+enum HBMainMenuBarFlags_ {
+  HB_MAIN_MENU_BAR_FLAG_NONE        = 0     ,
+  HB_MAIN_MENU_BAR_FLAG_HORIZONTAL  = 1 << 0,
+  HB_MAIN_MENU_BAR_FLAG_VERTICAL    = 1 << 1,
+};
+
+struct HBMenuItem : HBUIItem{
+  public:
+  HBMenuItem(const std::string& label, const HBDrawType drawType, const ImColor color)
+      : HBUIItem(color){
+    name = label;
+    this->drawType = drawType;
+  };
+  ~HBMenuItem(){};
 
   public:
-  void startDraw(ImDrawList *drawList);
+  std::string name          =         "";
+  ImVec2      size          =         {};
 
-  virtual ImVec2 StartPos() const = 0;
+  HBUIItem*   itemToDraw    =         {};
+  HBDrawType  drawType      =         HBDrawType_::Normal;
 
-  virtual ImVec2 EndPos() const = 0;
-
-  private:
-  virtual void draw(ImDrawList *drawList) = 0;
-
-  void drawChildren(ImDrawList *drawList);
+  public:
+  void    draw(ImDrawList *drawList)                override;
+  void    update(float deltaTime)                   override;
 };
 
-struct HBCircle : HBUIItem {
-  ImVec2 Center;
-  float Radius;
+struct HBMainMenuBar : HBRect {
+  HBMainMenuBar (MainMenuBarFlags flags, const ImColor color = ImColor(-1,-1,-1,-1)) :
+                                                               flags(flags), HBRect(color){
 
-  void draw(ImDrawList *drawList) override;
+  }
+  ~HBMainMenuBar(){};
 
-  ImVec2 StartPos() const override;
+  MainMenuBarFlags                               flags   =   0;
+  std::vector<std::shared_ptr<HBMenuItem>>       items   =   {};
 
-  ImVec2 EndPos() const override;
+  void draw(ImDrawList *drawList)                         override;
+  void update(float deltaTime)                            override;
 };
 
-struct HBRect : HBUIItem {
-  //Position
-  ImVec2 Start;
-  ImVec2 End;
 
-  void draw(ImDrawList *drawList) override;
-
-  ImVec2 StartPos() const override;
-
-  ImVec2 EndPos() const override;
-};
-
+//-----------------------------------------------------------------------------
+// [SECTION] Draw Data
+//-----------------------------------------------------------------------------
 struct HBDrawData {
-  MainMenuBarFlags mainMenuBarFlags = {};
+  DockspaceFlags                          dockspaceFlags  =   0 ;
+  std::shared_ptr<HBMainMenuBar>          mainMenuBar     =   {};
+  ImVec2 firstItemStart =   ImVec2(-1,-1);
 };
 
 //-----------------------------------------------------------------------------
@@ -131,40 +163,31 @@ struct HBTime {
 //-----------------------------------------------------------------------------
 // [SECTION] Flags & Enumerations
 //-----------------------------------------------------------------------------
-struct HBPadding{
-  float top     =   0;
-  float right   =   0;
-  float bottom  =   0;
-  float left    =   0;
+struct HBPadding {
+  float top     = 0;
+  float right   = 0;
+  float bottom  = 0;
+  float left    = 0;
 
   HBPadding(float top, float right, float bottom, float left) : top(top), right(right), bottom(bottom), left(left) {}
-  HBPadding(float topBottom, float rightLeft) : top(topBottom), right(rightLeft), bottom(topBottom), left(rightLeft) {}
-  HBPadding(float all) : top(all), right(all), bottom(all), left(all) {}
+
+  HBPadding(float topBottom, float rightLeft)
+      : top(topBottom), right(rightLeft), bottom(topBottom), left(rightLeft) {}
+
+  HBPadding(float all)
+      : top(all), right(all), bottom(all), left(all) {}
+
   HBPadding() = default;
 };
 
-struct HBStyle{
+struct HBStyle {
   //main window
-  HBPadding firstItemPadding          = HBPadding(0, 0, 0, 0);//padding for the first item
+  HBPadding firstItemPadding          = HBPadding(0, 0, 0, 0);         //padding for the first item
   HBPadding firstItemPaddingScreenMax = HBPadding(0, 0, 0, 0);//if the screen is maximized use this padding
 
-  //menuitems
-  ImVec2    menuItemSizeButton        = ImVec2(32, 32);
-};
-
-//-----------------------------------------------------------------------------
-// [SECTION] Main menubar
-//-----------------------------------------------------------------------------
-enum HBMainMenuBarFlags_ {
-  HB_MAIN_MENU_BAR_FLAG_NONE       = 0,
-  HB_MAIN_MENU_BAR_FLAG_HORIZONTAL = 1 << 0,
-  HB_MAIN_MENU_BAR_FLAG_VERTICAL   = 1 << 1,
-};
-
-struct HBMainMenuItem{
-  HBUIItem *item;
-  std::string name;
-  //todo: add image
+  //Menu
+  ImColor menuBarColor               = ImColor(-1, -1, -1, 255);
+  ImVec2  menuItemSizeButton         = ImVec2(32, 32);
 };
 
 //-----------------------------------------------------------------------------
@@ -176,39 +199,35 @@ enum HBDockspaceFlags_ {
 };
 
 //-----------------------------------------------------------------------------
-// [SECTION] MainWindowSettings
+// [SECTION] MAIN Window
 //-----------------------------------------------------------------------------
 enum HBMainWindowFlags_ {
-  HBUI_MAIN_WINDOW_FLAG_NONE                =   0,
-  HBUI_MAIN_WINDOW_FLAG_NO_DECORATION       =   1 << 1,
-  HBUI_MAIN_WINDOW_FLAG_NO_RESIZE           =   1 << 2,
-  HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR         =   1 << 4
-};
-
-struct HBMainWindowSettings {
+  HBUI_MAIN_WINDOW_FLAG_NONE            = 0,
+  HBUI_MAIN_WINDOW_FLAG_NO_DECORATION   = 1 << 1,
+  HBUI_MAIN_WINDOW_FLAG_NO_RESIZE       = 1 << 2,
+  HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR     = 1 << 4
 };
 
 //-----------------------------------------------------------------------------
 // [SECTION] HBIO
 //-----------------------------------------------------------------------------
-struct HBIO{
-  std::string           title               = "ImVK";
-  int                   width               = 1280;
-  int                   height              = 720;
+struct HBIO {
+  std::string title = "ImVK";
 
-  HBMainWindowSettings* mainWindowSettings  = {};
-  MainWindowFlags       mainWindowFlags     = HBUI_MAIN_WINDOW_FLAG_NONE;
+  int width   = 1280;
+  int height = 720;
+
+  MainWindowFlags mainWindowFlags = HBUI_MAIN_WINDOW_FLAG_NONE;
 };
 
 //-----------------------------------------------------------------------------
 // [SECTION] HBUIContext
 //-----------------------------------------------------------------------------
 struct HBContext {
-  bool    initialized   = false;
-  HBIO    io            = {};
-  HBStyle style         = {};
-
-  HBTime  time          = {};
+  bool initialized  = false;
+  HBIO io           = {};
+  HBStyle style     = {};
+  HBTime time       = {};
 
   //Draw Data
   std::shared_ptr<HBDrawData> drawData = std::make_shared<HBDrawData>();
@@ -290,13 +309,16 @@ namespace HBUI {
   // [SECTION] Menu Bars
   //---------------------------------------------------------------------------------
   HBUI_API bool
-  beginMainMenuBar(MainMenuBarFlags flags);                           // create and append to a full screen menu-bar.
+  beginMainMenuBar(MainMenuBarFlags flags);// create and append to a full screen menu-bar.
 
   IMGUI_API void
-  endMainMenuBar();                                                   // only call EndMainMenuBar() if BeginMainMenuBar() returns true!
+  endMainMenuBar();// only call EndMainMenuBar() if BeginMainMenuBar() returns true!
 
   IMGUI_API bool
-  beginMainMenuItem(const std::string &name);
+  beginMainMenuItem(const std::string &name, HBDrawType type, ImVec2 size = {});
+
+  IMGUI_API void
+  EndMainMenuItem();
 
   //---------------------------------------------------------------------------------
   // [SECTION] Sample/Debug Windows
