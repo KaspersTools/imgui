@@ -16,12 +16,13 @@ namespace HBUI {
       ImGui::EndTooltip();
     }
   }
+
   std::vector<std::string> flagsNames = {
           "ctx.mainWindowSettings.MainWindowFlags:   No Decoration                 ",
           "ctx.mainWindowSettings.MainWindowFlags:   No Resize                     ",
           "ctx.mainWindowSettings.MainWindowFlags:   No TitleBar                   ",
-          "ctx.mainWindowSettings.MainWindowFlags:   With Custom TitleBar          ",
-          "ctx.mainWindowSettings.MainWindowFlags:   Default DockSpace             "};
+          "ctx.mainWindowSettings.MainWindowFlags:   No Move                       ",
+  };
 
 
   HBUI_API void showDebugWindow(bool *p_open) {
@@ -52,6 +53,7 @@ namespace HBUI {
       std::map<std::string, MainWindowFlags> flagsMap = {
               {"ctx.mainWindowSettings.MainWindowFlags:   No Decoration                 ", HBUI_MAIN_WINDOW_FLAG_NO_DECORATION},
               {"ctx.mainWindowSettings.MainWindowFlags:   No Resize                     ", HBUI_MAIN_WINDOW_FLAG_NO_RESIZE},
+              {"ctx.mainWindowSettings.MainWindowFlags:   No Move                       ", HBUI_MAIN_WINDOW_FLAG_NO_MOVE},
               {"ctx.mainWindowSettings.MainWindowFlags:   No TitleBar                   ", HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR},
       };
 
@@ -73,25 +75,24 @@ namespace HBUI {
 
       HBStyle &style = getStyle();
 
-      if(ImGui::BeginTabBar("StyleTabBar")) {
+      if (ImGui::BeginTabBar("StyleTabBar")) {
 
-        if(ImGui::BeginTabItem("HBUII sizes")){
-          ImGui::SliderFloat2("MenuBarSize", (float *) &style.menuBarSize, 0, 100);
-          ImGui::SliderFloat2("MenuItemSizeButton", (float *) &style.menuItemSize, 0, 100);
-
-          ImGui::EndTabItem();
-        }
-
-        if (ImGui::BeginTabItem("Colors")) {
-          ImGui::ColorEdit4("WindowBg", (float *) &style.menuBarColor);
+        if (ImGui::BeginTabItem("HBUII sizes")) {
+          ImGui::SliderFloat("verticalMainMenuBarWidth             | //The width of the vertical mainmenubar                                                                              ", &style.mainMenuVerticalWidth,    0, 200);
+          ImGui::SliderFloat("horizontalMainMenuBarHeight          | //The height of the horizontal mainmenubar                                                                           ", &style.mainMenuHorizontalHeight, 0, 200);
+          ImGui::EndTabItem();/////////////////////////////////////|//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////"
+         }//////////////////////////////////////////////////////////|//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////"
+///////////////////////////////////////////////////////////////////|//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////"
+        if (ImGui::BeginTabItem("Colors")){////////////////////////|//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////"
+          ImGui::ColorEdit4("WindowBg                              | //By default the menubarbg of imgui is used. if you want you can overwite the main menu bar color with this stlye    ", (float *) &style.menuBarColor);
           ImGui::SameLine();
-          if(ImGui::Button("reset")){
-            style.menuBarColor = ImVec4(-1,-1,-1,255);
+          if (ImGui::Button("reset")) {
+            style.menuBarColor = ImVec4(-1, -1, -1, 255);
           }
           ImGui::EndTabItem();
         }
 
-        if(ImGui::BeginTabItem("ImGuiStyle")){
+        if (ImGui::BeginTabItem("ImGuiStyle")) {
           ImGui::ShowStyleEditor();
           ImGui::EndTabItem();
         }

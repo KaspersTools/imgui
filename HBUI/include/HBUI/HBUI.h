@@ -144,9 +144,11 @@ struct HBMainMenuBar : HBRect {
 // [SECTION] Draw Data
 //-----------------------------------------------------------------------------
 struct HBDrawData {
-  DockspaceFlags                          dockspaceFlags  =   0 ;
-  std::shared_ptr<HBMainMenuBar>          mainMenuBar     =   {};
-  ImVec2 firstItemStart =   ImVec2(-1,-1);
+  DockspaceFlags                          dockspaceFlags            =   0   ; //the flags for the dockspace
+  std::shared_ptr<HBMainMenuBar>          currentAppendingMenuBar   =   NULL; //the current appending main menu bar
+  std::shared_ptr<HBMainMenuBar>          mainMenuBarHorizontal     =   NULL; //the horizontal main menu bar
+  std::shared_ptr<HBMainMenuBar>          mainMenuBarVertical       =   NULL; //the vertical main menu bar
+  ImVec2 savedScreenPos                                             =   ImVec2(-1,-1); //used to determine where for example the dockspace should startr
 };
 
 //-----------------------------------------------------------------------------
@@ -179,23 +181,29 @@ struct HBPadding {
 };
 
 struct HBStyle {
-  //main window
-  HBPadding firstItemPadding          = HBPadding(0, 0, 0, 0);         //padding for the first item
-  HBPadding firstItemPaddingScreenMax = HBPadding(0, 0, 0, 0);//if the screen is maximized use this padding
-
   //Colors
-  ImColor menuBarColor               = ImColor(-1, -1, -1, 255);
+  ImColor menuBarColor                  = ImColor(-1, -1, -1, 255);
 
   //Sizes
-  ImVec2  menuBarSize                = ImVec2(70, 70);
-  ImVec2  menuItemSize               = ImVec2(32, 32);
+    //menus
+      //vertical
+      float       mainMenuVerticalWidth                 = 70; //The width of the vertical mainmenubar                         will be saved in draw data later and be will be determined by the items in the menubar
+      ImVec2      mainMenuBarVerticalFirstItemOffset    = {}; //Extra position for the first item in the vertical mainmenubar
+
+      //horizontal
+      float       mainMenuHorizontalHeight              = 35; //The height of the horizontal mainmenubar                      will be saved in draw data later and be will be determined by the items in the menubar
+      ImVec2      mainMenuBarHorizontalFirstItemOffset  = {}; //Extra position for the first item in the vertical mainmenubar
+
+      //shared
+      HBPadding   mainMenuItemsPadding                  = {}; //The padding for the mainmenu items (top, right, bottom, left). If not set use imgui frame padding
+      HBPadding   mainMenuItemsSpacing                  = {}; //The spacing for the mainmenu items (top, right, bottom, left). If not set the imgui frame spacing
 };
 
 //-----------------------------------------------------------------------------
 // [SECTION] Dockspace
 //-----------------------------------------------------------------------------
 enum HBDockspaceFlags_ {
-  HB_DOCKSPACE_FLAG_None      = 0,
+  HB_DOCKSPACE_FLAG_NONE      = 0,
   HB_DOCKSPACE_FLAG_MENUBAR   = 1 << 0,
 };
 
@@ -206,6 +214,7 @@ enum HBMainWindowFlags_ {
   HBUI_MAIN_WINDOW_FLAG_NONE            = 0,
   HBUI_MAIN_WINDOW_FLAG_NO_DECORATION   = 1 << 1,
   HBUI_MAIN_WINDOW_FLAG_NO_RESIZE       = 1 << 2,
+  HBUI_MAIN_WINDOW_FLAG_NO_MOVE         = 1 << 3,
   HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR     = 1 << 4
 };
 
@@ -259,6 +268,9 @@ namespace HBUI {
   HBUI_API HBIO&
   getIO();
 
+  HBUI_API HBDrawData&
+  getDrawData();
+
   //---------------------------------------------------------------------------------
   // [SECTION] Main Window
   //---------------------------------------------------------------------------------
@@ -302,9 +314,18 @@ namespace HBUI {
   //---------------------------------------------------------------------------------
   // [SECTION] Dockspaces
   //---------------------------------------------------------------------------------
+  /*
+   * @brief begin a full screen dockspace
+   * @param flags - the flags for the dockspace, see DockspaceFlags_
+   *                  HB_DOCKSPACE_FLAG_NONE, HB_DOCKSPACE_FLAG_MENUBAR
+   */
   HBUI_API void
-  beginFullScreenDockspace(DockspaceFlags flags = HB_DOCKSPACE_FLAG_None);
+  beginFullScreenDockspace(HBDockspaceFlags_ flags = HB_DOCKSPACE_FLAG_NONE);
 
+  /*
+   * @brief end the full screen dockspace
+   *      this function should be called after beginFullScreenDockspace
+   */
   HBUI_API void
   beginFullScreenDockspace(const bool isMaximized,
                            const bool mainWindowNoTitlebar,
@@ -315,14 +336,34 @@ namespace HBUI {
   //---------------------------------------------------------------------------------
   // [SECTION] Menu Bars
   //---------------------------------------------------------------------------------
+
+//  HBUI_API bool
+//  beginMainMenuBar(HBMainMenuBar flags);// create and append to a full screen menu-bar.
+
+  /*
+   * @brief create a full screen menu-bar.
+   * @param flags - the flags for the main menu bar, see MainMenuBarFlags_
+   *                  HB_MAIN_MENU_BAR_FLAG_NONE, HB_MAIN_MENU_BAR_FLAG_HORIZONTAL, HB_MAIN_MENU_BAR_FLAG_VERTICAL //@at 15-04-2024
+   * @return true if the main menu bar is active
+   */
   HBUI_API bool
   beginMainMenuBar(MainMenuBarFlags flags);// create and append to a full screen menu-bar.
 
+  /*
+   * @brief end the main menu bar
+   *      this function should be called after beginMainMenuBar, but only if beginMainMenuBar() is true
+   */
   IMGUI_API void
-  endMainMenuBar();// only call EndMainMenuBar() if BeginMainMenuBar() returns true!
+  endMainMenuBar();//
 
+  /*
+   * @param id    - the id of the menu item
+   * @param type  - the type of the menu item,  if the type is not set the default type (imgui main menu bar button) will be used
+   * @param size  - if the size is not set the default size will be used
+   * @return true if the menu item is active
+   */
   IMGUI_API bool
-  beginMainMenuItem(const std::string &name, HBDrawType type, ImVec2 size = {});
+  beginMainMenuItem(const std::string &id, HBDrawType type = 0, ImVec2 size = {});
 
   IMGUI_API void
   EndMainMenuItem();
@@ -357,7 +398,7 @@ namespace HBUI {
 
   //---------------------------------------------------------------------------------
   // [SECTION] Input
-  //---------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------s
   HBUI_API bool
   mouseOverRect(const ImVec2 &start, const ImVec2 &end);
 

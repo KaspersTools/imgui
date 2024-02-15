@@ -9,7 +9,7 @@ HBContext *g_HBUICTX = NULL;
 #endif
 
 namespace HBUI {
-  HBContext *
+  HBUI_API HBContext *
   initialize(const std::string &title, int width, int height, MainWindowFlags flags) {
     if (g_HBUICTX == NULL) {
       g_HBUICTX = new HBContext();
@@ -34,26 +34,33 @@ namespace HBUI {
     return g_HBUICTX;
   }
 
-  void
+  HBUI_API void
   setCurrentContext(HBContext *ctx) {
     g_HBUICTX = ctx;
   }
 
-  HBContext *
+  HBUI_API HBContext *
   getCurrentContext() {
     return g_HBUICTX;
   }
 
-  void
+  HBUI_API void
   clearContext() {//todo: implement
   }
 
-  HBUI_API HBStyle& getStyle(){
+  HBUI_API HBStyle&
+  getStyle(){
     return getCurrentContext()->style;
   }
 
-  HBUI_API HBIO&   getIO() {
+  HBUI_API HBIO&
+  getIO() {
     return getCurrentContext()->io;
+  }
+
+  HBUI_API HBDrawData&
+  getDrawData(){
+    return *getCurrentContext()->drawData;
   }
 
   /*********************************************
@@ -108,6 +115,7 @@ namespace HBUI {
     float deltaTime = getTime() - g_HBUICTX->time.lastTime;
     g_HBUICTX->time.deltaTime = deltaTime;
     g_HBUICTX->time.lastTime = getTime();
+
     update(deltaTime);
 
     startRenderBackend();

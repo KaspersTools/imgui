@@ -771,4 +771,10 @@ setBackendWindowFlags(const HBContext &ctx) {
   } else {
     glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_TRUE);
   }
+
+  if (ctx.io.mainWindowFlags & HBUI_MAIN_WINDOW_FLAG_NO_MOVE) {
+    glfwSetWindowAttrib(g_ImVKData->window, GLFW_FLOATING, GLFW_TRUE);
+  } else {
+    glfwSetWindowAttrib(g_ImVKData->window, GLFW_FLOATING, GLFW_FALSE);
+  }
 }

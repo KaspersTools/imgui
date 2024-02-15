@@ -19,6 +19,7 @@ class MainWindow {
 
   private:
   void init();
+  void createDockSpace();
   void render();
   void shutdown();
 
@@ -26,13 +27,10 @@ class MainWindow {
     bool showDemoWindow = true;
 
   private:
-    bool showAboutWindow = false;
-    bool showStyleEditor = true;
-    bool showMetricsWindow = false;
-    bool showDebugLogWindow = false;
-    bool showIDStackToolWindow = false;
-    bool showFontSelector = false;
-    bool showUserGuide = false;
+      bool withMenuBar        = true;
+      bool withDockSpace      = true;
+      bool horizontalMenuBar  = true;
+      bool verticalMenuBar    = false;
 };
 
 
