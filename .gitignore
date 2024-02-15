@@ -57,3 +57,17 @@ examples/example_sdl2_metal/example_sdl2_metal
 examples/example_sdl2_opengl2/example_sdl2_opengl2
 examples/example_sdl2_opengl3/example_sdl2_opengl3
 examples/example_sdl2_sdlrenderer/example_sdl2_sdlrenderer
+/HBUI/addons/imguifiledialog/dirent/ChangeLog
+/HBUI/addons/imguifiledialog/CMakeLists.txt
+/HBUI/addons/imguifiledialog/dirent/dirent.h
+/HBUI/addons/imguifiledialog/ImGuiFileDialog.cpp
+/HBUI/addons/imguifiledialog/ImGuiFileDialog.h
+/HBUI/addons/imguifiledialog/ImGuiFileDialogConfig.h
+/HBUI/addons/imguifiledialog/dirent/LICENSE
+/HBUI/addons/imguifiledialog/stb/LICENSE
+/HBUI/addons/imguifiledialog/LICENSE
+/HBUI/addons/imguifiledialog/dirent/README.md
+/HBUI/addons/imguifiledialog/stb/README.md
+/HBUI/addons/imguifiledialog/README.md
+/HBUI/addons/imguifiledialog/stb/stb_image.h
+/HBUI/addons/imguiyesaddons/imguiimageeditor_plugins/stb_image_resize.h

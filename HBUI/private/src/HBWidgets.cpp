@@ -2,6 +2,51 @@
 // Created by Kasper de Bruin on 10/02/2024.
 //
 #include <HBUI/HBUI.h>
+
+
+void renderWindowOuterBorders(ImGuiWindow *window) {
+  struct ImGuiResizeBorderDef {
+    ImVec2 InnerDir;
+    ImVec2 SegmentN1, SegmentN2;
+    float OuterAngle;
+  };
+
+  static const ImGuiResizeBorderDef resize_border_def[4] =
+          {
+                  {ImVec2(+1, 0), ImVec2(0, 1), ImVec2(0, 0), IM_PI * 1.00f},// Left
+                  {ImVec2(-1, 0), ImVec2(1, 0), ImVec2(1, 1), IM_PI * 0.00f},// Right
+                  {ImVec2(0, +1), ImVec2(0, 0), ImVec2(1, 0), IM_PI * 1.50f},// Up
+                  {ImVec2(0, -1), ImVec2(1, 1), ImVec2(0, 1), IM_PI * 0.50f} // Down
+          };
+
+  auto GetResizeBorderRect = [](ImGuiWindow *window, int border_n, float perp_padding, float thickness) {
+    ImRect rect = window->Rect();
+    if (thickness == 0.0f) {
+      rect.Max.x -= 1;
+      rect.Max.y -= 1;
+    }
+    if (border_n == ImGuiDir_Left) {
+      return ImRect(rect.Min.x - thickness, rect.Min.y + perp_padding, rect.Min.x + thickness,
+                    rect.Max.y - perp_padding);
+    }
+    if (border_n == ImGuiDir_Right) {
+      return ImRect(rect.Max.x - thickness, rect.Min.y + perp_padding, rect.Max.x + thickness,
+                    rect.Max.y - perp_padding);
+    }
+    if (border_n == ImGuiDir_Up) {
+      return ImRect(rect.Min.x + perp_padding, rect.Min.y - thickness, rect.Max.x - perp_padding,
+                    rect.Min.y + thickness);
+    }
+    if (border_n == ImGuiDir_Down) {
+      return ImRect(rect.Min.x + perp_padding, rect.Max.y - thickness, rect.Max.x - perp_padding,
+                    rect.Max.y + thickness);
+    }
+    IM_ASSERT(0);
+    return ImRect();
+  };
+}
+
+
 /**
  *
  * ******************
@@ -80,55 +125,76 @@ namespace HBUI {
  * ******************
  *
  */
-  HBUI_API void
-  beginFullScreenDockspace(const bool isMaximized, const bool isCustomTitleBar) {
-    //    auto viewport = wImGui::GetMainViewport();
-    //    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
-    //
-    //    ImGuiStyle &style = ImGui::GetStyle();
-    //    style.WindowMinSize.x = 370.0f;
-    //
-    //    ImGui::SetNextWindowPos({viewport->WorkPos.x, viewport->WorkPos.y});
-    //    ImGui::SetNextWindowSize(viewport->WorkSize);
-    //    ImGui::SetNextWindowViewport(viewport->ID);
-    //
-    //    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    //    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-    //
-    //    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-    //                    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
-    //                    ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
-    //
-    //    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-    //
-    //    ImVec2 WindowPaddingNormal = ImVec2(1.0f, 1.0f);
-    //    ImVec2 WindowPaddingMaximized = ImVec2(6.0f, 6.0f);
-    //
-    //    float WindowBorderSize = 0.0f;
-    //    ImVec4 MenuBarBG = {0.0f, 0.0f, 0.0f, 0.0f};
-    //
-    //    if (isMaximized) {
-    //      ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, WindowPaddingMaximized);
-    //    } else {
-    //      ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, WindowPaddingNormal);
-    //    }
-    //
-    //    ImGui::Begin("DockSpaceWindow", nullptr, window_flags);
-    //    ImGui::PopStyleVar(2);
-    //    ImGui::PopStyleVar(1);
-    //
-    //    ImGui::DockSpace(ImGui::GetID("MyDockspace"));//fixme: when custom title bar call this manually
-    //    if (!isCustomTitleBar) {}
-    //    ImGui::End();
 
-    ImGui::DockSpaceOverViewport();
+  HBUI_API void
+  beginFullScreenDockspace() {
+    const bool maximized = isMaximized();
+    const bool isCustomTitleBar = (HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR & getCurrentContext()->windowF());
+    const bool mainWindowNoTitleBar = (HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR & getCurrentContext()->windowF());
+
+    beginFullScreenDockspace(maximized, isCustomTitleBar, mainWindowNoTitleBar);
   }
 
+
   HBUI_API void
-  endFullScreenDockspace() {
+  beginFullScreenDockspace(const bool isMaximized,
+                           const bool hasCustomTitlebar,
+                           const bool mainWindowNoTitlebar) {
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
+    ImGuiViewport *viewport = ImGui::GetMainViewport();
+
+    ImGuiStyle &style = ImGui::GetStyle();
+    float minWinSizeX = style.WindowMinSize.x;
+    style.WindowMinSize.x = 370.0f;
+
+    ImVec2 pos = viewport->Pos;
+    ImVec2 size = viewport->Size;
+
+    ImVec2 workPos = viewport->WorkPos;
+    ImVec2 workSize = viewport->WorkSize;
+
+    if (mainWindowNoTitlebar) {
+      ImGui::SetNextWindowPos(viewport->Pos);
+      ImGui::SetNextWindowSize(viewport->Size);
+      ImGui::SetNextWindowViewport(viewport->ID);
+    } else {
+      ImGui::SetNextWindowPos(viewport->Pos);
+      ImGui::SetNextWindowSize(viewport->Size);
+      ImGui::SetNextWindowViewport(viewport->ID);
+    }
+
+    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
+                    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
+                    ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+
+    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoBackground;
+
+    ImVec2 WindowPaddingNormal = ImVec2(1.0f, 1.0f);
+    ImVec2 WindowPaddingMaximized = ImVec2(6.0f, 6.0f);
+
+    float windowRounding = 0;
+    float WindowBorderSize = 0.0f;
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, isMaximized ? WindowPaddingMaximized : WindowPaddingNormal);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, WindowBorderSize);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, windowRounding);
+
+    //todo: menubar bg when custom?
+
+    ImGui::Begin("DockSpaceWindow", nullptr, window_flags);
+    ImGui::PopStyleVar(3);
+    ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(50, 50, 50, 255));
+
+    // Draw window border if the window is not maximized
+    renderWindowOuterBorders(ImGui::GetCurrentWindow());
+
+    ImGui::PopStyleColor();// ImGuiCol_Border
+    //TODO: Start Title/Side bar here
+    // {}
+
+    ImGui::DockSpace(ImGui::GetID("MyDockspace"), ImVec2(0.0f, 0.0f));
     ImGui::End();
   }
-
   /**
  *
  * ******************

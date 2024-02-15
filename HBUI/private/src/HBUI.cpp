@@ -10,11 +10,11 @@ HBUIContext *g_HBUICTX = NULL;
 
 namespace HBUI {
   HBUIContext *
-  initialize() {
+  initialize(const std::string &title, int width, int height, MainWindowFlags flags) {
     if (g_HBUICTX == NULL) {
       g_HBUICTX = new HBUIContext();
     }
-    auto *settings = new MainWindowSettings("HBUI Example", 1280, 720, HBUI_MAIN_WINDOW_FLAG_NONE | HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE);
+    auto *settings = new MainWindowSettings(title, width, height, flags);
     g_HBUICTX->mainWindowSettings = settings;
     if (!initPlatformBackend(g_HBUICTX)) {
       std::cerr << "Failed to initialize platform backend" << std::endl;
@@ -38,6 +38,18 @@ namespace HBUI {
 
   void
   clearContext() {
+  }
+
+  /*********************************************
+    * MainWin
+    * *********************************************/
+  HBUI_API bool
+  isMaximized() {
+    ImVec2 size = getWindowSize();
+    ImVec2 frameSize = getWindowFrameSize();
+
+    return (size.x + frameSize.x == getMonitorWidth() &&
+            size.y + frameSize.y == getMonitorHeight());
   }
 
   /*********************************************
@@ -81,6 +93,10 @@ namespace HBUI {
     update(deltaTime);
 
     startRenderBackend();
+
+    if (isFlagSet(&g_HBUICTX->mainWindowSettings->flags, HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE)) {
+      beginFullScreenDockspace();
+    }
   }
 
   HBUI_API void
@@ -115,7 +131,18 @@ namespace HBUI {
   HBUI_API bool
   mouseOverCircle(const ImVec2 &center, float radius) {
     ImVec2 mousePos = ImGui::GetMousePos();
-    return (mousePos.x - center.x) * (mousePos.x - center.x) + (mousePos.y - center.y) * (mousePos.y - center.y) <
-           radius * radius;
+    return (mousePos.x - center.x) * (mousePos.x - center.x) + (mousePos.y - center.y) * (mousePos.y - center.y) < radius * radius;
+  }
+
+  /*********************************************
+      * Flags
+      * *********************************************/
+  HBUI_API void toggleFlag(int flag) {
+    g_HBUICTX->mainWindowSettings->flags ^= flag;
+    setBackendWindowFlags(*g_HBUICTX);
+  }
+
+  HBUI_API bool isFlagSet(int *flags, int flag) {
+    return (*flags & flag) == flag;
   }
 }// namespace HBUI

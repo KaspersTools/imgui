@@ -3,16 +3,12 @@
 //
 #include "MainWindow.h"
 #include <HBUI/HBUI.h>
-
-static int passes = 0;
+#include <HBUI/WindowManager.h>
 
 void MainWindow::init() {
-  HBUIContext *ctx = HBUI::initialize();
-  HBUI::setCurrentContext(ctx);
-
+  HBUI::initialize("Hello, World!", 1280, 720, HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE);
   run();
 }
-
 
 bool MainWindow::run() {
   while (!HBUI::wantToClose()) {
@@ -23,14 +19,15 @@ bool MainWindow::run() {
 
 void MainWindow::render() {
   HBUI::startFrame();
-  ImGui::Begin("Logs");
+
+  ImGui::Begin("Hello, window from template");
   ImGui::Text("Hello, world!");
   ImGui::Text("This is some useful text.");
   ImGui::End();
 
-  if(passes < 100) {
-    passes++;
-  }
+  HBUI::showDebugWindow();
+  HummingBirdCore::UI::WindowManager::getInstance()->render();
+
   HBUI::endFrame();
 }
 

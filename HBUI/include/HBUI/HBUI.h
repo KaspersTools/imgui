@@ -48,15 +48,11 @@ enum HBButtonDrawType {
 
 enum MainWindowFlags_ {
   HBUI_MAIN_WINDOW_FLAG_NONE = 0,
-  HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR = 1 << 0,
   HBUI_MAIN_WINDOW_FLAG_NO_DECORATION = 1 << 1,
   HBUI_MAIN_WINDOW_FLAG_NO_RESIZE = 1 << 2,
+  HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR = 1 << 4,
+  HBUI_MAIN_WINDOW_FLAG_CUSTOM_TITLEBAR = 1 << 5,
   HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE = 1 << 3,
-  HBUI_MAIN_WINDOW_FLAG_CUSTOM_TITLEBAR = 1 << 4,
-  HBUI_MAIN_WINDOW_FULLDOCK = HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR |
-                              HBUI_MAIN_WINDOW_FLAG_NO_DECORATION |
-                              HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE,
-  //default
 };
 
 //titlebar
@@ -246,13 +242,7 @@ struct HBRect : HBUIItem {
 
 namespace HBUI {
   HBUI_API HBUIContext *
-  initialize();
-
-  HBUI_API ImVec2
-  getNativeWindowSize();
-
-  HBUI_API ImVec2
-  getNativeWindowPos();
+  initialize(const std::string &title, int width, int height, MainWindowFlags flags);
 
   HBUI_API void
   setCurrentContext(HBUIContext *ctx);
@@ -265,6 +255,15 @@ namespace HBUI {
 
   HBUI_API void
   clearContext();
+
+  //---------------------------------------------------------------------------------
+  // [SECTION] Main Window
+  //---------------------------------------------------------------------------------
+  HBUI_API void
+  setMainWindowFlags(MainWindowFlags flags);
+
+  HBUI_API bool
+  isMaximized();
 
   //---------------------------------------------------------------------------------
   // [SECTION] Input
@@ -301,16 +300,13 @@ namespace HBUI {
   // [SECTION] Dockspaces
   //---------------------------------------------------------------------------------
   HBUI_API void
-  beginFullScreenDockspace(const bool isMaximized, const bool isCustomTitleBar = false);
+  beginFullScreenDockspace();
 
   HBUI_API void
-  endFullScreenDockspace();
-
-  //---------------------------------------------------------------------------------
-  // [SECTION] Main Window
-  //---------------------------------------------------------------------------------
-
-  //---------------------------------------------------------------------------------
+  beginFullScreenDockspace(const bool isMaximized,
+                           const bool hasCustomTitlebar,
+                           const bool mainWindowNoTitlebar);
+          //---------------------------------------------------------------------------------
   // [SECTION] Menu Bars
   //---------------------------------------------------------------------------------
   HBUI_API void
@@ -318,6 +314,12 @@ namespace HBUI {
 
   HBUI_API void
   endMainMenuBar();
+
+  //---------------------------------------------------------------------------------
+  // [SECTION] Sample/Debug Windows
+  //---------------------------------------------------------------------------------
+  HBUI_API void
+  showDebugWindow(bool *p_open = NULL);
 
   //---------------------------------------------------------------------------------
   // [SECTION] Updating
@@ -349,4 +351,10 @@ namespace HBUI {
 
   HBUI_API bool
   mouseOverCircle(const ImVec2 &center, float radius);
+
+  HBUI_API bool isFlagSet(int *flags, int flag);
+
+  HBUI_API void toggleFlag(int flag);
+
+
 }// namespace HBUI

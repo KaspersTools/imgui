@@ -52,6 +52,11 @@ target_sources(imgui PRIVATE ${sources} misc/cpp/imgui_stdlib.cpp)
 ###############################################################################
 # EXAMPLE
 ###############################################################################
-#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/example/ ${CMAKE_BINARY_DIR}/example)
-#target_link_libraries(ImVk-example PRIVATE HBUI)
+option(HBUI_BUILD_EXAMPLE "Build example" OFF)
+if(HBUI_BUILD_EXAMPLE)
+    set(IMVK_DOWNLOAD_GLFW ON)
+    add_subdirectory(HBUI)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/example/ ${CMAKE_BINARY_DIR}/example)
+    target_link_libraries(ImVk-example PRIVATE HBUI)
+endif()
 

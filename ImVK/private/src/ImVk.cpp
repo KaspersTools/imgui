@@ -26,6 +26,52 @@
 
 #include "../../../HBUI/include/HBUI/HBUI.h"
 
+
+IMVK_IMPL_API bool
+initPlatformBackend(HBUIContext *context, void *errorCallback = nullptr);
+
+IMVK_IMPL_API bool
+initGraphicsBackend(HBUIContext *context);
+
+IMVK_IMPL_API void
+startRenderBackend();
+
+IMVK_IMPL_API void
+endRenderBackend();
+
+IMVK_IMPL_API void
+shutdownBackend();
+
+IMVK_IMPL_API bool
+isMaximized();
+
+IMVK_IMPL_API void
+setWindowShouldCloseBackend();
+
+IMVK_IMPL_API bool
+getWindowShouldCloseBackend();
+
+IMVK_IMPL_API ImVec2
+getWindowSize();
+
+IMVK_IMPL_API ImVec2
+getMonitorSize();
+
+IMVK_IMPL_API ImVec2
+getWindowFrameSize();
+
+IMVK_IMPL_API float
+getMonitorHeight();
+
+IMVK_IMPL_API float
+getMonitorWidth();
+
+IMVK_IMPL_API void
+shutdownBackend();
+
+IMVK_IMPL_API void
+setBackendWindowFlags(const HBUIContext &ctx);
+
 #include <mutex>
 #include <queue>
 #include <thread>
@@ -433,27 +479,6 @@ initPlatformBackend(HBUIContext *context, void *errorCallback) {
   }
 
   glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-  glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
-
-  //  MainWindowFlags flags = context->mainWindowSettings->flags;
-  //  if (flags & HBUI_MAIN_WINDOW_FLAG_TRANSPARENT) {
-  //  } else {
-  //    glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_FALSE);
-  //  }
-  //  if (flags & HBUI_MAIN_WINDOW_FLAG_NO_DECORATION) {
-  //    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-  //  } else {
-  //    glfwWindowHint(GLFW_DECORATED, GLFW_TRUE);
-  //  }
-  //
-  //  if (flags & HBUI_MAIN_WINDOW_FLAG_NO_RESIZE) {
-  //    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-  //  } else {
-  //    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-  //  }
-
-  //  if (flags & HBUI_MAIN_WINDOW_FLAG_CENTER_WINDOW) {
-  glfwWindowHint(GLFW_CENTER_CURSOR, GLFW_TRUE);
 
   GLFWmonitor *primaryMonitor = glfwGetPrimaryMonitor();
   const GLFWvidmode *videoMode = glfwGetVideoMode(primaryMonitor);
@@ -462,7 +487,6 @@ initPlatformBackend(HBUIContext *context, void *errorCallback) {
   glfwGetMonitorPos(primaryMonitor, &monitorX, &monitorY);
 
   glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-
   g_ImVKData->window = glfwCreateWindow(context->mainWindowSettings->width, context->mainWindowSettings->height,
                                         context->mainWindowSettings->title.c_str(),
                                         NULL,
@@ -473,6 +497,8 @@ initPlatformBackend(HBUIContext *context, void *errorCallback) {
 
 
   glfwShowWindow(g_ImVKData->window);
+
+  setBackendWindowFlags(*context);
   return true;
 }
 
@@ -722,4 +748,25 @@ shutdownBackend() {
   //delete all left over pointeers
   delete g_ImVKData;
   g_ImVKData = nullptr;
+}
+
+IMVK_IMPL_API void
+setBackendWindowFlags(const HBUIContext &ctx) {
+  if (ctx.mainWindowSettings->flags & HBUI_MAIN_WINDOW_FLAG_NO_DECORATION) {
+    glfwSetWindowAttrib(g_ImVKData->window, GLFW_DECORATED, GLFW_FALSE);
+  } else {
+    glfwSetWindowAttrib(g_ImVKData->window, GLFW_DECORATED, GLFW_TRUE);
+  }
+
+  if (ctx.mainWindowSettings->flags & HBUI_MAIN_WINDOW_FLAG_NO_RESIZE) {
+    glfwSetWindowAttrib(g_ImVKData->window, GLFW_RESIZABLE, GLFW_FALSE);
+  } else {
+    glfwSetWindowAttrib(g_ImVKData->window, GLFW_RESIZABLE, GLFW_TRUE);
+  }
+
+  if (ctx.mainWindowSettings->flags & HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR) {
+    glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_FALSE);
+  } else {
+    glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_TRUE);
+  }
 }

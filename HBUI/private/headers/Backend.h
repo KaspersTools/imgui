@@ -58,4 +58,8 @@ getMonitorWidth();
 
 IMVK_IMPL_API void
 shutdownBackend();
+
+IMVK_IMPL_API void
+setBackendWindowFlags(const HBUIContext &ctx);
+
 #endif//HBUI_BACKEND_H
