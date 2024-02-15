@@ -22,160 +22,124 @@
 typedef int MainWindowFlags;// -> enum ImGuiWindowFlags_     // Flags: for Begin(), BeginChild()
 typedef int TitleBarFlags;  // -> enum ImGuiWindowFlags_     // Flags: for Begin(), BeginChild()
 
-struct HBUIContext;
+struct HBContext;
 
-struct MainWindowSettings;
-struct TitleBarSettings;
+struct HBMainWindowSettings;
+struct HBTitleBarSettings;
 
-struct Time;
+struct HBTime;
 
 struct HBUIDrawData;
 struct HBUIItem;
 struct HBCircle;
 struct HBRect;
 
-struct Updatable;
+struct HBUpdatable;
+
+//-----------------------------------------------------------------------------
+// [SECTION] Time
+//-----------------------------------------------------------------------------
+
+struct HBTime {
+  float deltaTime = 0.0f;
+  float lastTime  = 0.0f;
+  float frameTime = 0.0f;
+};
 
 //-----------------------------------------------------------------------------
 // [SECTION] Flags & Enumerations
 //-----------------------------------------------------------------------------
-//draw types
+struct HBPadding{
+  float top     =   0;
+  float right   =   0;
+  float bottom  =   0;
+  float left    =   0;
+
+  HBPadding(float top, float right, float bottom, float left) : top(top), right(right), bottom(bottom), left(left) {}
+  HBPadding(float topBottom, float rightLeft) : top(topBottom), right(rightLeft), bottom(topBottom), left(rightLeft) {}
+  HBPadding(float all) : top(all), right(all), bottom(all), left(all) {}
+  HBPadding() = default;
+};
+
+struct HBStyle{
+  HBPadding firstItemPadding          = HBPadding(0, 0, 0, 0);//padding for the first item
+  HBPadding firstItemPaddingScreenMax = HBPadding(0, 0, 0, 0);//if the screen is maximized use this padding
+};
+
+
+//-----------------------------------------------------------------------------
+// [SECTION] MainWindowSettings
+//-----------------------------------------------------------------------------
+//titlebar
+enum HBTitleBarFlags_ {
+  TitleBarFlag_None       = 0,
+  TitleBarFlag_Horizontal = 1 << 0,
+  TitleBarFlag_Vertical   = 1 << 1,
+};
+
+struct HBTitleBarSettings {
+  TitleBarFlags   flags   = 0;
+  ImVec2          size    = ImVec2(0, 0);
+  ImVec2          pos     = ImVec2(0, 0);
+  ImColor         color   = ImColor(0, 0, 0, 0);
+};
+
+enum HBMainWindowFlags_ {
+  HBUI_MAIN_WINDOW_FLAG_NONE                =   0,
+  HBUI_MAIN_WINDOW_FLAG_NO_DECORATION       =   1 << 1,
+  HBUI_MAIN_WINDOW_FLAG_NO_RESIZE           =   1 << 2,
+  HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR         =   1 << 4,
+  HBUI_MAIN_WINDOW_FLAG_CUSTOM_TITLEBAR     =   1 << 5,
+  HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE   =   1 << 3,
+};
+
+struct HBMainWindowSettings {
+  TitleBarFlags         titleBarFlags         = 0;
+  HBTitleBarSettings    titleBarSettings      = {};
+};
+
+
+//-----------------------------------------------------------------------------
+// [SECTION] HBIO
+//-----------------------------------------------------------------------------
+struct HBIO{
+  std::string           title               = "ImVK";
+  int                   width               = 1280;
+  int                   height              = 720;
+
+  HBMainWindowSettings* mainWindowSettings  = {};
+  MainWindowFlags       mainWindowFlags     = HBUI_MAIN_WINDOW_FLAG_NONE;
+};
+
+//-----------------------------------------------------------------------------
+// [SECTION] HBUIContext
+//-----------------------------------------------------------------------------
+struct HBContext {
+  bool    initialized   = false;
+  HBIO    io            = {};
+  HBStyle style         = {};
+
+  HBTime  time          = {};
+};
+
+//-----------------------------------------------------------------------------
+// [SECTION] Drawables
+//-----------------------------------------------------------------------------
 enum HBButtonDrawType {
   Normal,
   Circle,
   Square
 };
 
-enum MainWindowFlags_ {
-  HBUI_MAIN_WINDOW_FLAG_NONE = 0,
-  HBUI_MAIN_WINDOW_FLAG_NO_DECORATION = 1 << 1,
-  HBUI_MAIN_WINDOW_FLAG_NO_RESIZE = 1 << 2,
-  HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR = 1 << 4,
-  HBUI_MAIN_WINDOW_FLAG_CUSTOM_TITLEBAR = 1 << 5,
-  HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE = 1 << 3,
-};
-
-//titlebar
-enum TitleBarFlags_ {
-  TitleBarFlag_None = 0,
-  TitleBarFlag_Horizontal = 1 << 0,
-  TitleBarFlag_Vertical = 1 << 1,
-};
-
-struct TitleBarSettings {
-  TitleBarFlags flags = 0;
-  ImVec2 size = ImVec2(0, 0);
-  ImVec2 pos = ImVec2(0, 0);
-  ImColor color = ImColor(0, 0, 0, 0);
-};
-
-//Main window
-struct MainWindowSettings {
-  std::string title = "ImVK";
-  int width = 1280;
-  int height = 720;
-
-  //Flags
-  MainWindowFlags flags = 0;
-
-  //TitleBar
-  TitleBarFlags titleBarFlags = 0;
-  TitleBarSettings titleBarSettings = {};
-
-  //default constructor
-  MainWindowSettings(const std::string &title, int width, int height, MainWindowFlags flags = 0,
-                     TitleBarFlags titleBarFlags = 0, const TitleBarSettings titlebarSettings = {}) : width(width), height(height), flags(flags), titleBarFlags(titleBarFlags) {
-  }
-
-  //constructor
-  MainWindowSettings(const std::string &title, int width, int height) : title(title), width(width), height(height) {}
-};
-
-//-----------------------------------------------------------------------------
-// [SECTION] Time
-//-----------------------------------------------------------------------------
-struct Time {
-  float deltaTime = 0.0f;
-  float lastTime = 0.0f;
-  float frameTime = 0.0f;
-};
-
-//-----------------------------------------------------------------------------
-// [SECTION] HBUIContext
-//-----------------------------------------------------------------------------
-struct HBUIDrawData {
-  ImVec2 nextItemPos = ImVec2(0, 0);// Next item position
-};
-
-struct HBUIContext {
+struct HBUpdatable {
   public:
-  //=============================================================================
-  // [SECTION] Getters
-  //=============================================================================
-  MainWindowFlags &
-  windowF() const {
-    return mainWindowSettings->flags;
-  }
-
-  TitleBarSettings &
-  titleBarS() const {
-    return mainWindowSettings->titleBarSettings;
-  }
-
-  TitleBarFlags &
-  titleBarF() const {
-    return mainWindowSettings->titleBarFlags;
-  }
-
-  public:
-  //=============================================================================
-  // [SECTION] Constructors
-  //=============================================================================
-  //Constructor
-  HBUIContext() = default;
-
-  public:
-  //=============================================================================
-  // [SECTION] Settings
-  //=============================================================================
-  //MainWindow
-  MainWindowSettings *mainWindowSettings = nullptr;
-
-  //=============================================================================
-  // [SECTION] Drawing and backend
-  //=============================================================================
-  //Implementation Data
-  void *implementationData = nullptr;
-
-  //ImGui Stuff
-  ImGuiContext *imguiContext = nullptr;
-
-  //Draw Data
-  HBUIDrawData drawData = {};
-
-  public:
-  //=============================================================================
-  // [SECTION] Update
-  //=============================================================================
-  //updatables
-  std::vector<std::shared_ptr<Updatable>> updatables = {};
-
-  //Time
-  Time time = {};
-};
-
-//-----------------------------------------------------------------------------
-// [SECTION] HBUIItem
-//-----------------------------------------------------------------------------
-struct Updatable {
-  public:
-  Updatable() = default;
+      HBUpdatable() = default;
 
   public:
   virtual void update(float deltaTime) = 0;
 };
 
-struct HBUIItem : Updatable {
+struct HBUIItem : HBUpdatable {
   public:
   HBUIItem(){};
 
@@ -236,21 +200,22 @@ struct HBRect : HBUIItem {
   ImVec2 EndPos() const override;
 };
 
+
+
 //-----------------------------------------------------------------------------
 // [SECTION] HBUI
 //-----------------------------------------------------------------------------
-
 namespace HBUI {
-  HBUI_API HBUIContext *
+  HBUI_API HBContext *
   initialize(const std::string &title, int width, int height, MainWindowFlags flags);
 
   HBUI_API void
-  setCurrentContext(HBUIContext *ctx);
+  setCurrentContext(HBContext *ctx);
 
   HBUI_API void
   setCurrentImGuiContext(ImGuiContext *ctx);
 
-  HBUI_API HBUIContext *
+  HBUI_API HBContext *
   getCurrentContext();
 
   HBUI_API void
@@ -294,7 +259,7 @@ namespace HBUI {
                         ImDrawList *drawList);
 
   HBUI_API void
-  addUpdatable(std::shared_ptr<Updatable> updatable);
+  addUpdatable(std::shared_ptr<HBUpdatable> updatable);
 
   //---------------------------------------------------------------------------------
   // [SECTION] Dockspaces

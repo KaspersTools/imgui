@@ -5,17 +5,25 @@
 #include "../headers/Backend.h"
 #include <HBUI/HBUI.h>
 #ifndef g_HBUICTX
-HBUIContext *g_HBUICTX = NULL;
+HBContext *g_HBUICTX = NULL;
 #endif
 
 namespace HBUI {
-  HBUIContext *
+  HBContext *
   initialize(const std::string &title, int width, int height, MainWindowFlags flags) {
     if (g_HBUICTX == NULL) {
-      g_HBUICTX = new HBUIContext();
+      g_HBUICTX = new HBContext();
     }
-    auto *settings = new MainWindowSettings(title, width, height, flags);
-    g_HBUICTX->mainWindowSettings = settings;
+    g_HBUICTX->initialized = true;//fixme delete old context first
+
+    auto io = HBIO{
+            .title = title,
+            .width = width,
+            .height = height,
+            .mainWindowFlags = flags};
+    g_HBUICTX->io = io;
+
+
     if (!initPlatformBackend(g_HBUICTX)) {
       std::cerr << "Failed to initialize platform backend" << std::endl;
     }
@@ -27,11 +35,11 @@ namespace HBUI {
   }
 
   void
-  setCurrentContext(HBUIContext *ctx) {
+  setCurrentContext(HBContext *ctx) {
     g_HBUICTX = ctx;
   }
 
-  HBUIContext *
+  HBContext *
   getCurrentContext() {
     return g_HBUICTX;
   }
@@ -72,14 +80,14 @@ namespace HBUI {
 
   void
   update(float deltatime) {
-    for (auto updatable: g_HBUICTX->updatables) {
-      updatable->update(deltatime);
-    }
+    //    for (auto updatable: g_HBUICTX->updatables) {
+    //      updatable->update(deltatime);
+    //    }
   }
 
   HBUI_API void
-  addUpdatable(std::shared_ptr<Updatable> updatable) {
-    g_HBUICTX->updatables.push_back(updatable);
+  addUpdatable(std::shared_ptr<HBUpdatable> updatable) {
+    //    g_HBUICTX->updatables.push_back(updatable);
   }
 
   /*********************************************
@@ -94,7 +102,7 @@ namespace HBUI {
 
     startRenderBackend();
 
-    if (isFlagSet(&g_HBUICTX->mainWindowSettings->flags, HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE)) {
+    if (isFlagSet(&g_HBUICTX->io.mainWindowFlags, HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE)) {
       beginFullScreenDockspace();
     }
   }
@@ -138,7 +146,7 @@ namespace HBUI {
       * Flags
       * *********************************************/
   HBUI_API void toggleFlag(int flag) {
-    g_HBUICTX->mainWindowSettings->flags ^= flag;
+    g_HBUICTX->io.mainWindowFlags ^= flag;
     setBackendWindowFlags(*g_HBUICTX);
   }
 

@@ -6,7 +6,7 @@
 #include <HBUI/WindowManager.h>
 
 void MainWindow::init() {
-  HBUI::initialize("Hello, World!", 1280, 720, HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE);
+  HBUI::initialize("Hello, World!", 1280, 720, HBUI_MAIN_WINDOW_FLAG_DEFAULT_DOCKSPACE | HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR);
   run();
 }
 

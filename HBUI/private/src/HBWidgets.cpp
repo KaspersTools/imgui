@@ -129,8 +129,8 @@ namespace HBUI {
   HBUI_API void
   beginFullScreenDockspace() {
     const bool maximized = isMaximized();
-    const bool isCustomTitleBar = (HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR & getCurrentContext()->windowF());
-    const bool mainWindowNoTitleBar = (HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR & getCurrentContext()->windowF());
+    const bool isCustomTitleBar     = (HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR & getCurrentContext()->io.mainWindowFlags);
+    const bool mainWindowNoTitleBar = (HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR & getCurrentContext()->io.mainWindowFlags);
 
     beginFullScreenDockspace(maximized, isCustomTitleBar, mainWindowNoTitleBar);
   }
@@ -157,13 +157,13 @@ namespace HBUI {
       ImGui::SetNextWindowViewport(viewport->ID);
     }
 
-    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-                    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
-                    ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+    window_flags |= ImGuiWindowFlags_NoTitleBar   | ImGuiWindowFlags_NoCollapse            | ImGuiWindowFlags_NoResize  |
+                    ImGuiWindowFlags_NoMove       | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus|
+                    ImGuiWindowFlags_NoScrollbar  | ImGuiWindowFlags_NoScrollWithMouse;
 
     window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoBackground;
 
-    ImVec2 WindowPaddingNormal = ImVec2(1.0f, 1.0f);
+    ImVec2 WindowPaddingNormal    = ImVec2(1.0f, 1.0f);
     ImVec2 WindowPaddingMaximized = ImVec2(6.0f, 6.0f);
 
     float windowRounding = 0;
@@ -177,12 +177,14 @@ namespace HBUI {
 
     ImGui::Begin("DockSpaceWindow", nullptr, window_flags);
     ImGui::PopStyleVar(3);
-    ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(50, 50, 50, 255));
 
-    // Draw window border if the window is not maximized
-    renderWindowOuterBorders(ImGui::GetCurrentWindow());
+    if(!isMaximized) {
+      ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(50, 50, 50, 255));
+      // Draw window border if the window is not maximized
+      renderWindowOuterBorders(ImGui::GetCurrentWindow());
+      ImGui::PopStyleColor();// ImGuiCol_Border
+    }
 
-    ImGui::PopStyleColor();// ImGuiCol_Border
     //TODO: Start Title/Side bar here
     // {}
 

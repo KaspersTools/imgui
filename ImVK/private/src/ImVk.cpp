@@ -28,10 +28,10 @@
 
 
 IMVK_IMPL_API bool
-initPlatformBackend(HBUIContext *context, void *errorCallback = nullptr);
+initPlatformBackend(HBContext *context, void *errorCallback = nullptr);
 
 IMVK_IMPL_API bool
-initGraphicsBackend(HBUIContext *context);
+initGraphicsBackend(HBContext *context);
 
 IMVK_IMPL_API void
 startRenderBackend();
@@ -70,7 +70,7 @@ IMVK_IMPL_API void
 shutdownBackend();
 
 IMVK_IMPL_API void
-setBackendWindowFlags(const HBUIContext &ctx);
+setBackendWindowFlags(const HBContext &ctx);
 
 #include <mutex>
 #include <queue>
@@ -463,7 +463,7 @@ static void FramePresent(ImGui_ImplVulkanH_Window *wd) {
  ***********************************/
 //ImVK API
 IMVK_IMPL_API bool
-initPlatformBackend(HBUIContext *context, void *errorCallback) {
+initPlatformBackend(HBContext *context, void *errorCallback) {
   g_ImVKData = new ImVKDATA();
   if (errorCallback != nullptr) {
     g_ImVKData->g_GlfwErrorCallback = (GLFWerrorfun) errorCallback;
@@ -487,13 +487,13 @@ initPlatformBackend(HBUIContext *context, void *errorCallback) {
   glfwGetMonitorPos(primaryMonitor, &monitorX, &monitorY);
 
   glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-  g_ImVKData->window = glfwCreateWindow(context->mainWindowSettings->width, context->mainWindowSettings->height,
-                                        context->mainWindowSettings->title.c_str(),
+  g_ImVKData->window = glfwCreateWindow(context->io.width, context->io.height,
+                                        context->io.title.c_str(),
                                         NULL,
                                         NULL);
   glfwSetWindowPos(g_ImVKData->window,
-                   monitorX + (videoMode->width - context->mainWindowSettings->width) / 2,
-                   monitorY + (videoMode->height - context->mainWindowSettings->height) / 2);
+                   monitorX + (videoMode->width - context->io.width) / 2,
+                   monitorY + (videoMode->height - context->io.height) / 2);
 
 
   glfwShowWindow(g_ImVKData->window);
@@ -503,7 +503,7 @@ initPlatformBackend(HBUIContext *context, void *errorCallback) {
 }
 
 IMVK_IMPL_API bool
-initGraphicsBackend(HBUIContext *context) {
+initGraphicsBackend(HBContext *context) {
   if (!glfwVulkanSupported()) {
     (g_ImVKData->g_GlfwErrorCallback)(900, "GLFW: Vulkan Not Supported");
     return false;
@@ -751,20 +751,22 @@ shutdownBackend() {
 }
 
 IMVK_IMPL_API void
-setBackendWindowFlags(const HBUIContext &ctx) {
-  if (ctx.mainWindowSettings->flags & HBUI_MAIN_WINDOW_FLAG_NO_DECORATION) {
+setBackendWindowFlags(const HBContext &ctx) {
+
+  ImGui::GetStyleVarInfo(ImGuiStyleVar_WindowRounding);
+  if (ctx.io.mainWindowFlags & HBUI_MAIN_WINDOW_FLAG_NO_DECORATION) {
     glfwSetWindowAttrib(g_ImVKData->window, GLFW_DECORATED, GLFW_FALSE);
   } else {
     glfwSetWindowAttrib(g_ImVKData->window, GLFW_DECORATED, GLFW_TRUE);
   }
 
-  if (ctx.mainWindowSettings->flags & HBUI_MAIN_WINDOW_FLAG_NO_RESIZE) {
+  if (ctx.io.mainWindowFlags & HBUI_MAIN_WINDOW_FLAG_NO_RESIZE) {
     glfwSetWindowAttrib(g_ImVKData->window, GLFW_RESIZABLE, GLFW_FALSE);
   } else {
     glfwSetWindowAttrib(g_ImVKData->window, GLFW_RESIZABLE, GLFW_TRUE);
   }
 
-  if (ctx.mainWindowSettings->flags & HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR) {
+  if (ctx.io.mainWindowFlags & HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR) {
     glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_FALSE);
   } else {
     glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_TRUE);

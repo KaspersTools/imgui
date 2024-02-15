@@ -40,7 +40,7 @@ namespace HBUI {
     //ImGui::PushItemWidth(-ImGui::GetWindowWidth() * 0.35f);
     // e.g. Leave a fixed amount of width for labels (by passing a negative value), the rest goes to widgets.
     ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
-    HBUIContext *ctx = HBUI::getCurrentContext();
+    HBContext *ctx = HBUI::getCurrentContext();
 
     if (ImGui::TreeNode("Backend Flags")) {
       HelpMarker(
@@ -58,7 +58,7 @@ namespace HBUI {
       };
 
       for(auto &flag : flagsMap){
-        bool flagSet = HBUI::isFlagSet(&ctx->windowF(), flag.second);
+        bool flagSet = HBUI::isFlagSet(&ctx->io.mainWindowFlags, flag.second);
 
         if(ImGui::Checkbox(flag.first.c_str(), &flagSet)){
           HBUI::toggleFlag(flag.second);

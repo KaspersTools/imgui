@@ -7,7 +7,7 @@
 
 #include <imgui.h>
 
-struct HBUIContext;
+struct HBContext;
 
 //-----------------------------------------------------------------------------
 // [SECTION] ImVK
@@ -18,10 +18,10 @@ struct HBUIContext;
 #endif
 
 IMVK_IMPL_API bool
-initPlatformBackend(HBUIContext *context, void *errorCallback = nullptr);
+initPlatformBackend(HBContext *context, void *errorCallback = nullptr);
 
 IMVK_IMPL_API bool
-initGraphicsBackend(HBUIContext *context);
+initGraphicsBackend(HBContext *context);
 
 IMVK_IMPL_API void
 startRenderBackend();
@@ -60,6 +60,6 @@ IMVK_IMPL_API void
 shutdownBackend();
 
 IMVK_IMPL_API void
-setBackendWindowFlags(const HBUIContext &ctx);
+setBackendWindowFlags(const HBContext &ctx);
 
 #endif//HBUI_BACKEND_H
