@@ -8,31 +8,35 @@
 #include <HBUI/HBUI.h>
 
 class MainWindow {
-  public:
-  MainWindow() {
-    init();
-  }
-  ~MainWindow() {
-    shutdown();
-  }
-  bool run();
+public:
+		MainWindow() {
+			init();
+		}
 
-  private:
-  void init();
-  void createMainMenuBars();
-  void createDockSpace();
-  void render();
-  void shutdown();
+		~MainWindow() {
+			shutdown();
+		}
 
-  private:
-    bool   showDebugWindow    = true;
-    bool   showDemoWindow     = true;
-  private:
-      bool withMenuBar        = true;
-      bool horizontalMenuBar  = false;
-      bool verticalMenuBar    = true;
+		bool run();
 
-      bool withDockSpace      = true;
+private:
+		void init();
+
+		void createMainMenuBars();
+
+		void createDockSpace();
+
+		void render();
+
+		void shutdown();
+
+private:
+		bool showDebugWindow   = true;
+		bool showDemoWindow    = true;
+		bool withMenuBar       = true;
+		bool horizontalMenuBar = false;
+		bool verticalMenuBar   = true;
+		bool withDockSpace     = true;
 };
 
 

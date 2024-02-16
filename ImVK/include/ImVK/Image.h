@@ -9,54 +9,61 @@
 
 namespace ImVK {
 
-  enum class ImageFormat {
-    None = 0,
-    RGBA,
-    RGBA32F
-  };
+		enum class ImageFormat {
+				None = 0,
+				RGBA,
+				RGBA32F
+		};
 
-  class Image {
-public:
-    Image() = default;
-    Image(std::string_view path);
-    Image(uint32_t width, uint32_t height, ImageFormat format, const void *data = nullptr);
-    ~Image();
+		class Image {
+		public:
+				Image() = default;
 
-    bool LoadImageFromPath();
-    bool LoadImageFromPath(std::string filePath);
-    void SetData(const void *data);
+				Image(std::string_view path);
 
-    VkDescriptorSet GetDescriptorSet() const { return m_DescriptorSet; }
+				Image(uint32_t width, uint32_t height, ImageFormat format, const void *data = nullptr);
 
-    void Zoom(float zoom);
+				~Image();
 
-    void Resize(uint32_t width, uint32_t height);
+				bool LoadImageFromPath();
 
-    uint32_t GetWidth() const { return m_Width; }
-    uint32_t GetHeight() const { return m_Height; }
+				bool LoadImageFromPath(std::string filePath);
+
+				void SetData(const void *data);
+
+				VkDescriptorSet GetDescriptorSet() const { return m_DescriptorSet; }
+
+				void Zoom(float zoom);
+
+				void Resize(uint32_t width, uint32_t height);
+
+				uint32_t GetWidth() const { return m_Width; }
+
+				uint32_t GetHeight() const { return m_Height; }
 
 
-private:
-    void AllocateMemory();
-    void Release();
+		private:
+				void AllocateMemory();
 
-private:
-    uint32_t m_Width = 32, m_Height = 32;
+				void Release();
 
-    VkImage m_Image = nullptr;
-    VkImageView m_ImageView = nullptr;
-    VkDeviceMemory m_Memory = nullptr;
-    VkSampler m_Sampler = nullptr;
+		private:
+				uint32_t m_Width = 32, m_Height = 32;
 
-    ImageFormat m_Format = ImageFormat::None;
+				VkImage        m_Image     = nullptr;
+				VkImageView    m_ImageView = nullptr;
+				VkDeviceMemory m_Memory    = nullptr;
+				VkSampler      m_Sampler   = nullptr;
 
-    VkBuffer m_StagingBuffer = nullptr;
-    VkDeviceMemory m_StagingBufferMemory = nullptr;
+				ImageFormat m_Format = ImageFormat::None;
 
-    size_t m_AlignedSize = 0;
+				VkBuffer       m_StagingBuffer       = nullptr;
+				VkDeviceMemory m_StagingBufferMemory = nullptr;
 
-    VkDescriptorSet m_DescriptorSet = nullptr;
+				size_t m_AlignedSize = 0;
 
-    std::string m_Filepath;
-  };
+				VkDescriptorSet m_DescriptorSet = nullptr;
+
+				std::string m_Filepath;
+		};
 }// namespace ImVK

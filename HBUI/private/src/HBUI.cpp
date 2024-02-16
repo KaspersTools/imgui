@@ -211,4 +211,5 @@ namespace HBUI {
   HBUI_API bool isFlagSet(int *flags, int flag) {
     return (*flags & flag) == flag;
   }
+
 }// namespace HBUI

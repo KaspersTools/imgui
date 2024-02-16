@@ -5,6 +5,7 @@
 #include "HBUI/HBUI.h"
 #include <iostream>
 #include <map>
+#include <iomanip>
 
 namespace HBUI {
   struct debugData{
@@ -80,7 +81,7 @@ namespace HBUI {
     ImGui::Text("also dear imgui says hello ;)! (%s) (%d)", IMGUI_VERSION, IMGUI_VERSION_NUM);
     ImGui::Spacing();
 
-    if(ImGui::CollapsingHeader("Debug Draw Data")){
+    if (ImGui::CollapsingHeader("Debug Draw Data")){
       drawDebugDrawDataNode();
     }
     if (ImGui::CollapsingHeader("Backend Flags")) {
@@ -121,14 +122,23 @@ namespace HBUI {
           ImGui::DragFloat2("mainMenuItem  ---Size------------------------- | ", (float *) &style.mainMenuItemSize);
           ImGui::DragFloat2("mainMenuItems ---Padding---------------------- | ", (float *) &style.mainMenuItemsPadding);
           ImGui::DragFloat2("mainMenuItems ---Spacing---------------------- | ", (float *) &style.mainMenuItemsSpacing);
+
+          if(ImGui::Button("Reset Style")){
+            style = HBStyle();
+          }
+
+          ImGui::SameLine();
+          if(ImGui::Button("Print Style"))
+          {
+            getStyle().logToTTY();
+          }
+
           ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem("ImGuiStyle")) {
           ImGui::ShowStyleEditor();
           ImGui::EndTabItem();
         }
-
-
         ImGui::EndTabBar();
       }
     }
@@ -140,5 +150,29 @@ namespace HBUI {
     }
 
     ImGui::End();
+  }
+
+
+  HBUI_API void printVec2(const ImVec2 &vec2, const std::string &name){
+    // Set the width for the first column
+    int width = 70;
+
+    std::string type = "ImVec2";
+    ImVec2      val  = vec2;
+
+    ImGui::LogText("%s %s = {%.2ff, %.2ff};" IM_NEWLINE, type.c_str(), name.c_str(), val.x, val.y);
+
+    std::cout << std::left << std::setw(width) << "ImVec2 mainMenuBarVerticalFirstItemOffset" << " = {" << val.x << ", " << val.y << "}\n";
+    std::cout << std::setw(width) << "ImVec2 mainMenuBarHorizontalFirstItemOffset" << " = {" << val.x << ", " << val.y << "}\n";
+    std::cout << std::setw(width) << "ImVec2 mainMenuItemSize" << " = {" << val.x << ", " << val.y << "}\n";
+    std::cout << std::setw(width) << "ImVec2 mainMenuItemsPadding" << " = {" << val.x << ", " << val.y << "}\n";
+    std::cout << std::setw(width) << "ImVec2 mainMenuItemsSpacing" << " = {" << val.x << ", " << val.y << "}\n";
+
+  }
+
+  HBUI_API void printVec4(const ImVec4 &vec4, const std::string &name){
+    std::string type = "ImVec4";
+    ImVec4      val  = vec4;
+    ImGui::LogText("%s %s = {%.2ff, %.2ff, %.2ff, %.2ff};" IM_NEWLINE, type.c_str(), name.c_str(), val.x, val.y, val.z, val.w);
   }
 }// namespace HBUI
