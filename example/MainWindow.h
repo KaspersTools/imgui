@@ -37,6 +37,10 @@ private:
 		bool horizontalMenuBar = false;
 		bool verticalMenuBar   = true;
 		bool withDockSpace     = true;
+
+
+		float horizontalMenuBarFixedHeight =0;
+		float verticalMenuBarFixedWidth =0;
 };
 
 

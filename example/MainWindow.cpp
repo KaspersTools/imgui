@@ -17,30 +17,34 @@ bool MainWindow::run() {
 	return true;
 }
 
-void renderMenuBar(HBMainMenuBarFlags_ flags) {
-	if (HBUI::beginMainMenuBar(flags | HB_MAIN_MENU_BAR_FLAG_USE_HBUI_STYLE)) {
-		if (HBUI::mainMenuBarItem("test", ImVec2(40, 40))) {}
-		if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
-		if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
-		if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
-		if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
-		if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
-		if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
-		if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
-		if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
-		if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
-		if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
-		if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
+void renderMenuBar(MainMenuBarFlags flags, float width, float height) {
+	if (HBUI::beginMainMenuBar(flags, {width, height})) {
+		if (HBUI::mainMenuBarItem("test2")) {}
+		if (HBUI::mainMenuBarItem("test1")) {}
+		if (HBUI::mainMenuBarItem("test1")) {}
+		if (HBUI::mainMenuBarItem("test1")) {}
+		if (HBUI::mainMenuBarItem("test1")) {}
+		if (HBUI::mainMenuBarItem("test1")) {}
+		if (HBUI::mainMenuBarItem("test1")) {}
+		if (HBUI::mainMenuBarItem("test1")) {}
+		if (HBUI::mainMenuBarItem("test1")) {}
+		if (HBUI::mainMenuBarItem("test1")) {}
+		if (HBUI::mainMenuBarItem("test1")) {}
+		if (HBUI::mainMenuBarItem("test1")) {}
 		HBUI::endMainMenuBar();
 	}
 }
 
 void MainWindow::createMainMenuBars() {
 	if (verticalMenuBar) {
-		renderMenuBar(HB_MAIN_MENU_BAR_FLAG_VERTICAL);
+		renderMenuBar(HB_MAIN_MENU_BAR_FLAG_VERTICAL, verticalMenuBarFixedWidth, 0.0f);
 	}
 	if (horizontalMenuBar) {
-		renderMenuBar(HB_MAIN_MENU_BAR_FLAG_HORIZONTAL);
+//		renderMenuBar(, 0.0f, horizontalMenuBarFixedHeight);
+		if (HBUI::beginMainMenuBar(HB_MAIN_MENU_BAR_FLAG_HORIZONTAL | HB_MAIN_MENU_BAR_FLAG_NO_CALCULATE_SIZE, {0, horizontalMenuBarFixedHeight})) {
+
+			HBUI::endMainMenuBar();
+		}
 	}
 }
 
@@ -59,8 +63,8 @@ void MainWindow::render() {
 	ImGui::ShowDemoWindow(&showDemoWindow);
 
 	ImGui::Begin("HBUI Demo Window                          ");
-
-	ImGui::Text("HBUI -- (%f) -- and dear imgui says hello! (%s) (%d) ", HBUI_VERSION, IMGUI_VERSION, IMGUI_VERSION_NUM);
+	ImGui::Text("HBUI -- (%f) -- and dear imgui says hello! (%s) (%d) ", HBUI_VERSION, IMGUI_VERSION,
+				IMGUI_VERSION_NUM);
 	ImGui::Spacing();
 	if (ImGui::CollapsingHeader("Help")) {
 		ImGui::SeparatorText("ABOUT THIS DEMO:");
@@ -78,16 +82,21 @@ void MainWindow::render() {
 				"The code for the ImVk library is located in the ImVK folder. This handles the backend (for now only Vulkan in combination with glfw   <---- IMVK IS HERE!!!");
 	}
 	if (ImGui::CollapsingHeader("Example Options")) {
-		ImGui::SeparatorText("Windows             ");
-		ImGui::Checkbox("Show Debug Window    |   ", &showDebugWindow);
-		ImGui::Checkbox("Show Demo Window     |   ", &showDemoWindow);
-		ImGui::Checkbox("With Dock Space      |   ", &withDockSpace);
+		ImGui::SeparatorText("Windows");
+		ImGui::Checkbox("Show Debug Window     |   ", &showDebugWindow);
+		ImGui::Checkbox("Show Demo Window      |   ", &showDemoWindow);
+		ImGui::Checkbox("With Dock Space       |   ", &withDockSpace);
+		ImGui::Separator();
 
-		ImGui::Checkbox("With Menu  Bar        |   ", &withMenuBar);
-		ImGui::Checkbox("Vertical   Menu Bar   |  ", &verticalMenuBar);
+		ImGui::SeparatorText("Menu Bars");
+
+		ImGui::Checkbox("With Menu  Bar          |   ", &withMenuBar);
+		ImGui::Checkbox("Vertical   Menu Bar     |   ", &verticalMenuBar);
+		ImGui::DragFloat("Vertical Menu Bar Width |   ", &verticalMenuBarFixedWidth, 1.0f, 0.0f, 1000.0f);
+		ImGui::Separator();
 		ImGui::Checkbox("Horizontal Menu Bar   |   ", &horizontalMenuBar);
+		ImGui::DragFloat("Horizontal Menu Bar Height", &horizontalMenuBarFixedHeight, 1.0f, 0.0f, 1000.0f);
 	}
-
 	ImGui::End();
 
 

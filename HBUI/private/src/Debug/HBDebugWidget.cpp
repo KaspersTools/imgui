@@ -40,29 +40,32 @@ namespace HBUI {
     ImGui::Text("DockspaceFlags: %d", drawData.dockspaceFlags);
     ImGui::Text("currentAppendingMenuBar: %p", drawData.currentAppendingMenuBar.get());
 
-    ImGui::SeparatorText("Horizontal MainMenuBar");
-    ImGui::Text("mainMenuBarHorizontal: %p", drawData.mainMenuBarHorizontal.get());
-    if( ctx.drawData->mainMenuBarHorizontal.get() != nullptr && ctx.drawData->mainMenuBarHorizontal.get()->items.size() > 0) {
-
-      for (auto &child: ctx.drawData->mainMenuBarHorizontal.get()->items) {
-        ImGui::SeparatorText("Child");
-        ImGui::Text("child: %p", child.get());
-        ImGui::Text("child->start: %f, %f", child->pos.x, child->pos.y);
-        ImGui::Text("child->size: %f, %f", child->size.x, child->size.y);
-      }
-    }
-
     ImGui::SeparatorText("Vertical MainMenuBar");
     ImGui::Text("mainMenuBarVertical: %p", drawData.mainMenuBarVertical.get());
-    if( ctx.drawData->mainMenuBarVertical.get() != nullptr && ctx.drawData->mainMenuBarVertical.get()->items.size() > 0) {
+	ImGui::DragFloat("   ---Height----------------------- | ", (float *) &drawData.mainMenuBarVertical.get()->height);
+	ImGui::DragFloat("   ---Width------------------------ | ", (float *) &drawData.mainMenuBarVertical.get()->width);
+	ImGui::Separator();
+//	ImGui::ColorEdit4("   ---Color------------------------ | ", (float *) &drawData.mainMenuBarVertical.get()->color);
+//	ImGui::ColorEdit4("   ---ItemColor-------------------- | ", (float *) &drawData.mainMenuBarVertical.get()->itemColor);
+//	ImGui::DragFloat2("   ---Size------------------------- | ", (float *) &drawData.mainMenuBarVertical.get()->size);
+//	ImGui::DragFloat2("   ---Padding---------------------- | ", (float *) &drawData.mainMenuBarVertical.get()->padding);
+//	ImGui::DragFloat2("   ---Spacing---------------------- | ", (float *) &drawData.mainMenuBarVertical.get()->spacing);
+//    if( ctx.drawData->mainMenuBarVertical.get() != nullptr && ctx.drawData->mainMenuBarVertical.get()->items.size() > 0) {
+//
+//      for (auto &child: ctx.drawData->mainMenuBarVertical.get()->items) {
+//        ImGui::SeparatorText("Child");
+//        ImGui::Text("child: %p", child.get());
+//        ImGui::Text("child->start: %f, %f", child->pos.x, child->pos.y);
+//        ImGui::Text("child->size: %f, %f", child->size.x, child->size.y);
+//      }
+//    }
 
-      for (auto &child: ctx.drawData->mainMenuBarVertical.get()->items) {
-        ImGui::SeparatorText("Child");
-        ImGui::Text("child: %p", child.get());
-        ImGui::Text("child->start: %f, %f", child->pos.x, child->pos.y);
-        ImGui::Text("child->size: %f, %f", child->size.x, child->size.y);
-      }
-    }
+	ImGui::SeparatorText("Horizontal MainMenuBar");
+	ImGui::Text("mainMenuBarHorizontal: %p", drawData.mainMenuBarHorizontal.get());
+	ImGui::DragFloat("   ---Height----------------------- | ", (float *) &drawData.mainMenuBarHorizontal.get()->height);
+	ImGui::DragFloat("   ---Width------------------------ | ", (float *) &drawData.mainMenuBarHorizontal.get()->width);
+	ImGui::Separator();
+
 
     ImGui::Text("savedScreenPos: %f, %f", drawData.savedScreenPos.x, drawData.savedScreenPos.y);
   }
@@ -117,7 +120,10 @@ namespace HBUI {
           ImGui::DragFloat2("mainMenuBar   ---VerticalFirstItemOffset----   | ", (float *) &style.mainMenuBarVerticalFirstItemOffset);
           ImGui::DragFloat2("mainMenuBar   ---HorizontalFirstItemOffset---  | ", (float *) &style.mainMenuBarHorizontalFirstItemOffset);
           ImGui::ColorEdit4("mainMenuBar   ---Color------------------------ | ", (float *) &style.menuBarColor        );
+		  ImGui::Checkbox  ("mainMenuBar   ---UseMenuBarColor-------------  | ", (bool *) &style.useHBUIStyleMenuBarColor);
+
           ImGui::ColorEdit4("mainMenuBar   ---ItemColor-------------------- | ", (float *) &style.mainMenuBarItemColor);
+		  ImGui::Checkbox  ("mainMenuBar   ---UseItemColor----------------- | ", (bool *) &style.useHBUIStyleMainMenuItemColor);
 
           ImGui::DragFloat2("mainMenuItem  ---Size------------------------- | ", (float *) &style.mainMenuItemSize);
           ImGui::DragFloat2("mainMenuItems ---Padding---------------------- | ", (float *) &style.mainMenuItemsPadding);
