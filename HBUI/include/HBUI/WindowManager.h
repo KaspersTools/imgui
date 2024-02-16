@@ -8,22 +8,22 @@
 #include <HBUI/UIWindow.h>
 
 namespace HummingBirdCore::UI {
-		class WindowManager {
-		public:
-				WindowManager() = default;
+  class WindowManager {
+public:
+    WindowManager() = default;
 
-				~WindowManager() = default;
+    ~WindowManager() = default;
 
-				void addWindow(const std::string &name, const int addition, std::shared_ptr<UIWindow> uiWindow);
+    void addWindow(const std::string &name, const int addition, std::shared_ptr<UIWindow> uiWindow);
 
-				void render();
+    void render();
 
-				static WindowManager *getInstance();
+    static WindowManager *getInstance();
 
-				static void setInstance(WindowManager *instance);
+    static void setInstance(WindowManager *instance);
 
-		private:
-				// UIWindows
-				std::map<std::string, std::shared_ptr<UIWindow>> m_windows;
-		};
+private:
+    // UIWindows
+    std::map<std::string, std::shared_ptr<UIWindow>> m_windows;
+  };
 }// namespace HummingBirdCore::UI
