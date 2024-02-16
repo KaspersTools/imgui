@@ -29,8 +29,8 @@ class MainWindow {
     bool   showDemoWindow     = true;
   private:
       bool withMenuBar        = true;
-      bool horizontalMenuBar  = true;
-      bool verticalMenuBar    = false;
+      bool horizontalMenuBar  = false;
+      bool verticalMenuBar    = true;
 
       bool withDockSpace      = true;
 };

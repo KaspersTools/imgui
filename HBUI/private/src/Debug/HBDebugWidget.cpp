@@ -41,11 +41,6 @@ namespace HBUI {
 
     ImGui::SeparatorText("Horizontal MainMenuBar");
     ImGui::Text("mainMenuBarHorizontal: %p", drawData.mainMenuBarHorizontal.get());
-//    ImGui::Text("main menu bar calculated width: %f", drawData.mainMenuBarHorizontal.get()->mainMenuBarCalculatedWidth);
-//    ImGui::Text("main menu bar calculated height: %f", drawData.mainMenuBarHorizontal.get()->mainMenuBarCalculatedHeight);
-//    ImGui::Text("main menu bar item count : %d", drawData.mainMenuBarHorizontal.get()->items.size());
-//    ImGui::Text("main menu bar biggest item x : %f", drawData.mainMenuBarHorizontal.get()->biggestItemSize.x);
-//    ImGui::Text("main menu bar biggest item y: %f", drawData.mainMenuBarHorizontal.get()->biggestItemSize.y);
     if( ctx.drawData->mainMenuBarHorizontal.get() != nullptr && ctx.drawData->mainMenuBarHorizontal.get()->items.size() > 0) {
 
       for (auto &child: ctx.drawData->mainMenuBarHorizontal.get()->items) {
@@ -56,7 +51,17 @@ namespace HBUI {
       }
     }
 
+    ImGui::SeparatorText("Vertical MainMenuBar");
+    ImGui::Text("mainMenuBarVertical: %p", drawData.mainMenuBarVertical.get());
+    if( ctx.drawData->mainMenuBarVertical.get() != nullptr && ctx.drawData->mainMenuBarVertical.get()->items.size() > 0) {
 
+      for (auto &child: ctx.drawData->mainMenuBarVertical.get()->items) {
+        ImGui::SeparatorText("Child");
+        ImGui::Text("child: %p", child.get());
+        ImGui::Text("child->start: %f, %f", child->pos.x, child->pos.y);
+        ImGui::Text("child->size: %f, %f", child->size.x, child->size.y);
+      }
+    }
 
     ImGui::Text("savedScreenPos: %f, %f", drawData.savedScreenPos.x, drawData.savedScreenPos.y);
   }

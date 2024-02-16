@@ -37,6 +37,7 @@ void renderMenuBar(HBMainMenuBarFlags_ flags) {
 
 void MainWindow::createMainMenuBars() {
   if (verticalMenuBar) {
+    renderMenuBar(HB_MAIN_MENU_BAR_FLAG_VERTICAL);
   }
   if (horizontalMenuBar) {
     renderMenuBar(HB_MAIN_MENU_BAR_FLAG_HORIZONTAL);

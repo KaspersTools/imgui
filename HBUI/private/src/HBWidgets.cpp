@@ -119,20 +119,22 @@ bool HBMainMenuBar::draw(ImDrawList *drawList, ImColor color = ImColor(-1,-1,-1,
     HBRect::end = ImVec2(endX, endY);
 
     if(drawData->mainMenuBarVertical != nullptr){
-      HBRect::start.x +=width;
+      HBRect::start.x += drawData->mainMenuBarVertical->width;
     }
     //create a small overlap on the left side of the horizontal menu-bar
     HBRect::start.x -= 1;
     HBRect::end.x   += 1;
   }
-//  else if (bar.isVertical()) {
-//    HBRect::end = ImVec2(viewport->Pos.x + width,
-//                         viewport->Pos.y + viewport->Size.y);
-//
-//    if(drawData->mainMenuBarHorizontal != nullptr){
-//      HBRect::start.y += height;
-//    }
-//  }
+  else if(bar.isVertical()){
+    float endY = HBRect::start.y + HBUI::getWindowSize().y;
+    float endX = start.x         + width + 2;
+
+    HBRect::end = ImVec2(endX, endY);
+
+    if(drawData->mainMenuBarHorizontal != nullptr){
+      HBRect::start.x += drawData->mainMenuBarHorizontal->width;
+    }
+  }
 
   ImGui::SetNextItemAllowOverlap();
 
@@ -149,9 +151,14 @@ bool HBMainMenuBar::draw(ImDrawList *drawList, ImColor color = ImColor(-1,-1,-1,
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding,     windowRounding   );
 
   bool p_Open = false;
+
   if(bar.isHorizontal()) {
     p_Open = ImGui::Begin("###HBUIMainMenuBar_HORIZONTAL", nullptr, window_flags);
   }
+  else if(bar.isVertical()){
+    p_Open = ImGui::Begin("###HBUIMainMenuBar_VERTICAL", nullptr, window_flags);
+  }
+
   ImGui::PopStyleVar(3);
 
   if (!p_Open) {
@@ -172,39 +179,65 @@ bool HBMainMenuBar::draw(ImDrawList *drawList, ImColor color = ImColor(-1,-1,-1,
   if(bar.isHorizontal()) {
     HBUI::appendToCursor(ImVec2(0, height), {0,0},false);
   }
+  else if(bar.isVertical()){
+    HBUI::appendToCursor(ImVec2(width, 0), {0,0},false);
+  }
   return p_Open;
 }
 void HBMainMenuBar::update(float deltaTime) {
 }
 void HBMainMenuBar::append(std::shared_ptr<HBMenuItem> item) {
-  items.push_back(item);
-  ImVec2 spacing             = item->getSpacing();
+  const ImVec2 spacing              = item->getSpacing();
+  const HBStyle& style              = HBUI::getStyle();
 
   if (isHorizontal()) {
     ImVec2 start  = nextItemPos;
     start.x      += spacing.x; //spacing.left;
     start.y       = spacing.y; //spacing.top;
 
-    item->pos     = start;
+    item->pos     = start + style.mainMenuBarHorizontalFirstItemOffset;
 
     nextItemPos.x = start.x + item->size.x;// + spacing.right;
     nextItemPos.y = start.y;
 
-    ImVec2 totalItemSize = ImVec2(start.x + item->size.x + spacing.x ,// spacing.left + spacing.right,
-                                  start.y + item->size.y + spacing.y );// spacing.top  + spacing.bottom);
+    ImVec2 totalItemSize = ImVec2(item->pos.x + item->size.x + spacing.x ,// spacing.left + spacing.right,
+                                  item->pos.y + item->size.y + spacing.y );// spacing.top  + spacing.bottom);
 
-    if(totalItemSize.y > lowest){
-      lowest = totalItemSize.y;
+    if(totalItemSize.y > height){
+      height = totalItemSize.y;
+    }
+  }else if(isVertical()){
+    ImVec2 start  = nextItemPos;
+    start.x       = spacing.x; //spacing.left;
+    start.y      += spacing.y; //spacing.top;
+
+    item->pos     = start + style.mainMenuBarVerticalFirstItemOffset;
+
+    nextItemPos.x = start.x;
+    nextItemPos.y = start.y + item->size.y;// + spacing.bottom;
+
+    ImVec2 totalItemSize = ImVec2(item->pos.x + item->size.x + spacing.x ,// spacing.left + spacing.right,
+                                  item->pos.y + item->size.y + spacing.y );// spacing.top  + spacing.bottom);
+
+    if(totalItemSize.x > width){
+      width = totalItemSize.x;
     }
   }
+
+  items.push_back(item);
 }
 
 bool    HBMainMenuBar::isHorizontal()     const{
   return flags & HB_MAIN_MENU_BAR_FLAG_HORIZONTAL;
 };
+bool    HBMainMenuBar::isVertical()       const{
+  return flags & HB_MAIN_MENU_BAR_FLAG_VERTICAL;
+}
+
 bool    HBMainMenuBar::useCustomStyle()   const{
   return flags & HB_MAIN_MENU_BAR_FLAG_USE_HBUI_STYLE;
 }
+
 ImColor HBMainMenuBar::getColor()         const{
   if(useCustomStyle()){
     return HBUI::getStyle().menuBarColor;
@@ -236,7 +269,7 @@ bool      HBMenuItem::draw(ImDrawList *drawList, ImColor color, bool drawFilled)
 void      HBMenuItem::update(float deltaTime) {
 }
 
-ImVec2   HBMenuItem::getSpacing() const {
+ImVec2    HBMenuItem::getSpacing() const {
   auto   style      =   HBUI::getStyle();
   auto   imguiStyle =   ImGui::GetStyle();
   ImVec2 spacing    =   {0,0};
@@ -339,24 +372,30 @@ namespace HBUI {
 
     return true;
 
-  }// create and append to a full screen menu-bar.
+  }// create and append to a full screen menu-bar
+
   IMGUI_API void
   endMainMenuBar() {
     HBContext *ctx = HBUI::getCurrentContext();
     auto currentMenuBar = ctx->drawData->currentAppendingMenuBar;
     IM_ASSERT(currentMenuBar != nullptr && "No menu-bar is currently active, did you forgot to call beginMainMenuBar() before calling endMainMenuBar().");
 
-    currentMenuBar->height = currentMenuBar->lowest;
+    //draw the back ground rect
     currentMenuBar->draw(nullptr);
 
     const HBMainMenuBar& bar              = *ctx->drawData->currentAppendingMenuBar;
     const HBStyle& style                  = HBUI::getStyle();
+
+    //draw the menu items
     for(auto &child : ctx->drawData->currentAppendingMenuBar->items){
       if(bar.isHorizontal()) {
-        child->pos.x += bar.start.x + style.mainMenuBarHorizontalFirstItemOffset.x;
-        child->pos.y += bar.start.y + style.mainMenuBarHorizontalFirstItemOffset.y;
-        child->draw(nullptr, ImColor(255,0,0,255), true);
+        child->pos.x += bar.start.x;
+        child->pos.y += bar.start.y;
+      }else if(bar.isVertical()){
+        child->pos.x += bar.start.x;
+        child->pos.y += bar.start.y;
       }
+      child->draw(nullptr, ImColor(255,0,0,255), true);
     }
 
     ctx->drawData->currentAppendingMenuBar = nullptr;
@@ -380,6 +419,7 @@ namespace HBUI {
 
     return true;
   }
+
   IMGUI_API bool
   mainMenuBarItem(const std::string &id, float radius) {
     IM_ASSERT(id != "" && "Menu item id cannot be empty!");

@@ -218,6 +218,7 @@ struct HBMainMenuBar : HBRect {
   void append(std::shared_ptr<HBMenuItem> item);
 
   bool    isHorizontal     ()   const;
+  bool    isVertical       ()   const;
   bool    useCustomStyle   ()   const;
   ImColor getColor         ()   const;
 
@@ -231,8 +232,6 @@ struct HBMainMenuBar : HBRect {
   //items
   std::vector<std::shared_ptr<HBMenuItem>>       items        =   {};
   ImVec2                                         nextItemPos  =   {};
-
-  float                                           lowest      =   10;
 };
 
 
