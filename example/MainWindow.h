@@ -30,8 +30,7 @@ class MainWindow {
   private:
       bool withMenuBar        = true;
       bool horizontalMenuBar  = true;
-      bool verticalMenuBar    = true;
-      bool firstHorizontal    = false;
+      bool verticalMenuBar    = false;
 
       bool withDockSpace      = true;
 };

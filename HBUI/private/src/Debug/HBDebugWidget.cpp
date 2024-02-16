@@ -29,17 +29,35 @@ namespace HBUI {
           "ctx.mainWindowSettings.MainWindowFlags:   No Move                       ",
   };
 
-  void drawDebugDrawDataNode(){
-    const HBContext& ctx = *HBUI::getCurrentContext();
-    const HBDrawData& drawData = *ctx.drawData;
+  void drawDebugDrawDataNode() {
+    const HBContext &ctx = *HBUI::getCurrentContext();
+    const HBDrawData &drawData = *ctx.drawData;
 
     ImGui::Text("DrawData");
     ImGui::Spacing();
 
     ImGui::Text("DockspaceFlags: %d", drawData.dockspaceFlags);
     ImGui::Text("currentAppendingMenuBar: %p", drawData.currentAppendingMenuBar.get());
+
+    ImGui::SeparatorText("Horizontal MainMenuBar");
     ImGui::Text("mainMenuBarHorizontal: %p", drawData.mainMenuBarHorizontal.get());
-    ImGui::Text("mainMenuBarVertical: %p", drawData.mainMenuBarVertical.get());
+//    ImGui::Text("main menu bar calculated width: %f", drawData.mainMenuBarHorizontal.get()->mainMenuBarCalculatedWidth);
+//    ImGui::Text("main menu bar calculated height: %f", drawData.mainMenuBarHorizontal.get()->mainMenuBarCalculatedHeight);
+//    ImGui::Text("main menu bar item count : %d", drawData.mainMenuBarHorizontal.get()->items.size());
+//    ImGui::Text("main menu bar biggest item x : %f", drawData.mainMenuBarHorizontal.get()->biggestItemSize.x);
+//    ImGui::Text("main menu bar biggest item y: %f", drawData.mainMenuBarHorizontal.get()->biggestItemSize.y);
+    if( ctx.drawData->mainMenuBarHorizontal.get() != nullptr && ctx.drawData->mainMenuBarHorizontal.get()->items.size() > 0) {
+
+      for (auto &child: ctx.drawData->mainMenuBarHorizontal.get()->items) {
+        ImGui::SeparatorText("Child");
+        ImGui::Text("child: %p", child.get());
+        ImGui::Text("child->start: %f, %f", child->pos.x, child->pos.y);
+        ImGui::Text("child->size: %f, %f", child->size.x, child->size.y);
+      }
+    }
+
+
+
     ImGui::Text("savedScreenPos: %f, %f", drawData.savedScreenPos.x, drawData.savedScreenPos.y);
   }
 
@@ -57,11 +75,10 @@ namespace HBUI {
     ImGui::Text("also dear imgui says hello ;)! (%s) (%d)", IMGUI_VERSION, IMGUI_VERSION_NUM);
     ImGui::Spacing();
 
-    if(ImGui::TreeNode("Debug Draw Data")){
+    if(ImGui::CollapsingHeader("Debug Draw Data")){
       drawDebugDrawDataNode();
-      ImGui::TreePop();
     }
-    if (ImGui::TreeNode("Backend Flags")) {
+    if (ImGui::CollapsingHeader("Backend Flags")) {
       HelpMarker(
               "These flags are used by the backends (ImVK) to specify their capabilities.\n");
 
@@ -82,33 +99,25 @@ namespace HBUI {
           HBUI::toggleFlag(flag.second);
         }
       }
-
-      ImGui::TreePop();
       ImGui::Spacing();
     }
-    if (ImGui::TreeNode("Style"))         {
+    if (ImGui::CollapsingHeader("Style"))         {
       ImGui::Text("Style");
       ImGui::Spacing();
-
       HBStyle &style = getStyle();
 
       if (ImGui::BeginTabBar("StyleTabBar")) {
+        if (ImGui::BeginTabItem("HBUIStyle")) {
+          ImGui::DragFloat2("mainMenuBar   ---VerticalFirstItemOffset----   | ", (float *) &style.mainMenuBarVerticalFirstItemOffset);
+          ImGui::DragFloat2("mainMenuBar   ---HorizontalFirstItemOffset---  | ", (float *) &style.mainMenuBarHorizontalFirstItemOffset);
+          ImGui::ColorEdit4("mainMenuBar   ---Color------------------------ | ", (float *) &style.menuBarColor        );
+          ImGui::ColorEdit4("mainMenuBar   ---ItemColor-------------------- | ", (float *) &style.mainMenuBarItemColor);
 
-        if (ImGui::BeginTabItem("HBUII sizes")) {
-          ImGui::SliderFloat("verticalMainMenuBarWidth             | //The width of the vertical mainmenubar                                                                              ", &style.mainMenuVerticalWidth,    0, 200);
-          ImGui::SliderFloat("horizontalMainMenuBarHeight          | //The height of the horizontal mainmenubar                                                                           ", &style.mainMenuHorizontalHeight, 0, 200);
-          ImGui::EndTabItem();
-         }
-
-        if (ImGui::BeginTabItem("Colors")){
-          ImGui::ColorEdit4("WindowBg                              | //By default the menubarbg of imgui is used. if you want you can overwite the main menu bar color with this stlye    ", (float *) &style.menuBarColor);
-          ImGui::SameLine();
-          if (ImGui::Button("reset")) {
-            style.menuBarColor = ImVec4(-1, -1, -1, 255);
-          }
+          ImGui::DragFloat2("mainMenuItem  ---Size------------------------- | ", (float *) &style.mainMenuItemSize);
+          ImGui::DragFloat2("mainMenuItems ---Padding---------------------- | ", (float *) &style.mainMenuItemsPadding);
+          ImGui::DragFloat2("mainMenuItems ---Spacing---------------------- | ", (float *) &style.mainMenuItemsSpacing);
           ImGui::EndTabItem();
         }
-
         if (ImGui::BeginTabItem("ImGuiStyle")) {
           ImGui::ShowStyleEditor();
           ImGui::EndTabItem();
@@ -117,10 +126,14 @@ namespace HBUI {
 
         ImGui::EndTabBar();
       }
-
-
-      ImGui::TreePop();
     }
+
+    if(ImGui::CollapsingHeader("Degubg Info")){
+      ImGui::SeparatorText("ABOUT THIS DEMO:");
+      ImGui::BulletText("This HBUI Debug Window is a simple example of how to use HBUI.");
+      ImGui::BulletText("All the UI elements are available and shown in this window.");
+    }
+
     ImGui::End();
   }
 }// namespace HBUI

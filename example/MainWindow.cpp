@@ -18,25 +18,28 @@ bool MainWindow::run() {
 }
 
 void renderMenuBar(HBMainMenuBarFlags_ flags) {
-  if (HBUI::beginMainMenuBar(flags)) {
+  if (HBUI::beginMainMenuBar(flags | HB_MAIN_MENU_BAR_FLAG_USE_HBUI_STYLE)) {
+    if (HBUI::mainMenuBarItem("test",  ImVec2(40, 40)))  {}
+    if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
+    if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
+    if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
+    if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
+    if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
+    if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
+    if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
+    if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
+    if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
+    if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
+    if (HBUI::mainMenuBarItem("test1", ImVec2(40, 40))) {}
     HBUI::endMainMenuBar();
   }
 }
+
 void MainWindow::createMainMenuBars() {
-  if (firstHorizontal) {
-    if (horizontalMenuBar) {
-      renderMenuBar(HB_MAIN_MENU_BAR_FLAG_HORIZONTAL);
-      if (verticalMenuBar) {
-        renderMenuBar(HB_MAIN_MENU_BAR_FLAG_VERTICAL);
-      }
-    }
-  } else {
-    if (verticalMenuBar) {
-      renderMenuBar(HB_MAIN_MENU_BAR_FLAG_VERTICAL);
-    }
-    if (horizontalMenuBar) {
-      renderMenuBar(HB_MAIN_MENU_BAR_FLAG_HORIZONTAL);
-    }
+  if (verticalMenuBar) {
+  }
+  if (horizontalMenuBar) {
+    renderMenuBar(HB_MAIN_MENU_BAR_FLAG_HORIZONTAL);
   }
 }
 void MainWindow::createDockSpace() {
@@ -71,27 +74,12 @@ void MainWindow::render() {
   if (ImGui::CollapsingHeader("Example Options")) {
     ImGui::SeparatorText("Windows             ");
     ImGui::Checkbox("Show Debug Window    |   ", &showDebugWindow);
-    ImGui::SameLine();
     ImGui::Checkbox("Show Demo Window     |   ", &showDemoWindow);
-    ImGui::SeparatorText("Docking             ");
     ImGui::Checkbox("With Dock Space      |   ", &withDockSpace);
-    ImGui::SameLine();
-    ImGui::Text("Renderered At: f , f ");//HBUI::getDrawData().
-    ImGui::SeparatorText("Menu Bars           ");
-    ImGui::Checkbox("With Menu Bar        |   ", &withMenuBar);
-    ImGui::Checkbox("Vertical Menu Bar    |   ", &verticalMenuBar);
-    if (HBUI::getDrawData().mainMenuBarVertical != nullptr) {
-      ImGui::SameLine();
-      ImGui::Text("Renderered At: %f , %f", HBUI::getDrawData().mainMenuBarVertical->start.x, HBUI::getDrawData().mainMenuBarVertical->end.y);
-    }
-    ImGui::Checkbox("Horizontal Menu Bar  |   ", &horizontalMenuBar);
-    if (HBUI::getDrawData().mainMenuBarHorizontal != nullptr) {
-      ImGui::SameLine();
-      ImGui::Text("Renderered At: %f , %f", HBUI::getDrawData().mainMenuBarHorizontal->start.x, HBUI::getDrawData().mainMenuBarHorizontal->end.y);
-    }
-    ImGui::Checkbox("Horizontal First     |   ", &firstHorizontal);
-    ImGui::SameLine();
-    ImGui::Text("Render the horizontal before the vertical one so you can check the allignment");
+
+    ImGui::Checkbox("With Menu  Bar        |   ", &withMenuBar);
+    ImGui::Checkbox("Vertical   Menu Bar   |  ", &verticalMenuBar);
+    ImGui::Checkbox("Horizontal Menu Bar   |   ", &horizontalMenuBar);
   }
 
   ImGui::End();

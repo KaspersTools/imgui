@@ -49,53 +49,31 @@ void renderWindowOuterBorders(ImGuiWindow *window) {
   };
 }
 
-/**
- *
- * ******************
- * HBUIItem
- * ******************
- *
- */
-//-----------------------------------------------------------------------------
-// [SECTION] HBUIItem
-//-----------------------------------------------------------------------------
-
 //-----------------------------------------------------------------------------
 // [SECTION] Rect
 //-----------------------------------------------------------------------------
-bool HBRect::draw(ImDrawList *drawList) {
-  drawList->AddRectFilled(start, end, Color);
+bool HBRect::draw(ImDrawList *drawList, ImColor color, bool drawFilled){
+  drawList->AddRectFilled(start, end, color);
 }
 void HBRect::update(float deltaTime) {
 }
 
 //-----------------------------------------------------------------------------
-// [SECTION] MenuItem
-//-----------------------------------------------------------------------------
-bool HBMenuItem::draw(ImDrawList *drawList) {
-}
-void HBMenuItem::update(float deltaTime) {
-}
-
-
-//-----------------------------------------------------------------------------
 // [SECTION] MenuBar
 //-----------------------------------------------------------------------------
-bool HBMainMenuBar::draw(ImDrawList *drawList) {
+bool HBMainMenuBar::draw(ImDrawList *drawList, ImColor color = ImColor(-1,-1,-1,-1), bool drawFilled = false){
+  if(color.Value == ImColor(-1,-1,-1,-1)) {
+    color = getColor();//
+  }
   bool maximized = false;
 
-  auto imguiStyle = ImGui::GetStyle();
-
-  auto ctx      = HBUI::getCurrentContext();
-  auto hbStyle  = HBUI::getCurrentContext()->style;
-  auto drawData = HBUI::getCurrentContext()->drawData;
-  auto viewport = (ImGuiViewportP *) (void *) ImGui::GetMainViewport();
-
-  bool horizontal = (drawData->currentAppendingMenuBar == drawData->mainMenuBarHorizontal);
-  bool vertical = (drawData->currentAppendingMenuBar == drawData->mainMenuBarVertical);
-
-  ctx->drawData->savedScreenPos = ImGui::GetStyle().WindowMinSize;
-  imguiStyle.WindowMinSize = {0, 0};
+  auto imguiStyle                 = ImGui::GetStyle();
+  auto ctx                        = HBUI::getCurrentContext();
+  auto drawData                   = HBUI::getCurrentContext()->drawData;
+  auto viewport                   = (ImGuiViewportP *) (void *) ImGui::GetMainViewport();
+  const HBMainMenuBar& bar        = *drawData->currentAppendingMenuBar;
+//  ctx->drawData->savedScreenPos = imguiStyle.WindowMinSize; //fixme: disabled for now, because it breaks the main menu bar
+//  imguiStyle.WindowMinSize = ImVec2(1, 1);                  //fixme: disabled for now, because it breaks the main menu bar
 
   ImGui::SetCurrentViewport(NULL, viewport);
   ImGuiWindowFlags window_flags =   ImGuiWindowFlags_NoResize
@@ -108,36 +86,59 @@ bool HBMainMenuBar::draw(ImDrawList *drawList) {
                                   | ImGuiWindowFlags_NoBringToFrontOnFocus
                                   | ImGuiWindowFlags_NoNavFocus
                                   | ImGuiWindowFlags_NoBackground
-                                  ;
+          ;
+
   HBRect::start = HBUI::getViewportPos();
 
-  if (horizontal) {
-    float endY = HBRect::start.y + hbStyle.mainMenuHorizontalHeight;
+  //      main menu bars are drawn like this
+  //-----------------------------------------------
+  //--------first called horizontal----------------
+  //-----------------------------------------------
+  //|||||||||||||xoxoxoxoxoxoooxooxoxoxoxoooxooxoxo
+  //|second |||||xooxoxox    MAIN      xoooxooxoxox
+  //|call |||||||xooxoxox    MAIN      xoooxooxoxox
+  //|vertical |||xooxoxox   CONTENT    xoooxooxoxox
+  //|||||||||||||xoxoxoxoxoooxooxoxoxoxoooxooxoxoxo
+  //|||||||||||||xoxoxoxoxoooxooxoxoxoxoooxooxoxoxo
+  //|||||||||||||xoxoxoxoxoooxooxoxoxoxoooxooxoxoxo
+
+  //|||||||||||||----------------------------------
+  //|||||||||||||-----second called horizontal-----
+  //|||||||||||||----------------------------------
+  //|first ||||||xooxoxoxoxoooxooxoxoxoxoooxooxoxox
+  //|call |||||||xooxoxox    MAIN      xoooxooxoxox
+  //|vertical |||xooxoxox   CONTENT    xoooxooxoxox
+  //|||||||||||||xooxoxoxoxoooxooxoxoxoxoooxooxoxox
+  //|||||||||||||xooxoxoxoxoooxooxoxoxoxoooxooxoxox
+  //|||||||||||||xooxoxoxoxoooxooxoxoxoxoooxooxoxox
+
+  if (bar.isHorizontal()) {
+    float endY = HBRect::start.y + height;
     float endX = start.x         + HBUI::getWindowSize().x;
 
     HBRect::end = ImVec2(endX, endY);
 
     if(drawData->mainMenuBarVertical != nullptr){
-      HBRect::start.x += hbStyle.mainMenuVerticalWidth;
+      HBRect::start.x +=width;
     }
-
     //create a small overlap on the left side of the horizontal menu-bar
     HBRect::start.x -= 1;
     HBRect::end.x   += 1;
   }
-  else if (vertical) {
-    HBRect::end = ImVec2(viewport->Pos.x + hbStyle.mainMenuVerticalWidth,
-                         viewport->Pos.y + viewport->Size.y);
+//  else if (bar.isVertical()) {
+//    HBRect::end = ImVec2(viewport->Pos.x + width,
+//                         viewport->Pos.y + viewport->Size.y);
+//
+//    if(drawData->mainMenuBarHorizontal != nullptr){
+//      HBRect::start.y += height;
+//    }
+//  }
 
-    if(drawData->mainMenuBarHorizontal != nullptr){
-      HBRect::start.y += hbStyle.mainMenuHorizontalHeight;
-    }
-  }
   ImGui::SetNextItemAllowOverlap();
+
   ImGui::SetNextWindowPos     (HBRect::start ,    ImGuiCond_Always);
   ImGui::SetNextWindowSize    (HBRect::Size(),    ImGuiCond_Always);
   ImGui::SetNextWindowViewport(ImGui::GetMainViewport()->ID);
-
 
   ImVec2 windowPadding       = ImVec2(0.0f, 0.0f);
   float windowRounding       = 0.0f;
@@ -148,10 +149,8 @@ bool HBMainMenuBar::draw(ImDrawList *drawList) {
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding,     windowRounding   );
 
   bool p_Open = false;
-  if(horizontal) {
+  if(bar.isHorizontal()) {
     p_Open = ImGui::Begin("###HBUIMainMenuBar_HORIZONTAL", nullptr, window_flags);
-  }else if(vertical){
-    p_Open = ImGui::Begin("###HBUIMainMenuBar_VERTICAL",   nullptr, window_flags);
   }
   ImGui::PopStyleVar(3);
 
@@ -167,19 +166,93 @@ bool HBMainMenuBar::draw(ImDrawList *drawList) {
   if (drawList == nullptr) {
     drawList = ImGui::GetWindowDrawList();
   }
-  HBRect::draw(drawList);
 
-  if(horizontal) {
-    HBUI::appendToCursor(ImVec2(0, hbStyle.mainMenuHorizontalHeight), false);
-  }else if(vertical){
-    HBUI::appendToCursor(ImVec2(hbStyle.mainMenuVerticalWidth, 0), false);
+  HBRect::draw(drawList, color, true);
+
+  if(bar.isHorizontal()) {
+    HBUI::appendToCursor(ImVec2(0, height), {0,0},false);
   }
-
   return p_Open;
 }
 void HBMainMenuBar::update(float deltaTime) {
 }
+void HBMainMenuBar::append(std::shared_ptr<HBMenuItem> item) {
+  items.push_back(item);
+  ImVec2 spacing             = item->getSpacing();
 
+  if (isHorizontal()) {
+    ImVec2 start  = nextItemPos;
+    start.x      += spacing.x; //spacing.left;
+    start.y       = spacing.y; //spacing.top;
+
+    item->pos     = start;
+
+    nextItemPos.x = start.x + item->size.x;// + spacing.right;
+    nextItemPos.y = start.y;
+
+    ImVec2 totalItemSize = ImVec2(start.x + item->size.x + spacing.x ,// spacing.left + spacing.right,
+                                  start.y + item->size.y + spacing.y );// spacing.top  + spacing.bottom);
+
+    if(totalItemSize.y > lowest){
+      lowest = totalItemSize.y;
+    }
+  }
+}
+
+bool    HBMainMenuBar::isHorizontal()     const{
+  return flags & HB_MAIN_MENU_BAR_FLAG_HORIZONTAL;
+};
+bool    HBMainMenuBar::useCustomStyle()   const{
+  return flags & HB_MAIN_MENU_BAR_FLAG_USE_HBUI_STYLE;
+}
+ImColor HBMainMenuBar::getColor()         const{
+  if(useCustomStyle()){
+    return HBUI::getStyle().menuBarColor;
+  }
+
+  return ImGui::GetStyle().Colors[ImGuiCol_MenuBarBg];
+}
+
+
+//-----------------------------------------------------------------------------
+// [SECTION] MenuItem
+//-----------------------------------------------------------------------------
+bool      HBMenuItem::draw(ImDrawList *drawList, ImColor color, bool drawFilled) {
+  if(color.Value == ImColor(-1,-1,-1,-1)) {
+    ImColor(255,0,0,255);
+  }
+  if (drawList == nullptr) {
+      drawList = ImGui::GetWindowDrawList();
+  }
+
+  if (drawFilled) {
+      drawList->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), color);
+  } else {
+      drawList->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y), color);
+  }
+  return true;
+
+}
+void      HBMenuItem::update(float deltaTime) {
+}
+
+ImVec2   HBMenuItem::getSpacing() const {
+  auto   style      =   HBUI::getStyle();
+  auto   imguiStyle =   ImGui::GetStyle();
+  ImVec2 spacing    =   {0,0};
+
+  if(this->spacing.x == -1 && this->spacing.y == -1) {
+    auto curMenuBar = HBUI::getCurrentContext()->drawData->currentAppendingMenuBar;
+    if (curMenuBar != nullptr && curMenuBar->useCustomStyle()) {
+      spacing = style.mainMenuItemsSpacing;
+    }else{
+      spacing = imguiStyle.ItemSpacing;
+    }
+    return spacing;
+  }else{
+    return this->spacing;
+  }
+}
 
 namespace HBUI {
   /**
@@ -196,14 +269,13 @@ namespace HBUI {
     const bool hasMenuBar             = (HB_DOCKSPACE_FLAG_MENUBAR & flags);
     return beginFullScreenDockspace(maximized, mainWindowNoTitleBar, hasMenuBar);
   }
+
   HBUI_API bool
   beginFullScreenDockspace(const bool isMaximized, const bool mainWindowNoTitleBar, const bool hasMenuBar) {
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
     ImGuiViewport *viewport       = ImGui::GetMainViewport();
 
     ImGuiStyle &style     = ImGui::GetStyle();
-    float minWinSizeX     = style.WindowMinSize.x;
-    style.WindowMinSize.x = 370.0f;
     auto drawData         = HBUI::getCurrentContext()->drawData;
 
     ImGui::SetNextWindowPos     (getCursorViewportPos());
@@ -237,9 +309,8 @@ namespace HBUI {
 
     ImGui::DockSpace(ImGui::GetID("MyDockspace"), ImVec2(0.0f, 0.0f));
     ImGui::End();
-
-    style.WindowMinSize.x = minWinSizeX;
   }
+
   /**
  *
  * ******************
@@ -249,57 +320,70 @@ namespace HBUI {
  */
   HBUI_API bool
   beginMainMenuBar(MainMenuBarFlags flags) {
-
     HBContext *ctx = HBUI::getCurrentContext();
+    IM_ASSERT(ctx->drawData->currentAppendingMenuBar == nullptr && "A menu-bar is already active! Please call EndMainMenuBar() before starting a new one.");
 
-    const bool horizontal = (HB_MAIN_MENU_BAR_FLAG_HORIZONTAL & flags) ||
-                            (HB_MAIN_MENU_BAR_FLAG_NONE       & flags);
-
-    const bool vertical   = (HB_MAIN_MENU_BAR_FLAG_VERTICAL   & flags);
-
+    const bool horizontal     = (HB_MAIN_MENU_BAR_FLAG_HORIZONTAL & flags) ||
+                                (HB_MAIN_MENU_BAR_FLAG_NONE       & flags);
+    const bool vertical       = (HB_MAIN_MENU_BAR_FLAG_VERTICAL   & flags);
     IM_ASSERT(!(vertical && horizontal) && "Cannot create a menu-bar with both horizontal and vertical flags! Create two separate menu-bars instead.");
 
-    ImColor col = ctx->style.menuBarColor;
-    if (col.Value == ImColor(-1, -1, -1, 255))
-      col = ImGui::GetStyle().Colors[ImGuiCol_MenuBarBg];
-
     if (horizontal) {
-      ctx->drawData->mainMenuBarHorizontal    = std::make_shared<HBMainMenuBar>(flags, col);
+      ctx->drawData->mainMenuBarHorizontal    = std::make_shared<HBMainMenuBar>(flags);
       ctx->drawData->currentAppendingMenuBar  = ctx->drawData->mainMenuBarHorizontal;
     }
-    if (vertical) {
-      ctx->drawData->mainMenuBarVertical      = std::make_shared<HBMainMenuBar>(flags, col);
+    else if(vertical){
+      ctx->drawData->mainMenuBarVertical      = std::make_shared<HBMainMenuBar>(flags);
       ctx->drawData->currentAppendingMenuBar  = ctx->drawData->mainMenuBarVertical;
     }
+
     return true;
 
   }// create and append to a full screen menu-bar.
-
   IMGUI_API void
   endMainMenuBar() {
     HBContext *ctx = HBUI::getCurrentContext();
-    ctx->drawData->currentAppendingMenuBar->draw(nullptr);
+    auto currentMenuBar = ctx->drawData->currentAppendingMenuBar;
+    IM_ASSERT(currentMenuBar != nullptr && "No menu-bar is currently active, did you forgot to call beginMainMenuBar() before calling endMainMenuBar().");
+
+    currentMenuBar->height = currentMenuBar->lowest;
+    currentMenuBar->draw(nullptr);
+
+    const HBMainMenuBar& bar              = *ctx->drawData->currentAppendingMenuBar;
+    const HBStyle& style                  = HBUI::getStyle();
+    for(auto &child : ctx->drawData->currentAppendingMenuBar->items){
+      if(bar.isHorizontal()) {
+        child->pos.x += bar.start.x + style.mainMenuBarHorizontalFirstItemOffset.x;
+        child->pos.y += bar.start.y + style.mainMenuBarHorizontalFirstItemOffset.y;
+        child->draw(nullptr, ImColor(255,0,0,255), true);
+      }
+    }
+
     ctx->drawData->currentAppendingMenuBar = nullptr;
-
-    ImGui::GetStyle().WindowMinSize = ctx->drawData->savedScreenPos;
-
+//    ImGui::GetStyle().WindowMinSize = ctx->drawData->savedScreenPos; //fixme: disabled for now, because it breaks the main menu bar
     ImGui::End();
-  }// only call EndMainMenuBar() if BeginMainMenuBar() returns true!
+  }
 
   //menu items
   IMGUI_API bool
-  beginMainMenuItem(const std::string &id, HBDrawType type, ImVec2 size) {
-    if (type == Normal) { type = Square; }
-    if (size == ImVec2(0, 0)) {}
+  mainMenuBarItem(const std::string &id, ImVec2 size){
+    IM_ASSERT(id != "" && "Menu item id cannot be empty!");
+    auto currentMenuBar = HBUI::getDrawData().currentAppendingMenuBar;
+    IM_ASSERT(currentMenuBar != nullptr && "No menu-bar is currently active!");
 
+    if (size == ImVec2(0, 0)) {
+      size = HBUI::getStyle().mainMenuItemSize;
+    }
+
+    std::shared_ptr<HBMenuItem> menuItem = std::make_shared<HBMenuItem>(id, Square, size);
+    currentMenuBar->append(menuItem);
+
+    return true;
+  }
+  IMGUI_API bool
+  mainMenuBarItem(const std::string &id, float radius) {
     IM_ASSERT(id != "" && "Menu item id cannot be empty!");
 
     return true;
   }
-
-
-  IMGUI_API void
-  EndMainMenuItem() {
-  }
-
 }// namespace HBUI

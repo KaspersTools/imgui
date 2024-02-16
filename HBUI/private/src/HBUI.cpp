@@ -64,11 +64,10 @@ namespace HBUI {
   }
 
   HBUI_API ImVec2
-  appendToCursor(const ImVec2 &size, const bool addSpacing){
+  appendToCursor(const ImVec2 &size, const ImVec2 &spacing, bool addSpacing) {
     if(addSpacing){
-      HBPadding spacing = getStyle().getItemSpacing();
-      getDrawData().cursorPos.x += spacing.left + spacing.right;
-      getDrawData().cursorPos.y += spacing.left + spacing.right;
+      getDrawData().cursorPos.x += spacing.x;
+      getDrawData().cursorPos.y += spacing.y;
     }
 
     ImVec2 cursor = getDrawData().cursorPos;

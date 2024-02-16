@@ -33,192 +33,49 @@ struct HBDrawData;
 struct HBUIItem;
 struct HBCircle;
 struct HBRect;
-
 struct HBUpdatable;
-
-//-----------------------------------------------------------------------------
-// [SECTION] Drawables
-//-----------------------------------------------------------------------------
-enum HBDrawType_ {
-  Normal = 0,
-  Circle = 1,
-  Square = 2
-};
-
-struct HBUpdatable {
-  public:
-  HBUpdatable() {
-  };
-
-  public:
-  virtual void update(float deltaTime) = 0;
-};
-
-struct HBUIItem   : HBUpdatable {
-  public:
-  HBUIItem(const ImColor color) :
-                                      Color(color){
-  };
-  ~HBUIItem() {
-  };
-
-  //ID
-  std::string ID = "kasper123";
-
-  //Color
-  ImColor Color   = {};
-
-  //Children
-  std::vector<std::shared_ptr<HBUIItem>> Children = {};
-
-  public:
-  virtual bool draw(ImDrawList *drawList)                 = 0;
-//  void update(float deltaTime)                          override;
-};
-
-struct HBRect     : HBUIItem {
-  HBRect(const ImColor color) :
-                                HBUIItem(color){
-  }
-  ~HBRect(){
-  }
-
-  //Position
-  ImVec2 start = {};
-  ImVec2 end   = {};
-
-  bool  draw(ImDrawList *drawList) override;
-  void  update(float deltaTime)    override;
-
-  ImVec2 StartPos()                 const {
-    return start;
-  }
-
-  ImVec2 EndPos()                   const {
-    return end;
-  }
-
-  ImVec2 Size()                     const {
-    return ImVec2(end.x - start.x, end.y - start.y);
-  }
-};
-
-
-//-----------------------------------------------------------------------------
-// [SECTION] Main menubar
-//-----------------------------------------------------------------------------
-enum HBMainMenuBarFlags_ {
-  HB_MAIN_MENU_BAR_FLAG_NONE        = 0     ,
-  HB_MAIN_MENU_BAR_FLAG_HORIZONTAL  = 1 << 0,
-  HB_MAIN_MENU_BAR_FLAG_VERTICAL    = 1 << 1,
-};
-
-struct HBMenuItem : HBUIItem{
-  public:
-  HBMenuItem(const std::string& label, const HBDrawType drawType, const ImColor color)
-      : HBUIItem(color){
-    name = label;
-    this->drawType = drawType;
-  };
-  ~HBMenuItem(){};
-
-  public:
-  std::string name          =         "";
-  ImVec2      size          =         {};
-
-  HBUIItem*   itemToDraw    =         {};
-  HBDrawType  drawType      =         HBDrawType_::Normal;
-
-  public:
-  bool    draw(ImDrawList *drawList)                override;
-  void    update(float deltaTime)                   override;
-};
-
-struct HBMainMenuBar : HBRect {
-  HBMainMenuBar (MainMenuBarFlags flags, const ImColor color = ImColor(-1,-1,-1,-1)) :
-                                                                flags(flags), HBRect(color){
-
-  }
-  ~HBMainMenuBar(){};
-
-  MainMenuBarFlags                               flags   =   0;
-  std::vector<std::shared_ptr<HBMenuItem>>       items   =   {};
-
-  bool draw(ImDrawList *drawList)                         override;
-  void update(float deltaTime)                            override;
-};
-
-
-//-----------------------------------------------------------------------------
-// [SECTION] Draw Data
-//-----------------------------------------------------------------------------
-struct HBDrawData {
-  DockspaceFlags                          dockspaceFlags            =   0   ; //the flags for the dockspace
-  ImVec2                                  dockspaceSize             =   {}  ; //the size of the dockspace
-  ImVec2                                  dockspacePos              =   {}  ; //the position of the dockspace
-
-  std::shared_ptr<HBMainMenuBar>          currentAppendingMenuBar   =   NULL; //the current appending main menu bar
-  std::shared_ptr<HBMainMenuBar>          mainMenuBarHorizontal     =   NULL; //the horizontal main menu bar
-  std::shared_ptr<HBMainMenuBar>          mainMenuBarVertical       =   NULL; //the vertical main menu bar
-
-  ImVec2 cursorPos                                                  =   ImVec2(-1,-1); //used to determine where for example the dockspace should startr
-  ImVec2 savedScreenPos                                             =   ImVec2(-1,-1); //used to determine where for example the dockspace should startr
-};
-
-//-----------------------------------------------------------------------------
-// [SECTION] Time
-//-----------------------------------------------------------------------------
-struct HBTime {
-  float deltaTime = 0.0f;
-  float lastTime  = 0.0f;
-  float frameTime = 0.0f;
-};
 
 //-----------------------------------------------------------------------------
 // [SECTION] Flags & Enumerations
 //-----------------------------------------------------------------------------
-struct HBPadding {
-  float top     = 0;
-  float right   = 0;
-  float bottom  = 0;
-  float left    = 0;
+//struct HBPadding {
+//  float top     = 0;
+//  float right   = 0;
+//  float bottom  = 0;
+//  float left    = 0;
+//
+//  HBPadding(float top, float right, float bottom, float left) : top(top), right(right), bottom(bottom), left(left) {}
+//
+//  HBPadding(float vertical, float horizontal)
+//      : top(vertical), right(horizontal), bottom(vertical), left(horizontal) {}
+//
+//  HBPadding(float all)
+//      : top(all), right(all), bottom(all), left(all) {}
+//
+//  HBPadding() = default;
+//};
 
-  HBPadding(float top, float right, float bottom, float left) : top(top), right(right), bottom(bottom), left(left) {}
-
-  HBPadding(float vertical, float horizontal)
-      : top(vertical), right(horizontal), bottom(vertical), left(horizontal) {}
-
-  HBPadding(float all)
-      : top(all), right(all), bottom(all), left(all) {}
-
-  HBPadding() = default;
-};
 
 struct HBStyle {
   //Colors
-  ImColor menuBarColor                  = ImColor(-1, -1, -1, 255);
+  ImColor menuBarColor                  = ImColor(163, 255, 0, 255);
 
   //Sizes
     //menus
-      //vertical
-      float       mainMenuVerticalWidth                 = 70; //The width of the vertical mainmenubar                         will be saved in draw data later and be will be determined by the items in the menubar
-      ImVec2      mainMenuBarVerticalFirstItemOffset    = {}; //Extra position for the first item in the vertical mainmenubar
+      //vertical  menubar
+        ImVec2      mainMenuBarVerticalFirstItemOffset    = {0,0}; //Extra offset for the first item in the vertical mainmenubar
 
-      //horizontal
-      float       mainMenuHorizontalHeight              = 35; //The height of the horizontal mainmenubar                      will be saved in draw data later and be will be determined by the items in the menubar
-      ImVec2      mainMenuBarHorizontalFirstItemOffset  = {}; //Extra position for the first item in the vertical mainmenubar
+      //horizontal menubar
+        ImVec2      mainMenuBarHorizontalFirstItemOffset  = {0,0}; //Extra offset for the first item in the vertical mainmenubar
 
-      //shared
-      HBPadding   mainMenuItemsPadding                  = {-1}; //The padding for the mainmenu items (top, right, bottom, left). If not set use imgui frame padding
-      HBPadding   mainMenuItemsSpacing                  = {-1}; //The spacing for the mainmenu items (top, right, bottom, left). If not set the imgui frame spacing
-      HBPadding   getItemSpacing() const{
-        if(mainMenuItemsSpacing.top == -1){
-          auto imSpac = ImGui::GetStyle().ItemSpacing / 2;
-          return HBPadding(imSpac.y, imSpac.x);
-        }else{
-          return mainMenuItemsSpacing;
-        }
-      }
+    //shared
+      //items
+      ImVec2      mainMenuItemSize                          = {32, 32}; //The size of the mainmenu items (width, height) \\ for circles x is used for the radius and y is ignored
+      ImColor     mainMenuBarItemColor                      = ImColor(255,0,266,255);
+
+      ImVec2      mainMenuItemsPadding                      = {0, 0}; //The padding for the mainmenu items (top, right, bottom, left). If not set use imgui frame padding
+      ImVec2      mainMenuItemsSpacing                      = {5, 9}; //The spacing for the mainmenu items (top, right, bottom, left). If not set the imgui frame spacing
+
 };
 
 //-----------------------------------------------------------------------------
@@ -250,6 +107,158 @@ struct HBIO {
   int height = 720;
 
   MainWindowFlags mainWindowFlags = HBUI_MAIN_WINDOW_FLAG_NONE;
+};
+
+//-----------------------------------------------------------------------------
+// [SECTION] Drawables
+//-----------------------------------------------------------------------------
+enum HBDrawType_ {
+  Square = 0,
+  Circle = 1,
+};
+
+struct HBUpdatable {
+  public:
+  HBUpdatable() {
+  };
+
+  public:
+  virtual void update(float deltaTime) = 0;
+};
+
+struct HBUIItem   : HBUpdatable {
+  public:
+  HBUIItem(){
+  };
+
+  ~HBUIItem() {
+  };
+
+  //ID
+  std::string ID = "kasper123";
+
+  public:
+    virtual bool draw(ImDrawList *drawList, ImColor color, bool drawFilled)  = 0;
+//  void update(float deltaTime)                          override;
+};
+
+struct HBRect     : HBUIItem {
+  HBRect() : HBUIItem() {
+  }
+
+  ~HBRect(){
+  }
+
+  //Position
+  ImVec2 start = {};
+  ImVec2 end   = {};
+
+  bool  draw(ImDrawList *drawList, ImColor color, bool drawFilled) override;
+
+  void  update(float deltaTime)    override;
+
+  ImVec2 StartPos()                 const {
+    return start;
+  }
+
+  ImVec2 EndPos()                   const {
+    return end;
+  }
+
+  ImVec2 Size()                     const {
+    return ImVec2(end.x - start.x, end.y - start.y);
+  }
+};
+
+
+//-----------------------------------------------------------------------------
+// [SECTION] Main menubar
+//-----------------------------------------------------------------------------
+enum HBMainMenuBarFlags_ {
+  HB_MAIN_MENU_BAR_FLAG_NONE              = 0     ,
+  HB_MAIN_MENU_BAR_FLAG_HORIZONTAL        = 1 << 0,
+  HB_MAIN_MENU_BAR_FLAG_VERTICAL          = 1 << 1,
+  HB_MAIN_MENU_BAR_FLAG_USE_HBUI_STYLE    = 1 << 2
+};
+
+struct HBMenuItem : HBUIItem{
+  public:
+  HBMenuItem(const std::string& label, const HBDrawType drawType, const ImVec2 size)
+      : HBUIItem(){
+    this->name     = label;
+    this->size     = size;
+    this->drawType = drawType;
+  };
+  ~HBMenuItem(){
+
+  };
+
+  public:
+  std::string name          =         "";
+  ImVec2      size          =         {};
+  ImVec2      pos           =         {};
+  HBDrawType  drawType      =         Square;
+  ImVec2      spacing       =         {-1,-1};
+  ImVec2      getSpacing()  const;
+
+  public:
+  bool    draw(ImDrawList *drawList, ImColor color, bool drawFilled) override;
+  void    update(float deltaTime)                   override;
+};
+
+struct HBMainMenuBar : HBRect {
+  HBMainMenuBar (MainMenuBarFlags flags) :
+                                                                flags(flags), HBRect(){
+
+  }
+  ~HBMainMenuBar(){};
+
+  bool draw(ImDrawList *drawList, ImColor color, bool drawFilled) override;
+  void update(float deltaTime)                            override;
+  void append(std::shared_ptr<HBMenuItem> item);
+
+  bool    isHorizontal     ()   const;
+  bool    useCustomStyle   ()   const;
+  ImColor getColor         ()   const;
+
+  //flags
+  MainMenuBarFlags                               flags        =   0;
+
+  //properties
+  float                                          height       =   50; //The height of the main menu bar. This is calculated based on the items. If This Is An Horizontal Bar Use The Height to offset to set the pos for the next window
+  float                                          width        =   50; //The width of the main menu bar.  This is calculated based on the items. If This Is An Vertical Bar Use The Width to offset to set the pos for the next window
+
+  //items
+  std::vector<std::shared_ptr<HBMenuItem>>       items        =   {};
+  ImVec2                                         nextItemPos  =   {};
+
+  float                                           lowest      =   10;
+};
+
+
+//-----------------------------------------------------------------------------
+// [SECTION] Draw Data
+//-----------------------------------------------------------------------------
+struct HBDrawData {
+  DockspaceFlags                          dockspaceFlags            =   0   ; //the flags for the dockspace
+  ImVec2                                  dockspaceSize             =   {}  ; //the size of the dockspace
+  ImVec2                                  dockspacePos              =   {}  ; //the position of the dockspace
+
+  std::shared_ptr<HBMainMenuBar>          currentAppendingMenuBar   =   NULL; //the current appending main menu bar
+  std::shared_ptr<HBMainMenuBar>          mainMenuBarHorizontal     =   NULL; //the horizontal main menu bar
+  std::shared_ptr<HBMainMenuBar>          mainMenuBarVertical       =   NULL; //the vertical main menu bar
+
+  ImVec2 cursorPos                                                  =   ImVec2(-1,-1); //used to determine where for example the dockspace should startr
+  ImVec2 savedScreenPos                                             =   ImVec2(-1,-1); //used to determine where for example the dockspace should startr
+};
+
+//-----------------------------------------------------------------------------
+// [SECTION] Time
+//-----------------------------------------------------------------------------
+struct HBTime {
+  float deltaTime = 0.0f;
+  float lastTime  = 0.0f;
+  float frameTime = 0.0f;
 };
 
 //-----------------------------------------------------------------------------
@@ -296,7 +305,7 @@ namespace HBUI {
 
   //---------------------------------------------------------------------------------
   HBUI_API ImVec2
-  appendToCursor(const ImVec2 &size, const bool addSpacing = true);
+  appendToCursor(const ImVec2 &size, const ImVec2 &spacing, bool addSpacing);
 
   HBUI_API ImVec2
   getCursorViewportPos();
@@ -400,16 +409,22 @@ namespace HBUI {
   endMainMenuBar();//
 
   /*
-   * @param id    - the id of the menu item
-   * @param type  - the type of the menu item,  if the type is not set the default type (imgui main menu bar button) will be used
-   * @param size  - if the size is not set the default size will be used
-   * @return true if the menu item is active
+   * @brief create a main menu bar item
+   * @param id - the id of the item
+   * @param size - the size of the item
+   * @return true if the item is clicked
    */
   IMGUI_API bool
-  beginMainMenuItem(const std::string &id, HBDrawType type = 0, ImVec2 size = {});
+  mainMenuBarItem(const std::string &id, ImVec2 size = {});
 
-  IMGUI_API void
-  EndMainMenuItem();
+  /*
+   * @brief create a main menu bar item
+   * @param id - the id of the item
+   * @param radius - the radius of the item
+   * @return true if the item is clicked
+   */
+  IMGUI_API bool
+  mainMenuBarItem(const std::string &id, float radius = HBUI::getStyle().mainMenuItemSize.x);
 
   //---------------------------------------------------------------------------------
   // [SECTION] Sample/Debug Windows
@@ -454,5 +469,9 @@ namespace HBUI {
   HBUI_API void
   toggleFlag(int flag);
 
+
+  //---------------------------------------------------------------------------------
+  // [SECTION] Animations
+  //---------------------------------------------------------------------------------
 
 }// namespace HBUI
