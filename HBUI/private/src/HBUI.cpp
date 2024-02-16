@@ -48,19 +48,59 @@ namespace HBUI {
   clearContext() {//todo: implement
   }
 
-  HBUI_API HBStyle&
-  getStyle(){
+  HBUI_API HBStyle &
+  getStyle() {
     return getCurrentContext()->style;
   }
 
-  HBUI_API HBIO&
+  HBUI_API HBIO &
   getIO() {
     return getCurrentContext()->io;
   }
 
-  HBUI_API HBDrawData&
-  getDrawData(){
+  HBUI_API HBDrawData &
+  getDrawData() {
     return *getCurrentContext()->drawData;
+  }
+
+  HBUI_API ImVec2
+  appendToCursor(const ImVec2 &size, const bool addSpacing){
+    if(addSpacing){
+      HBPadding spacing = getStyle().getItemSpacing();
+      getDrawData().cursorPos.x += spacing.left + spacing.right;
+      getDrawData().cursorPos.y += spacing.left + spacing.right;
+    }
+
+    ImVec2 cursor = getDrawData().cursorPos;
+    getDrawData().cursorPos.x += size.x;
+    getDrawData().cursorPos.y += size.y;
+
+    return getDrawData().cursorPos;
+  }
+
+  HBUI_API ImVec2
+  getCursorViewportPos(){
+    return getDrawData().cursorPos + getViewportPos();
+  }
+
+  HBUI_API ImVec2
+  getWindowSize(){
+    return ImGui::GetIO().DisplaySize;
+  }
+
+  HBUI_API ImVec2
+  getContentRegionAvail(){
+    return getWindowSize() - getDrawData().cursorPos;
+  }
+
+  HBUI_API ImVec2
+  getViewportPos(){
+    return ImGui::GetMainViewport()->Pos;
+  }
+
+  HBUI_API ImVec2
+  getViewportSize(){
+    return ImGui::GetMainViewport()->Size;
   }
 
   /*********************************************
@@ -108,23 +148,28 @@ namespace HBUI {
   /*********************************************
     * Rendering
     * *********************************************/
+
+  void fullScreenemptyWindow() {
+  }
   HBUI_API void
   startFrame() {
     g_HBUICTX->drawData = std::make_shared<HBDrawData>();
-
     float deltaTime = getTime() - g_HBUICTX->time.lastTime;
+
     g_HBUICTX->time.deltaTime = deltaTime;
     g_HBUICTX->time.lastTime = getTime();
 
     update(deltaTime);
 
     startRenderBackend();
+
+    auto vp = ImGui::GetMainViewport();
+    g_HBUICTX->drawData->cursorPos = {0,0};
   }
 
   HBUI_API void
   endFrame() {
     endRenderBackend();
-
     g_HBUICTX->time.frameTime = getTime() - g_HBUICTX->time.lastTime;
   }
 
@@ -136,7 +181,6 @@ namespace HBUI {
   HBUI_API void
   shutdown() {
     shutdownBackend();
-
     delete g_HBUICTX;
     g_HBUICTX = NULL;
   }

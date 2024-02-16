@@ -46,7 +46,7 @@ list(APPEND HBUI_SOURCES
 option(HBUI_WITH_DEBUG_WINDOW "HBUI_WITH_DEBUG_WINDOW" ON)
 if (HBUI_WITH_DEBUG_WINDOW)
     list(APPEND HBUI_SOURCES
-            ${HBUI_DIR}/private/src/HBDebugWidget.cpp
+            ${HBUI_DIR}/private/src/Debug/HBDebugWidget.cpp
     )
     target_compile_definitions(HBUI PUBLIC HBUI_WITH_DEBUG_WINDOW)
 endif ()

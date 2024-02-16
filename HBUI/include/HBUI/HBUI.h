@@ -72,7 +72,7 @@ struct HBUIItem   : HBUpdatable {
   std::vector<std::shared_ptr<HBUIItem>> Children = {};
 
   public:
-  virtual void draw(ImDrawList *drawList) = 0;
+  virtual bool draw(ImDrawList *drawList)                 = 0;
 //  void update(float deltaTime)                          override;
 };
 
@@ -87,11 +87,20 @@ struct HBRect     : HBUIItem {
   ImVec2 start = {};
   ImVec2 end   = {};
 
-  void  draw(ImDrawList *drawList) override;
+  bool  draw(ImDrawList *drawList) override;
   void  update(float deltaTime)    override;
 
-  ImVec2 StartPos()                 const ;
-  ImVec2 EndPos()                   const ;
+  ImVec2 StartPos()                 const {
+    return start;
+  }
+
+  ImVec2 EndPos()                   const {
+    return end;
+  }
+
+  ImVec2 Size()                     const {
+    return ImVec2(end.x - start.x, end.y - start.y);
+  }
 };
 
 
@@ -121,7 +130,7 @@ struct HBMenuItem : HBUIItem{
   HBDrawType  drawType      =         HBDrawType_::Normal;
 
   public:
-  void    draw(ImDrawList *drawList)                override;
+  bool    draw(ImDrawList *drawList)                override;
   void    update(float deltaTime)                   override;
 };
 
@@ -135,7 +144,7 @@ struct HBMainMenuBar : HBRect {
   MainMenuBarFlags                               flags   =   0;
   std::vector<std::shared_ptr<HBMenuItem>>       items   =   {};
 
-  void draw(ImDrawList *drawList)                         override;
+  bool draw(ImDrawList *drawList)                         override;
   void update(float deltaTime)                            override;
 };
 
@@ -145,9 +154,14 @@ struct HBMainMenuBar : HBRect {
 //-----------------------------------------------------------------------------
 struct HBDrawData {
   DockspaceFlags                          dockspaceFlags            =   0   ; //the flags for the dockspace
+  ImVec2                                  dockspaceSize             =   {}  ; //the size of the dockspace
+  ImVec2                                  dockspacePos              =   {}  ; //the position of the dockspace
+
   std::shared_ptr<HBMainMenuBar>          currentAppendingMenuBar   =   NULL; //the current appending main menu bar
   std::shared_ptr<HBMainMenuBar>          mainMenuBarHorizontal     =   NULL; //the horizontal main menu bar
   std::shared_ptr<HBMainMenuBar>          mainMenuBarVertical       =   NULL; //the vertical main menu bar
+
+  ImVec2 cursorPos                                                  =   ImVec2(-1,-1); //used to determine where for example the dockspace should startr
   ImVec2 savedScreenPos                                             =   ImVec2(-1,-1); //used to determine where for example the dockspace should startr
 };
 
@@ -171,8 +185,8 @@ struct HBPadding {
 
   HBPadding(float top, float right, float bottom, float left) : top(top), right(right), bottom(bottom), left(left) {}
 
-  HBPadding(float topBottom, float rightLeft)
-      : top(topBottom), right(rightLeft), bottom(topBottom), left(rightLeft) {}
+  HBPadding(float vertical, float horizontal)
+      : top(vertical), right(horizontal), bottom(vertical), left(horizontal) {}
 
   HBPadding(float all)
       : top(all), right(all), bottom(all), left(all) {}
@@ -195,8 +209,16 @@ struct HBStyle {
       ImVec2      mainMenuBarHorizontalFirstItemOffset  = {}; //Extra position for the first item in the vertical mainmenubar
 
       //shared
-      HBPadding   mainMenuItemsPadding                  = {}; //The padding for the mainmenu items (top, right, bottom, left). If not set use imgui frame padding
-      HBPadding   mainMenuItemsSpacing                  = {}; //The spacing for the mainmenu items (top, right, bottom, left). If not set the imgui frame spacing
+      HBPadding   mainMenuItemsPadding                  = {-1}; //The padding for the mainmenu items (top, right, bottom, left). If not set use imgui frame padding
+      HBPadding   mainMenuItemsSpacing                  = {-1}; //The spacing for the mainmenu items (top, right, bottom, left). If not set the imgui frame spacing
+      HBPadding   getItemSpacing() const{
+        if(mainMenuItemsSpacing.top == -1){
+          auto imSpac = ImGui::GetStyle().ItemSpacing / 2;
+          return HBPadding(imSpac.y, imSpac.x);
+        }else{
+          return mainMenuItemsSpacing;
+        }
+      }
 };
 
 //-----------------------------------------------------------------------------
@@ -247,6 +269,7 @@ struct HBContext {
 // [SECTION] HBUI
 //-----------------------------------------------------------------------------
 namespace HBUI {
+  //---------------------------------------------------------------------------------Q
   HBUI_API HBContext *
   initialize(const std::string &title, int width, int height, MainWindowFlags flags);
 
@@ -270,6 +293,25 @@ namespace HBUI {
 
   HBUI_API HBDrawData&
   getDrawData();
+
+  //---------------------------------------------------------------------------------
+  HBUI_API ImVec2
+  appendToCursor(const ImVec2 &size, const bool addSpacing = true);
+
+  HBUI_API ImVec2
+  getCursorViewportPos();
+
+  HBUI_API ImVec2
+  getWindowSize();
+
+  HBUI_API ImVec2
+  getContentRegionAvail();
+
+  HBUI_API ImVec2
+  getViewportPos();
+
+  HBUI_API ImVec2
+  getViewportSize();
 
   //---------------------------------------------------------------------------------
   // [SECTION] Main Window
@@ -319,19 +361,20 @@ namespace HBUI {
    * @param flags - the flags for the dockspace, see DockspaceFlags_
    *                  HB_DOCKSPACE_FLAG_NONE, HB_DOCKSPACE_FLAG_MENUBAR
    */
-  HBUI_API void
+  HBUI_API bool
   beginFullScreenDockspace(HBDockspaceFlags_ flags = HB_DOCKSPACE_FLAG_NONE);
 
-  /*
-   * @brief end the full screen dockspace
-   *      this function should be called after beginFullScreenDockspace
-   */
-  HBUI_API void
+  HBUI_API bool
   beginFullScreenDockspace(const bool isMaximized,
                            const bool mainWindowNoTitlebar,
                            const bool hasMenuBar);
-
-  HBUI_API void endFullScreenDockspace();
+//
+//  /*
+//   * @brief end the full screen dockspace
+//   *      this function should be called after beginFullScreenDockspace(..flags..)
+//   */
+//  HBUI_API void
+//  endFullScreenDockspace();
 
   //---------------------------------------------------------------------------------
   // [SECTION] Menu Bars
@@ -372,7 +415,7 @@ namespace HBUI {
   // [SECTION] Sample/Debug Windows
   //---------------------------------------------------------------------------------
   HBUI_API void
-  showDebugWindow(bool *p_open = NULL);
+  showDebugWindow(bool *p_open);
 
   //---------------------------------------------------------------------------------
   // [SECTION] Updating

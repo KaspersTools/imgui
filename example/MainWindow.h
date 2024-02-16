@@ -19,18 +19,21 @@ class MainWindow {
 
   private:
   void init();
+  void createMainMenuBars();
   void createDockSpace();
   void render();
   void shutdown();
 
   private:
-    bool showDemoWindow = true;
-
+    bool   showDebugWindow    = true;
+    bool   showDemoWindow     = true;
   private:
       bool withMenuBar        = true;
-      bool withDockSpace      = true;
       bool horizontalMenuBar  = true;
-      bool verticalMenuBar    = false;
+      bool verticalMenuBar    = true;
+      bool firstHorizontal    = false;
+
+      bool withDockSpace      = true;
 };
 
 
