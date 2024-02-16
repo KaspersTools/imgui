@@ -191,16 +191,16 @@ enum HBMainMenuBarFlags_ {
   HB_MAIN_MENU_BAR_FLAG_NO_CALCULATE_SIZE = 1 << 3,
 };
 
-struct HBMenuItem : HBUIItem {
+struct HBMenuButton : HBUIItem {
   public:
-  HBMenuItem(const std::string &label, const HBDrawType drawType, const ImVec2 size)
+  HBMenuButton(const std::string &label, const HBDrawType drawType, const ImVec2 size)
       : HBUIItem() {
     this->name = label;
     this->size = size;
     this->drawType = drawType;
   };
 
-  ~HBMenuItem(){
+  ~HBMenuButton(){
 
   };
 
@@ -229,7 +229,7 @@ struct HBMainMenuBar : HBRect {
 
   void update(float deltaTime) override;
 
-  void append(std::shared_ptr<HBMenuItem> item);
+  void append(std::shared_ptr<HBMenuButton> item);
 
   bool isHorizontal() const;
 
@@ -247,10 +247,23 @@ struct HBMainMenuBar : HBRect {
   float width = 50; //The width of the main menu bar.  This is calculated based on the items. If This Is An Vertical Bar Use The Width to offset to set the pos for the next window
 
   //items
-  std::vector<std::shared_ptr<HBMenuItem>> items = {};
+  std::vector<std::shared_ptr<HBMenuButton>> items = {};
   ImVec2 nextItemPos = {};
 };
 
+struct HBAnimation : HBUIItem {
+  public:
+  HBAnimation() : HBUIItem() {
+  }
+
+  ~HBAnimation() {
+  }
+
+  public:
+  bool draw(ImDrawList *drawList, ImColor color, bool drawFilled) override;
+
+  void update(float deltaTime) override;
+};
 
 //-----------------------------------------------------------------------------
 // [SECTION] Draw Data
@@ -421,14 +434,12 @@ namespace HBUI {
   IMGUI_API void
   endMainMenuBar();//
 
-  /*
-	 * @brief create a main menu bar item
-	 * @param id - the id of the item
-	 * @param size - the size of the item
-	 * @return true if the item is clicked
-	 */
+
   IMGUI_API bool
-  mainMenuBarItem(const std::string &id, ImVec2 size = HBUI::getStyle().mainMenuItemSize);
+  menuBarButton(const std::string &id, ImVec2 size = HBUI::getStyle().mainMenuItemSize);
+
+  //  IMGUI_API
+  //  menuBarButton(const std::string&)
 
   //---------------------------------------------------------------------------------
   // [SECTION] Sample/Debug Windows

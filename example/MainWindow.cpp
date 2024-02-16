@@ -19,20 +19,22 @@ bool MainWindow::run() {
 
 void renderMenuBar(MainMenuBarFlags flags, float width, float height) {
   if (HBUI::beginMainMenuBar(flags, {width, height})) {
-    if (HBUI::mainMenuBarItem("test2")) {}
-    if (HBUI::mainMenuBarItem("test1")) {}
-    if (HBUI::mainMenuBarItem("test1")) {}
-    if (HBUI::mainMenuBarItem("test1")) {}
-    if (HBUI::mainMenuBarItem("test1")) {}
-    if (HBUI::mainMenuBarItem("test1")) {}
-    if (HBUI::mainMenuBarItem("test1")) {}
-    if (HBUI::mainMenuBarItem("test1")) {}
-    if (HBUI::mainMenuBarItem("test1")) {}
-    if (HBUI::mainMenuBarItem("test1")) {}
-    if (HBUI::mainMenuBarItem("test1")) {}
-    if (HBUI::mainMenuBarItem("test1")) {}
+    if (HBUI::menuBarButton("test2")) {}
+    if (HBUI::menuBarButton("test1")) {}
+    if (HBUI::menuBarButton("test1")) {}
+    if (HBUI::menuBarButton("test1")) {}
+    if (HBUI::menuBarButton("test1")) {}
+    if (HBUI::menuBarButton("test1")) {}
+    if (HBUI::menuBarButton("test1")) {}
+    if (HBUI::menuBarButton("test1")) {}
+    if (HBUI::menuBarButton("test1")) {}
+    if (HBUI::menuBarButton("test1")) {}
+    if (HBUI::menuBarButton("test1")) {}
+    if (HBUI::menuBarButton("test1")) {}
     HBUI::endMainMenuBar();
   }
+
+  ImGui::GetID()
 }
 
 void MainWindow::createMainMenuBars() {

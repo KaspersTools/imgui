@@ -176,7 +176,7 @@ bool HBMainMenuBar::draw(ImDrawList *drawList, ImColor color = ImColor(-1, -1, -
 void HBMainMenuBar::update(float deltaTime) {
 }
 
-void HBMainMenuBar::append(std::shared_ptr<HBMenuItem> item) {
+void HBMainMenuBar::append(std::shared_ptr<HBMenuButton> item) {
   const ImVec2 spacing = item->getSpacing();
   const HBStyle &style = HBUI::getStyle();
   const bool checkForSize = (HB_MAIN_MENU_BAR_FLAG_NO_CALCULATE_SIZE & flags) == 0;
@@ -244,7 +244,7 @@ ImColor HBMainMenuBar::getColor() const {
 //-----------------------------------------------------------------------------
 // [SECTION] MenuItem
 //-----------------------------------------------------------------------------
-bool HBMenuItem::draw(ImDrawList *drawList, ImColor color, bool drawFilled) {
+bool HBMenuButton::draw(ImDrawList *drawList, ImColor color, bool drawFilled) {
   if (color.Value == ImColor(-1, -1, -1, -1)) {
     ImColor(255, 0, 0, 255);
   }
@@ -260,10 +260,10 @@ bool HBMenuItem::draw(ImDrawList *drawList, ImColor color, bool drawFilled) {
   return true;
 }
 
-void HBMenuItem::update(float deltaTime) {
+void HBMenuButton::update(float deltaTime) {
 }
 
-ImVec2 HBMenuItem::getSpacing() const {
+ImVec2 HBMenuButton::getSpacing() const {
   auto style = HBUI::getStyle();
   ImVec2 spacing = {12, 12};
   return spacing;
@@ -401,7 +401,7 @@ namespace HBUI {
 
   //menu items
   IMGUI_API bool
-  mainMenuBarItem(const std::string &id, ImVec2 size) {
+  menuBarButton(const std::string &id, ImVec2 size) {
     IM_ASSERT(id != "" && "Menu item id cannot be empty!");
     auto currentMenuBar = HBUI::getDrawData().currentAppendingMenuBar;
     IM_ASSERT(currentMenuBar != nullptr && "No menu-bar is currently active!");
@@ -410,7 +410,7 @@ namespace HBUI {
       size = HBUI::getStyle().mainMenuItemSize;
     }
 
-    std::shared_ptr<HBMenuItem> menuItem = std::make_shared<HBMenuItem>(id, Square, size);
+    std::shared_ptr<HBMenuButton> menuItem = std::make_shared<HBMenuButton>(id, Square, size);
     currentMenuBar->append(menuItem);
 
     return true;
