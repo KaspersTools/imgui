@@ -34,7 +34,7 @@ class MainWindow {
   bool showDebugWindow = true;
   bool showDemoWindow = true;
   bool withMenuBar = true;
-  bool horizontalMenuBar = false;
+  bool horizontalMenuBar = true;
   bool verticalMenuBar = true;
   bool withDockSpace = true;
 

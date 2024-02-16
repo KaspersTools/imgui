@@ -38,12 +38,12 @@ namespace HBUI {
 
     ImGui::Text("DockspaceFlags: %d", drawData.dockspaceFlags);
     ImGui::Text("currentAppendingMenuBar: %p", drawData.currentAppendingMenuBar.get());
-
-    ImGui::SeparatorText("Vertical MainMenuBar");
-    ImGui::Text("mainMenuBarVertical: %p", drawData.mainMenuBarVertical.get());
-    ImGui::DragFloat("   ---Height----------------------- | ", (float *) &drawData.mainMenuBarVertical.get()->height);
-    ImGui::DragFloat("   ---Width------------------------ | ", (float *) &drawData.mainMenuBarVertical.get()->width);
-    ImGui::Separator();
+//
+//    ImGui::SeparatorText("Vertical MainMenuBar");
+//    ImGui::Text("mainMenuBarVertical: %p", drawData..get());
+//    ImGui::DragFloat("   ---Height----------------------- | ", (float *) &drawData.mainMenuBarVertical.get()->height);
+//    ImGui::DragFloat("   ---Width------------------------ | ", (float *) &drawData.mainMenuBarVertical.get()->width);
+//    ImGui::Separator();
     //	ImGui::ColorEdit4("   ---Color------------------------ | ", (float *) &drawData.mainMenuBarVertical.get()->color);
     //	ImGui::ColorEdit4("   ---ItemColor-------------------- | ", (float *) &drawData.mainMenuBarVertical.get()->itemColor);
     //	ImGui::DragFloat2("   ---Size------------------------- | ", (float *) &drawData.mainMenuBarVertical.get()->size);
@@ -58,15 +58,15 @@ namespace HBUI {
     //        ImGui::Text("child->size: %f, %f", child->size.x, child->size.y);
     //      }
     //    }
-
-    ImGui::SeparatorText("Horizontal MainMenuBar");
-    ImGui::Text("mainMenuBarHorizontal: %p", drawData.mainMenuBarHorizontal.get());
-    ImGui::DragFloat("   ---Height----------------------- | ", (float *) &drawData.mainMenuBarHorizontal.get()->height);
-    ImGui::DragFloat("   ---Width------------------------ | ", (float *) &drawData.mainMenuBarHorizontal.get()->width);
-    ImGui::Separator();
-
-
-    ImGui::Text("savedScreenPos: %f, %f", drawData.savedScreenPos.x, drawData.savedScreenPos.y);
+//
+//    ImGui::SeparatorText("Horizontal MainMenuBar");
+//    ImGui::Text("mainMenuBarHorizontal: %p", drawData.mainMenuBarHorizontal.get());
+//    ImGui::DragFloat("   ---Height----------------------- | ", (float *) &drawData.mainMenuBarHorizontal.get()->height);
+//    ImGui::DragFloat("   ---Width------------------------ | ", (float *) &drawData.mainMenuBarHorizontal.get()->width);
+//    ImGui::Separator();
+//
+//
+//    ImGui::Text("savedScreenPos: %f, %f", drawData.savedScreenPos.x, drawData.savedScreenPos.y);
   }
 
   HBUI_API void showDebugWindow(bool *p_open) {

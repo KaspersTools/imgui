@@ -64,32 +64,26 @@ namespace HBUI {
   }
 
   HBUI_API ImVec2
-  appendToCursor(const ImVec2 &size, const ImVec2 &spacing, bool addSpacing) {
-    if(addSpacing){
-      getDrawData().cursorPos.x += spacing.x;
-      getDrawData().cursorPos.y += spacing.y;
-    }
+  getCursorViewportPos(){
+    auto windowPos  = HBUI::getDrawData().cursorPos;
+    auto vp         = ImGui::GetMainViewport();
 
-    ImVec2 cursor = getDrawData().cursorPos;
-    getDrawData().cursorPos.x += size.x;
-    getDrawData().cursorPos.y += size.y;
-
-    return getDrawData().cursorPos;
+    return ImVec2(windowPos.x + vp->Pos.x,
+                  windowPos.y + vp->Pos.y);
   }
 
   HBUI_API ImVec2
-  getCursorViewportPos(){
-    return getDrawData().cursorPos + getViewportPos();
+  getContentRegionAvail(){
+    auto windowPos = HBUI::getDrawData().cursorPos;
+    auto vp = ImGui::GetMainViewport();
+
+    return ImVec2(vp->Size.x - windowPos.x,
+                  vp->Size.y - windowPos.y);
   }
 
   HBUI_API ImVec2
   getWindowSize(){
     return ImGui::GetIO().DisplaySize;
-  }
-
-  HBUI_API ImVec2
-  getContentRegionAvail(){
-    return getWindowSize() - getDrawData().cursorPos;
   }
 
   HBUI_API ImVec2
@@ -163,7 +157,6 @@ namespace HBUI {
     startRenderBackend();
 
     auto vp = ImGui::GetMainViewport();
-    g_HBUICTX->drawData->cursorPos = {0,0};
   }
 
   HBUI_API void

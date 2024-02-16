@@ -35,6 +35,7 @@ set(HBUI_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(HBUI SHARED
         include/HBUI/HBMath.h
 private/src/Animations/HBAnimations.cpp
+        include/HBUI/fonts/IconsFontAwesome6.h
 )
 
 list(APPEND HBUI_SOURCES
@@ -68,6 +69,7 @@ target_sources(HBUI PUBLIC ${HBUI_HEADERS})
 target_compile_definitions(HBUI PUBLIC HBUI_VERSION="${PROJECT_VERSION}")
 
 target_include_directories(HBUI PUBLIC ${HBUI_DIR}/include)
+target_include_directories(HBUI PUBLIC ${HBUI_DIR}/include/HBUI/fonts)
 target_include_directories(HBUI PUBLIC ${HBUI_DIR}/include/imgui)
 target_include_directories(HBUI PRIVATE ${HBUI_DIR}/private)
 

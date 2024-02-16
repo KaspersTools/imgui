@@ -4,9 +4,33 @@
 #include "MainWindow.h"
 #include <HBUI/HBUI.h>
 #include <HBUI/WindowManager.h>
+#include <IconsFontAwesome6.h>
 
 void MainWindow::init() {
   HBUI::initialize("Hello, World!", 1280, 720, HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR);
+
+  //load font
+  ImGuiIO& io = ImGui::GetIO();
+
+  // Load the default font
+  io.Fonts->AddFontDefault();
+
+  // Load Font Awesome
+//  static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+  {
+    ImFontConfig icons_config = ImFontConfig();
+    icons_config.MergeMode = true;
+    icons_config.PixelSnapH = true;
+    icons_config.RasterizerDensity = 2.0f;
+    icons_config.RasterizerMultiply = 1.0f;
+    io.Fonts->AddFontFromFileTTF("assets/fonts/FontAwesome6Free/ttfs/fa-regular-400.ttf", 15.0f, &icons_config);
+  }
+
+  ImFontConfig fontConfig = ImFontConfig();
+  fontConfig.RasterizerDensity = 2.0f;
+  fontConfig.RasterizerMultiply = 1.0f;
+  io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/JetBrainsMono/JetBrainsMonoNerdFont-Regular.ttf", 15.0f, &fontConfig);
+
   run();
 }
 
@@ -17,8 +41,8 @@ bool MainWindow::run() {
   return true;
 }
 
-void renderMenuBar(MainMenuBarFlags flags, float width, float height) {
-  if (HBUI::beginMainMenuBar(flags, {width, height})) {
+void renderMenuBar(const std::string &id, MainMenuBarFlags flags, float width, float height) {
+  if (HBUI::beginMainMenuBar(id, flags, {width, height})) {
     if (HBUI::menuBarButton("test2")) {}
     if (HBUI::menuBarButton("test1")) {}
     if (HBUI::menuBarButton("test1")) {}
@@ -33,21 +57,12 @@ void renderMenuBar(MainMenuBarFlags flags, float width, float height) {
     if (HBUI::menuBarButton("test1")) {}
     HBUI::endMainMenuBar();
   }
-
-  ImGui::GetID()
 }
 
 void MainWindow::createMainMenuBars() {
-  if (verticalMenuBar) {
-    renderMenuBar(HB_MAIN_MENU_BAR_FLAG_VERTICAL, verticalMenuBarFixedWidth, 0.0f);
-  }
-  if (horizontalMenuBar) {
-    if (HBUI::beginMainMenuBar(HB_MAIN_MENU_BAR_FLAG_HORIZONTAL | HB_MAIN_MENU_BAR_FLAG_NO_CALCULATE_SIZE,
-                               {0, horizontalMenuBarFixedHeight})) {
 
-      HBUI::endMainMenuBar();
-    }
-  }
+  renderMenuBar("kasper", HB_MAIN_MENU_BAR_FLAG_HORIZONTAL,  0.0f, horizontalMenuBarFixedHeight);
+  renderMenuBar("kasper2", HB_MAIN_MENU_BAR_FLAG_HORIZONTAL, 0.0f, horizontalMenuBarFixedHeight);
 }
 
 void MainWindow::createDockSpace() {
@@ -75,13 +90,13 @@ void MainWindow::render() {
 
     ImGui::SeparatorText("ABOUT THE LIBRARIES:");
     ImGui::BulletText(
-            "The code for this window is located in the example/MainWindow.cpp file.                                    <---- DEMO IS HERE!!!           ");
+        "The code for this window is located in the example/MainWindow.cpp file.                                    <---- DEMO IS HERE!!!           ");
     ImGui::BulletText(
-            "The code for the HBUI library  is located in the HBUI/include/HBUI folder.                                 <---- HBUI IS HERE!!!");
+        "The code for the HBUI library  is located in the HBUI/include/HBUI folder.                                 <---- HBUI IS HERE!!!");
     ImGui::BulletText(
-            "The code for the ImGui library is located in the root directory, this will be moved to the include folder. <-- IMVK IS HERE!!!");
+        "The code for the ImGui library is located in the root directory, this will be moved to the include folder. <-- IMVK IS HERE!!!");
     ImGui::BulletText(
-            "The code for the ImVk library is located in the ImVK folder. This handles the backend (for now only Vulkan in combination with glfw   <---- IMVK IS HERE!!!");
+        "The code for the ImVk library is located in the ImVK folder. This handles the backend (for now only Vulkan in combination with glfw   <---- IMVK IS HERE!!!");
   }
   if (ImGui::CollapsingHeader("Example Options")) {
     ImGui::SeparatorText("Windows");
@@ -101,6 +116,15 @@ void MainWindow::render() {
   }
   ImGui::End();
 
+  ImGui::Begin("Fonts");
+  ImGui::Text(ICON_FA_H " Home");  // Example of using a home icon
+  ImGui::Button(ICON_FA_PLAY " Play");  // Example of using a play icon in a button
+  ImGui::End();
+
+  ImGui::Begin("My Window");
+  ImGui::Text(ICON_FA_HOUSE " Home");
+  ImGui::Button(ICON_FA_PLAY " Play");
+  ImGui::End();
 
 #ifdef HBUI_WITH_DEBUG_WINDOW
   HBUI::showDebugWindow(&showDebugWindow);

@@ -56,24 +56,29 @@ struct HBUpdatable;
 //};
 namespace HBUI {
   HBUI_API void printVec2(const ImVec2 &vec2, const std::string &name);
+
   HBUI_API void printVec4(const ImVec4 &vec4, const std::string &name);
+
   HBUI_API HBContext *getCurrentContext();
 }// namespace HBUI
 
 struct HBStyle {
   //Colors
-  ImColor menuBarColor = (163, 255, 0, 255);
-  bool useHBUIStyleMenuBarColor = false;//Use the HBUI style for the mainmenu
+  ImColor menuBarColor             = (163, 255, 0, 255);
+  bool    useHBUIStyleMenuBarColor = false;//Use the HBUI style for the mainmenu
 
-  ImVec2 mainMenuBarVerticalFirstItemOffset = {0, 55}; //Extra offset for the first item in the vertical mainmenubar
+  ImVec2 mainMenuBarVerticalFirstItemOffset   = {0, 55}; //Extra offset for the first item in the vertical mainmenubar
   ImVec2 mainMenuBarHorizontalFirstItemOffset = {0, 0};//Extra offset for the first item in the vertical mainmenubar
-  ImVec2 mainMenuItemSize = {45, 45};                  //The size of the mainmenu items (width, height) \\ for circles x is used for the radius and y is ignored
+  ImVec2 mainMenuItemSize                     = {45,
+                                                 45};                  //The size of the mainmenu items (width, height) \\ for circles x is used for the radius and y is ignored
 
-  ImColor mainMenuBarItemColor = (255, 0, 266, 255);//The color/Tint of the mainmenu items
-  bool useHBUIStyleMainMenuItemColor = false;       //Use the HBUI style for the mainmenu items
+  ImColor mainMenuBarItemColor          = (255, 0, 266, 255);//The color/Tint of the mainmenu items
+  bool    useHBUIStyleMainMenuItemColor = false;       //Use the HBUI style for the mainmenu items
 
-  ImVec2 mainMenuItemsPadding = {0, 0};//The padding for the mainmenu items (top, right, bottom, left). If not set use imgui frame padding
-  ImVec2 mainMenuItemsSpacing = {5, 9};//The spacing for the mainmenu items (top, right, bottom, left). If not set the imgui frame spacing
+  ImVec2 mainMenuItemsPadding = {0,
+                                 0};//The padding for the mainmenu items (top, right, bottom, left). If not set use imgui frame padding
+  ImVec2 mainMenuItemsSpacing = {5,
+                                 9};//The spacing for the mainmenu items (top, right, bottom, left). If not set the imgui frame spacing
 
 
   void logToTTY() {
@@ -94,7 +99,7 @@ struct HBStyle {
 // [SECTION] Dockspace
 //-----------------------------------------------------------------------------
 enum HBDockspaceFlags_ {
-  HB_DOCKSPACE_FLAG_NONE = 0,
+  HB_DOCKSPACE_FLAG_NONE    = 0,
   HB_DOCKSPACE_FLAG_MENUBAR = 1 << 0,
 };
 
@@ -102,11 +107,11 @@ enum HBDockspaceFlags_ {
 // [SECTION] MAIN Window
 //-----------------------------------------------------------------------------
 enum HBMainWindowFlags_ {
-  HBUI_MAIN_WINDOW_FLAG_NONE = 0,
+  HBUI_MAIN_WINDOW_FLAG_NONE          = 0,
   HBUI_MAIN_WINDOW_FLAG_NO_DECORATION = 1 << 1,
-  HBUI_MAIN_WINDOW_FLAG_NO_RESIZE = 1 << 2,
-  HBUI_MAIN_WINDOW_FLAG_NO_MOVE = 1 << 3,
-  HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR = 1 << 4
+  HBUI_MAIN_WINDOW_FLAG_NO_RESIZE     = 1 << 2,
+  HBUI_MAIN_WINDOW_FLAG_NO_MOVE       = 1 << 3,
+  HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR   = 1 << 4
 };
 
 //-----------------------------------------------------------------------------
@@ -115,7 +120,7 @@ enum HBMainWindowFlags_ {
 struct HBIO {
   std::string title = "ImVK";
 
-  int width = 1280;
+  int width  = 1280;
   int height = 720;
 
   MainWindowFlags mainWindowFlags = HBUI_MAIN_WINDOW_FLAG_NONE;
@@ -130,23 +135,23 @@ enum HBDrawType_ {
 };
 
 struct HBUpdatable {
-  public:
-  HBUpdatable(){};
+public:
+  HBUpdatable() {};
 
-  public:
+public:
   virtual void update(float deltaTime) = 0;
 };
 
 struct HBUIItem : HBUpdatable {
-  public:
-  HBUIItem(){};
+public:
+  HBUIItem() {};
 
-  ~HBUIItem(){};
+  ~HBUIItem() {};
 
   //ID
   std::string ID = "kasper123";
 
-  public:
+public:
   virtual bool draw(ImDrawList *drawList, ImColor color, bool drawFilled) = 0;
   //  void update(float deltaTime)                          override;
 };
@@ -160,7 +165,7 @@ struct HBRect : HBUIItem {
 
   //Position
   ImVec2 start = {};
-  ImVec2 end = {};
+  ImVec2 end   = {};
 
   bool draw(ImDrawList *drawList, ImColor color, bool drawFilled) override;
 
@@ -184,46 +189,47 @@ struct HBRect : HBUIItem {
 // [SECTION] Main menubar
 //-----------------------------------------------------------------------------
 enum HBMainMenuBarFlags_ {
-  HB_MAIN_MENU_BAR_FLAG_NONE = 0,
-  HB_MAIN_MENU_BAR_FLAG_HORIZONTAL = 1 << 0,
-  HB_MAIN_MENU_BAR_FLAG_VERTICAL = 1 << 1,
-  HB_MAIN_MENU_BAR_FLAG_USE_HBUI_STYLE = 1 << 2,
+  HB_MAIN_MENU_BAR_FLAG_NONE              = 0,
+  HB_MAIN_MENU_BAR_FLAG_HORIZONTAL        = 1 << 0,
+  HB_MAIN_MENU_BAR_FLAG_VERTICAL          = 1 << 1,
+  HB_MAIN_MENU_BAR_FLAG_USE_HBUI_STYLE    = 1 << 2,
   HB_MAIN_MENU_BAR_FLAG_NO_CALCULATE_SIZE = 1 << 3,
 };
 
 struct HBMenuButton : HBUIItem {
-  public:
+public:
   HBMenuButton(const std::string &label, const HBDrawType drawType, const ImVec2 size)
       : HBUIItem() {
-    this->name = label;
-    this->size = size;
+    this->name     = label;
+    this->size     = size;
     this->drawType = drawType;
   };
 
-  ~HBMenuButton(){
+  ~HBMenuButton() {
 
   };
 
-  public:
-  std::string name = "";
-  ImVec2 size = {};
-  ImVec2 pos = {};
-  HBDrawType drawType = Square;
-  ImVec2 spacing = {-1, -1};
+public:
+  std::string name     = "";
+  ImVec2      size     = {};
+  ImVec2      pos      = {};
+  HBDrawType  drawType = Square;
+  ImVec2      spacing  = {-1, -1};
 
   ImVec2 getSpacing() const;
 
-  public:
+public:
   bool draw(ImDrawList *drawList, ImColor color, bool drawFilled) override;
 
   void update(float deltaTime) override;
 };
 
 struct HBMainMenuBar : HBRect {
-  HBMainMenuBar(MainMenuBarFlags flags, ImVec2 size = {50, 50}) : flags(flags), HBRect(), width(size.x), height(size.y) {
+  HBMainMenuBar(MainMenuBarFlags flags, ImVec2 size = {50, 50}) : flags(flags), HBRect(), width(size.x),
+                                                                  height(size.y) {
   }
 
-  ~HBMainMenuBar(){};
+  ~HBMainMenuBar() {};
 
   bool draw(ImDrawList *drawList, ImColor color, bool drawFilled) override;
 
@@ -243,23 +249,24 @@ struct HBMainMenuBar : HBRect {
   MainMenuBarFlags flags = 0;
 
   //properties
-  float height = 50;//The height of the main menu bar. This is calculated based on the items. If This Is An Horizontal Bar Use The Height to offset to set the pos for the next window
-  float width = 50; //The width of the main menu bar.  This is calculated based on the items. If This Is An Vertical Bar Use The Width to offset to set the pos for the next window
+  std::string id    = "";
+  float height      = 50;//The height of the main menu bar. This is calculated based on the items. If This Is An Horizontal Bar Use The Height to offset to set the pos for the next window
+  float width       = 50; //The width of the main menu bar.  This is calculated based on the items. If This Is An Vertical Bar Use The Width to offset to set the pos for the next window
 
   //items
-  std::vector<std::shared_ptr<HBMenuButton>> items = {};
-  ImVec2 nextItemPos = {};
+  std::vector<std::shared_ptr<HBMenuButton>> items       = {};
+  ImVec2                                     nextItemPos = {};
 };
 
 struct HBAnimation : HBUIItem {
-  public:
+public:
   HBAnimation() : HBUIItem() {
   }
 
   ~HBAnimation() {
   }
 
-  public:
+public:
   bool draw(ImDrawList *drawList, ImColor color, bool drawFilled) override;
 
   void update(float deltaTime) override;
@@ -269,16 +276,14 @@ struct HBAnimation : HBUIItem {
 // [SECTION] Draw Data
 //-----------------------------------------------------------------------------
 struct HBDrawData {
-  DockspaceFlags dockspaceFlags = 0;//the flags for the dockspace
-  ImVec2 dockspaceSize = {};        //the size of the dockspace
-  ImVec2 dockspacePos = {};         //the position of the dockspace
+  DockspaceFlags dockspaceFlags = 0;          //the flags for the dockspace
+  ImVec2         dockspaceSize  = {};         //the size of the dockspace
+  ImVec2         dockspacePos   = {};         //the position of the dockspace
 
-  std::shared_ptr<HBMainMenuBar> currentAppendingMenuBar = NULL;//the current appending main menu bar
-  std::shared_ptr<HBMainMenuBar> mainMenuBarHorizontal = NULL;  //the horizontal main menu bar
-  std::shared_ptr<HBMainMenuBar> mainMenuBarVertical = NULL;    //the vertical main menu bar
+  std::shared_ptr<HBMainMenuBar>              currentAppendingMenuBar = NULL;//the current appending main menu bar
+  std::vector<std::shared_ptr<HBMainMenuBar>> mainMenuBars            = {};//the main menu bars/ Think im goind to just rename it to panels lol
 
-  ImVec2 cursorPos = ImVec2(-1, -1);     //used to determine where for example the dockspace should startr
-  ImVec2 savedScreenPos = ImVec2(-1, -1);//used to determine where for example the dockspace should startr
+  ImVec2 cursorPos = ImVec2(0, 0);     //used to determine where for example the dockspace should startr
 };
 
 //-----------------------------------------------------------------------------
@@ -286,7 +291,7 @@ struct HBDrawData {
 //-----------------------------------------------------------------------------
 struct HBTime {
   float deltaTime = 0.0f;
-  float lastTime = 0.0f;
+  float lastTime  = 0.0f;
   float frameTime = 0.0f;
 };
 
@@ -294,13 +299,14 @@ struct HBTime {
 // [SECTION] HBUIContext
 //-----------------------------------------------------------------------------
 struct HBContext {
-  bool initialized = false;
-  HBIO io = {};
-  HBStyle style = {};
-  HBTime time = {};
+  bool    initialized = false;
+  HBIO    io          = {};
+  HBStyle style       = {};
+  HBTime  time        = {};
 
   //Draw Data
   std::shared_ptr<HBDrawData> drawData = std::make_shared<HBDrawData>();
+
 };
 
 //-----------------------------------------------------------------------------
@@ -330,17 +336,16 @@ namespace HBUI {
   getDrawData();
 
   //---------------------------------------------------------------------------------
-  HBUI_API ImVec2
-  appendToCursor(const ImVec2 &size, const ImVec2 &spacing, bool addSpacing);
-
+// [SECTION] Context
+//---------------------------------------------------------------------------------
   HBUI_API ImVec2
   getCursorViewportPos();
 
   HBUI_API ImVec2
-  getWindowSize();
+  getContentRegionAvail();
 
   HBUI_API ImVec2
-  getContentRegionAvail();
+  getWindowSize();
 
   HBUI_API ImVec2
   getViewportPos();
@@ -391,11 +396,6 @@ namespace HBUI {
   //---------------------------------------------------------------------------------
   // [SECTION] Dockspaces
   //---------------------------------------------------------------------------------
-  /*
-	 * @brief begin a full screen dockspace
-	 * @param flags - the flags for the dockspace, see DockspaceFlags_
-	 *                  HB_DOCKSPACE_FLAG_NONE, HB_DOCKSPACE_FLAG_MENUBAR
-	 */
   HBUI_API bool
   beginFullScreenDockspace(HBDockspaceFlags_ flags = HB_DOCKSPACE_FLAG_NONE);
 
@@ -403,43 +403,18 @@ namespace HBUI {
   beginFullScreenDockspace(const bool isMaximized,
                            const bool mainWindowNoTitlebar,
                            const bool hasMenuBar);
-  //
-  //  /*
-  //   * @brief end the full screen dockspace
-  //   *      this function should be called after beginFullScreenDockspace(..flags..)
-  //   */
-  //  HBUI_API void
-  //  endFullScreenDockspace();
 
   //---------------------------------------------------------------------------------
   // [SECTION] Menu Bars
   //---------------------------------------------------------------------------------
-
-  //  HBUI_API bool
-  //  beginMainMenuBar(HBMainMenuBar flags);// create and append to a full screen menu-bar.
-
-  /*
-	 * @brief create a full screen menu-bar.
-	 * @param flags - the flags for the main menu bar, see MainMenuBarFlags_
-	 *                  HB_MAIN_MENU_BAR_FLAG_NONE, HB_MAIN_MENU_BAR_FLAG_HORIZONTAL, HB_MAIN_MENU_BAR_FLAG_VERTICAL //@at 15-04-2024
-	 * @return true if the main menu bar is active
-	 */
   HBUI_API bool
-  beginMainMenuBar(MainMenuBarFlags flags, ImVec2 size);// create and append to a full screen menu-bar.
+  beginMainMenuBar(const std::string& id, MainMenuBarFlags flags, ImVec2 size);// create and append to a full screen menu-bar.
 
-  /*
-	 * @brief end the main menu bar
-	 *      this function should be called after beginMainMenuBar, but only if beginMainMenuBar() is true
-	 */
   IMGUI_API void
   endMainMenuBar();//
 
-
   IMGUI_API bool
   menuBarButton(const std::string &id, ImVec2 size = HBUI::getStyle().mainMenuItemSize);
-
-  //  IMGUI_API
-  //  menuBarButton(const std::string&)
 
   //---------------------------------------------------------------------------------
   // [SECTION] Sample/Debug Windows
@@ -485,11 +460,5 @@ namespace HBUI {
 
   HBUI_API void
   toggleFlag(int flag);
-
-
-  //---------------------------------------------------------------------------------
-  // [SECTION] Animations
-  //---------------------------------------------------------------------------------
-
 
 }// namespace HBUI
