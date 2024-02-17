@@ -38,14 +38,18 @@ namespace HBUI {
 
     for (auto &bar: drawData.mainMenuBars) {
       ImGui::SeparatorText(bar->idString.c_str());
-      ImGui::Text("Bar    pos:  ImVec2(%f,f%)",  bar->windowPos);
-      ImGui::Text("Bar    size: ImVec2(%f,f%)",  bar->windowSize);
-      ImGui::BeginDisabled();
-      bool hor = bar->isHorizontal();
-      bool ver = bar->isVertical();
-      ImGui::Checkbox("Bar  horizontal: ", &hor);
-      ImGui::Checkbox("Bar  vertical:   ", &ver);
-      ImGui::EndDisabled();
+
+      ImGui::Text("pos  = %f, %f", bar->windowPos.x, bar->windowPos.y);
+      ImGui::Text("size = %f, %f", bar->windowSize.x, bar->windowSize.y);
+      {
+        ImGui::BeginDisabled();
+        bool hor = bar->isHorizontal();
+        bool ver = bar->isVertical();
+        ImGui::Checkbox("horizontal:   ", &hor);
+        ImGui::Checkbox("vertical  :   ", &ver);
+        ImGui::EndDisabled();
+      }
+
       ImGui::Spacing();
     }
   }

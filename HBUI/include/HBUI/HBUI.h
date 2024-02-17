@@ -269,7 +269,7 @@ struct HBMainMenuBar : HBUIItem {
   MainMenuBarFlags flags = 0;
 
   //properties //fixme: make height and width a vec2
-  ImVec2 windowPos = {0, 0};//The start position of the MenuBar in window space, if 0 it will be on the cursorPos
+  ImVec2 windowPos  = {0, 0};//The start position of the MenuBar in window space, if 0 it will be on the cursorPos
   ImVec2 windowSize = {0, 0};//The size of the MenuBar, if 0 it will be calculated based on the items
 
   bool   enabled   = true;
