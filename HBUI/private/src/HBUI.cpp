@@ -1,6 +1,6 @@
 //
 // Created by Kasper de Bruin on 06/02/2024.
-//
+//todo: cleanup with sections
 
 #include "../headers/Backend.h"
 #include <HBUI/HBUI.h>
@@ -30,6 +30,8 @@ namespace HBUI {
     if (!initGraphicsBackend(g_HBUICTX)) {
       std::cerr << "Failed to initialize graphics backend" << std::endl;
     }
+
+    HBTime::init();
 
     return g_HBUICTX;
   }
@@ -108,36 +110,8 @@ namespace HBUI {
             size.y + frameSize.y == getMonitorHeight());
   }
 
-  /*********************************************
-    * Updating
-    * *********************************************/
-  HBUI_API float
-  getDeltaTime() {
-    return g_HBUICTX->time.deltaTime;
+  HBUI_API void update(float deltatime){
   }
-
-  HBUI_API float
-  getFrameTime() {
-    return g_HBUICTX->time.frameTime;
-  }
-
-  HBUI_API float
-  getTime() {
-    ImGui::GetTime();
-  }
-
-  void
-  update(float deltatime) {
-    //    for (auto updatable: g_HBUICTX->updatables) {
-    //      updatable->update(deltatime);
-    //    }
-  }
-
-  HBUI_API void
-  addUpdatable(std::shared_ptr<HBUpdatable> updatable) {
-    //    g_HBUICTX->updatables.push_back(updatable);
-  }
-
   /*********************************************
     * Rendering
     * *********************************************/
@@ -146,23 +120,16 @@ namespace HBUI {
   }
   HBUI_API void
   startFrame() {
+    HBTime::startFrame();
+    update(g_HBUICTX->time.deltaTime);
     g_HBUICTX->drawData = std::make_shared<HBDrawData>();
-    float deltaTime = getTime() - g_HBUICTX->time.lastTime;
-
-    g_HBUICTX->time.deltaTime = deltaTime;
-    g_HBUICTX->time.lastTime = getTime();
-
-    update(deltaTime);
-
     startRenderBackend();
-
-    auto vp = ImGui::GetMainViewport();
   }
 
   HBUI_API void
   endFrame() {
     endRenderBackend();
-    g_HBUICTX->time.frameTime = getTime() - g_HBUICTX->time.lastTime;
+    HBTime::endFrame();
   }
 
   HBUI_API bool
