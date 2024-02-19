@@ -54,7 +54,32 @@ bool MainWindow::run() {
 void renderMenuBar(const std::string &id,
                    HBItemFlags itemFlags, MainMenuBarFlags flags,
                    ImVec2 pos, ImVec2 size) {
-  if (HBUI::beginMainMenuBar(id, itemFlags, flags, pos, size)) {
+}
+
+void MainWindow::createMainMenuBars() {
+//  renderMenuBar("vertical", HBItemFlags_None, HB_MAIN_MENU_BAR_FLAG_VERTICAL, {}, {});
+//  renderMenuBar("horizontal", HBItemFlags_None, HB_MAIN_MENU_BAR_FLAG_HORIZONTAL, {}, {});
+//  renderMenuBar("somewherehorizontal", HBItemFlags_None, HB_MAIN_MENU_BAR_FLAG_HORIZONTAL, {}, {});
+
+//  const std::string &id,
+//  HBItemFlags itemFlags, MainMenuBarFlags flags,
+//      Vec2Anim animProps, ImVec2 windowSize;
+  bool looping = false;
+  HBAnimProps<ImVec2> animProps = {
+      .start          = {0, 0},
+      .end            = {0, 500},
+      .current        = {0, 0},
+      .duration       = 10.f,
+      .playbackSpeed  = 1.f,
+      .looping        = false,
+      .type           = HB_AnimType_Linear,
+      .direction      = HB_AnimDirection_Forward,
+      .state          = HB_AnimState_Idle,
+      .effect         = HB_AnimEffect_Expand,
+  };
+
+  if (HBUI::beginMainMenuBar("mainMenuBar", animProps, HBItemFlags_None,
+                             HB_MAIN_MENU_BAR_FLAG_HORIZONTAL | HB_Main_Menu_Bar_Flag_Animated)) {
     if (HBUI::menuBarButton("test2")) {}
     if (HBUI::menuBarButton("test1")) {}
     if (HBUI::menuBarButton("test1")) {}
@@ -69,12 +94,6 @@ void renderMenuBar(const std::string &id,
     if (HBUI::menuBarButton("test1")) {}
     HBUI::endMainMenuBar();
   }
-}
-
-void MainWindow::createMainMenuBars() {
-  renderMenuBar("vertical", HBItemFlags_None, HB_MAIN_MENU_BAR_FLAG_VERTICAL, {}, {});
-  renderMenuBar("horizontal", HBItemFlags_None, HB_MAIN_MENU_BAR_FLAG_HORIZONTAL, {}, {});
-  renderMenuBar("somewherehorizontal", HBItemFlags_None, HB_MAIN_MENU_BAR_FLAG_HORIZONTAL, {}, {});
 }
 
 void MainWindow::createDockSpace() {
