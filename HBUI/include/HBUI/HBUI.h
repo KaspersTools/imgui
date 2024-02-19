@@ -341,7 +341,7 @@ struct HBContext {
     animManager->addAnimation(id, props);
   }
 
-  std::shared_ptr<HBAnimManager> animManager = std::make_shared<HBAnimManager>();
+  std::shared_ptr<HBUI::Animation::HBAnimManager> animManager = std::make_shared<HBUI::Animation::HBAnimManager>();
 };
 
 //-----------------------------------------------------------------------------

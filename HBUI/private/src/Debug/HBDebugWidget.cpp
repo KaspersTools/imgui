@@ -37,27 +37,113 @@ namespace HBUI {
     ImGui::Spacing();
 
     for (auto &anim: ctx.animManager->getAnimations()) {
-      const std::string title = "Animation: " + anim.second->getId();
+      ImGuiID     id    = anim.first;
+      std::string title = "Animation " + anim.second->getId();
+
+
       ImGui::Spacing();
       ImGui::Spacing();
       ImGui::SeparatorText(title.c_str());
       //id data
       {
-        ImGui::Text("id:     %f", anim.first);
-        ImGui::Text("id str: %s", anim.second->getId().c_str());
+        ImGui::Text("imgui id: %f", anim.first);
+//        ImGui::Text("id str:   %s", anim.second->setId());
       }
       //ImVec2 data
-      auto animPtr = std::dynamic_pointer_cast<HBAnim<ImVec2>>(anim.second);
-      if (animPtr) {
-        ImGui::Text("type:   ImVec2");
+      auto currentData = std::dynamic_pointer_cast<HBUI::Animation::HBAnim<ImVec2>>(anim.second);
 
-        ImGui::Text("current value:  %f, %f", animPtr->getCurrentValue().x, animPtr->getCurrentValue().y);
-        ImGui::Text("start   value:  %f, %f", animPtr->getStartValue().x, animPtr->getStartValue().y);
-        ImGui::Text("end     value:  %f, %f", animPtr->getEndValue().x, animPtr->getEndValue().y);
+      if (currentData) {
+        ImGui::Text("type:   ImVec2");
+        ImGui::SeparatorText("ImVec2 StartData");
+        //    start         = other.start;
+        //    end           = other.end;
+        //    duration      = other.duration;
+        //    playbackSpeed = other.playbackSpeed;
+        //    looping       = other.looping;
+        //    type          = other.type;
+        //    direction     = other.direction;
+        //    state         = other.state;
+        //    effect        = other.effect;
+        ImGui::Text("start   value:  %f, %f", currentData->getDefaultStartValue().x,
+                    currentData->getDefaultStartValue().y);
+        ImGui::Text("end     value:  %f, %f", currentData->getDefaultEndValue().x, currentData->getDefaultEndValue().y);
+        ImGui::Text("current value:  %f, %f", currentData->getCurrentValue().x, currentData->getCurrentValue().y);
+        ImGui::Text("duration:       %f", currentData->getDuration());
+        ImGui::Text("playbackSpeed:  %f", currentData->getPlaybackSpeed());
+        ImGui::Text("looping:        %s", currentData->getDefaultLooping() ? "true" : "false");
+
+        std::string  type  = "type: ";
+        HB_AnimType_ type_ = currentData->getDefaultType();
+        switch (type_) {
+          case HB_AnimType_Linear:
+            type += "Linear";
+            break;
+          default:
+            type += "Unknown";
+            break;
+        }
+        ImGui::Text(type.c_str());
+
+        std::string       dir       = "direction: ";
+        HB_AnimDirection_ direction = currentData->getDefaultDirection();
+        switch (direction) {
+          case HB_AnimDirection_Forward:
+            dir += "Forward";
+            break;
+          case HB_AnimDirection_Backward:
+            dir += "Backward";
+            break;
+          default:
+            dir += "Unknown";
+            break;
+        }
+        ImGui::Text(dir.c_str());
+
+        auto        state = currentData->getDefaultState();
+        std::string txt   = "state: ";
+        switch (state) {
+          case HB_AnimState_Idle:
+            txt += "Idle";
+            break;
+          case HB_AnimState_Playing:
+            txt += "Playing";
+            break;
+          case HB_AnimState_Paused:
+            txt += "Paused";
+            break;
+          case HB_AnimState_Stopped:
+            txt += "Stopped";
+            break;
+          case HB_AnimState_Finished:
+            txt += "Finished";
+            break;
+          default:
+            txt += "Unknown";
+            break;
+        }
       }
+
+      //Current
+      ImGui::SeparatorText("Current");
+
+      ImGui::DragFloat("current time", &currentData->getCurrentTime());
+      ImGui::DragFloat2("current value", &currentData->getCurrentValue().x);
+      ImGui::DragFloat2("current start", &currentData->getStartValue().x);
+      ImGui::DragFloat2("current end", &currentData->getEndValue().x);
+      bool looping = currentData->isLooping();
+      if (ImGui::Checkbox("looping", &looping)) {
+        currentData->setLooping(looping);
+      }
+      float playbackSpeed = currentData->getPlaybackSpeed();
+      if (ImGui::DragFloat("playbackSpeed", &playbackSpeed, 0.1f, 0, 40)) {
+        currentData->setPlaybackSpeed(playbackSpeed);
+      }
+
+      ImGui::Spacing();
+
       //state data
       {
-        auto        state = animPtr->getState();
+        auto        state = currentData->getState();
         std::string txt   = "state: ";
         switch (state) {
           case HB_AnimState_Idle:
@@ -80,43 +166,78 @@ namespace HBUI {
             break;
         }
 
-        ImGui::Text(txt.c_str());
-        //play
-        if (ImGui::Button("Play")) {
-          animPtr->play();
+
+        //reset
+        if (ImGui::Button("Reset")) {
+          currentData->reset();
         }
+        if (ImGui::IsItemHovered()) {
+          ImGui::BeginTooltip();
+          ImGui::Text("Reset the starting values of the animation");
+          ImGui::EndTooltip();
+        }
+
+        //stop
+        ImGui::SameLine();
+        if (ImGui::Button("Stop")) {
+          currentData->stop();
+        }
+        if (ImGui::IsItemHovered()) {
+          ImGui::BeginTooltip();
+          ImGui::Text("Stop the animation");
+          ImGui::EndTooltip();
+        }
+
+        //pause
+        ImGui::SameLine();
+        if (ImGui::Button("Pause")) {
+          currentData->pause();
+        }
+        if (ImGui::IsItemHovered()) {
+          ImGui::BeginTooltip();
+          ImGui::Text("Pause the animation");
+          ImGui::EndTooltip();
+        }
+
+        //play
+        ImGui::SameLine();
+        if (ImGui::Button("Play")) {
+          currentData->play();
+        }
+        if (ImGui::IsItemHovered()) {
+          ImGui::BeginTooltip();
+          ImGui::Text("Play the animation");
+          ImGui::EndTooltip();
+        }
+
+        //current
+        ImGui::SameLine();
+        ImGui::Text(txt.c_str());
       }
       ImGui::Spacing();
 
-      //time data
-      {
-        bool looping = animPtr->isLooping();
-        if (ImGui::Checkbox("looping", &looping)) {
-          animPtr->setLooping(looping);
-        }
-
-        float duration = animPtr->getDuration();
-        if (ImGui::DragFloat("durations", &duration, .1f, 0, 40)) {
-          animPtr->setDuration(duration);
-        }
-
-        float playbackSpeed = animPtr->getPlaybackSpeed();
-        if (ImGui::DragFloat("playbackSpeed", &playbackSpeed, 0.1f, 0, 40)) {
-          animPtr->setPlaybackSpeed(playbackSpeed);
-        }
-      }
-
       //dir
       {
-        const std::string dir = animPtr->getDirection();
+        std::string       dir       = "direction: ";
+        HB_AnimDirection_ direction = currentData->getDirection();
+        switch (direction) {
+          case HB_AnimDirection_Forward:
+            dir += "Forward";
+            break;
+          case HB_AnimDirection_Backward:
+            dir += "Backward";
+            break;
+          default:
+            dir += "Unknown";
+            break;
+        }
         ImGui::Text("direction: %s", dir.c_str());
         if (ImGui::Button("Forward")) {
-          animPtr->setDirection(HB_AnimDirection_Forward);
+          currentData->setDirection(HB_AnimDirection_Forward);
         }
         ImGui::SameLine();
-        ImGui::Dummy({20, 0});
         if (ImGui::Button("Backward")) {
-          animPtr->setDirection(HB_AnimDirection_Backward);
+          currentData->setDirection(HB_AnimDirection_Backward);
         }
       }
       ImGui::Spacing();
