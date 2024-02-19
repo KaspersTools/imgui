@@ -15,6 +15,8 @@
 #include <memory>
 #include <vector>
 #include <map>
+#include "Animation/Animation.h"
+#include "HBTime.h"
 
 //-----------------------------------------------------------------------------
 // [SECTION] Forward Declarations
@@ -164,8 +166,7 @@ public:
   virtual bool draw(ImDrawList *drawList, ImColor color, bool drawFilled) = 0;
 
   void update(float deltaTime) override {
-    //empty
-    std::cout << "HBUIItem::update: " << idString << std::endl;
+
   }
 
   //gets calculated based on the draw type
@@ -207,10 +208,11 @@ struct HBRect : HBUIItem {
 // [SECTION] Main menubar
 //-----------------------------------------------------------------------------
 enum HBMainMenuBarFlags_ {
-  HB_MAIN_MENU_BAR_FLAG_NONE              = 0,
-  HB_MAIN_MENU_BAR_FLAG_HORIZONTAL        = 1 << 0,
-  HB_MAIN_MENU_BAR_FLAG_VERTICAL          = 1 << 1,
-  HB_MAIN_MENU_BAR_FLAG_USE_HBUI_STYLE    = 1 << 2
+  HB_MAIN_MENU_BAR_FLAG_NONE           = 0,
+  HB_MAIN_MENU_BAR_FLAG_HORIZONTAL     = 1 << 0,
+  HB_MAIN_MENU_BAR_FLAG_VERTICAL       = 1 << 1,
+  HB_MAIN_MENU_BAR_FLAG_USE_HBUI_STYLE = 1 << 2,
+  HB_Main_Menu_Bar_Flag_Animated       = 1 << 3,
 };
 
 struct HBMenuButton : HBUIItem {
@@ -243,10 +245,17 @@ public:
 };
 
 struct HBMainMenuBar : HBUIItem {
-  HBMainMenuBar(const std::string &id, HBItemFlags itemFlags = HBItemFlags_None, MainMenuBarFlags flags = 0,
-                ImVec2 windowPos = {}, ImVec2 windowSize = {}
-  ) : HBUIItem(id, itemFlags), flags(flags),
-      windowPos(windowPos), windowSize(windowSize) {
+  HBMainMenuBar(const std::string &id,
+                HBItemFlags itemFlags = 0,
+                MainMenuBarFlags flags = 0,
+                ImVec2 windowPos = {},
+                ImVec2 windowSize = {},
+                HBAnimProps<ImVec2> animProps = {}
+  ) : HBUIItem(id, itemFlags),
+      flags(flags),
+      windowPos(windowPos),
+      windowSize(windowSize),
+      animProps(animProps) {
   }
 
   ~HBMainMenuBar() {};
@@ -272,7 +281,7 @@ struct HBMainMenuBar : HBUIItem {
   ImVec2 windowPos  = {0, 0};//The start position of the MenuBar in window space, if 0 it will be on the cursorPos
   ImVec2 windowSize = {0, 0};//The size of the MenuBar, if 0 it will be calculated based on the items
 
-  bool   enabled   = true;
+  bool enabled = true;
 
   //primitive
   HBRect rect = HBRect(idString + "mainMenuBar", HBItemFlags_None);
@@ -280,6 +289,10 @@ struct HBMainMenuBar : HBUIItem {
   //items
   std::vector<std::shared_ptr<HBMenuButton>> items       = {};
   ImVec2                                     nextItemPos = {};
+
+  //animation
+//  HBPanelAnimType_ animType = HB_PANEL_ANIM_TYPE_NONE;
+  HBAnimProps<ImVec2> animProps = {};
 };
 
 //-----------------------------------------------------------------------------
@@ -297,28 +310,6 @@ struct HBDrawData {
   ImVec2 cursorPos = ImVec2(0, 0);     //used to determine where for example the dockspace should startr
 };
 
-//-----------------------------------------------------------------------------
-// [SECTION] Time
-//-----------------------------------------------------------------------------
-struct HBTime {
-  inline static float deltaTime = 0.0f;
-  inline static float lastTime  = 0.0f;
-  inline static float frameTime = 0.0f;
-
-  inline static void init() {
-    lastTime = ImGui::GetTime();
-  }
-
-  inline static void startFrame() {
-    float time = ImGui::GetTime();
-    deltaTime = time - lastTime;
-    lastTime  = time;
-  }
-
-  inline static void endFrame() {
-    frameTime = ImGui::GetTime() - lastTime;
-  }
-};
 
 //-----------------------------------------------------------------------------
 // [SECTION] HBUIContext
@@ -331,13 +322,33 @@ struct HBContext {
 
   //Draw Data
   std::shared_ptr<HBDrawData> drawData = std::make_shared<HBDrawData>();
+
+  //AnimManager
+  void update() {
+    animManager->update();
+  }
+
+  bool hasAnimation(const ImGuiID &id) {
+    return animManager->hasAnimation(id);
+  }
+
+  bool hasAnimation(const std::string& id){
+    return animManager->hasAnimation(ImGui::GetID(id.c_str()));
+  }
+
+
+  ImVec2 addAnimation(const std::string &id, HBAnimProps<ImVec2> props) {
+    animManager->addAnimation(id, props);
+  }
+
+  std::shared_ptr<HBAnimManager> animManager = std::make_shared<HBAnimManager>();
 };
 
 //-----------------------------------------------------------------------------
 // [SECTION] HBUI
 //-----------------------------------------------------------------------------
 namespace HBUI {
-  //---------------------------------------------------------------------------------Q
+  //---------------------------------------------------------------------------
   HBUI_API HBContext *
   initialize(const std::string &title, int width, int height, MainWindowFlags flags);
 
@@ -432,9 +443,13 @@ namespace HBUI {
   // [SECTION] Menu Bars
   //---------------------------------------------------------------------------------
   HBUI_API bool
-  beginMainMenuBar(const std::string &id,
-                   HBItemFlags itemFlags = HBItemFlags_None, MainMenuBarFlags flags = 0,
-                   ImVec2 windowPos = {}, ImVec2 windowSize = {});
+  beginMainMenuBar(const std::string &id, ImVec2 windowPos = {}, ImVec2 windowSize = {},
+                   HBItemFlags itemFlags = HBItemFlags_None, MainMenuBarFlags flags = 0);
+
+  HBUI_API bool
+  beginMainMenuBar(const std::string &id, HBAnimProps<ImVec2> animProp,
+                   HBItemFlags itemFlags, MainMenuBarFlags flags
+  );
 
   IMGUI_API void
   endMainMenuBar();//
@@ -452,6 +467,10 @@ namespace HBUI {
   // [SECTION] Updating
   //---------------------------------------------------------------------------------
   HBUI_API void update(float deltatime);
+
+  //---------------------------------------------------------------------------------
+  // [SECTION] Animations
+  //---------------------------------------------------------------------------------
 
   //---------------------------------------------------------------------------------
   // [SECTION] Rendering

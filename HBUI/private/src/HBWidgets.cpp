@@ -68,7 +68,9 @@ void HBRect::update(float deltaTime) {
 //-----------------------------------------------------------------------------
 // [SECTION] MenuBar
 //-----------------------------------------------------------------------------
-bool HBMainMenuBar::draw(ImDrawList *drawList, ImColor color = ImColor(-1, -1, -1, -1), bool drawFilled = false) {
+bool HBMainMenuBar::draw(ImDrawList *drawList,
+                         ImColor color = ImColor(-1, -1, -1, -1),
+                         bool drawFilled = false) {
   if (color.Value == ImColor(-1, -1, -1, -1)) {
     color = getColor();//
   }
@@ -87,27 +89,6 @@ bool HBMainMenuBar::draw(ImDrawList *drawList, ImColor color = ImColor(-1, -1, -
                                   ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
                                   ImGuiWindowFlags_NoBackground;
 
-  //      main menu bars are drawn like this
-  //-----------------------------------------------
-  //--------first call horizontal------------------
-  //-----------------------------------------------
-  //|||||||||||||xoxoxoxoxoxoooxooxoxoxoxoooxooxoxo
-  //|second |||||xooxoxox    MAIN      xoooxooxoxox
-  //|call |||||||xooxoxox    MAIN      xoooxooxoxox
-  //|vertical |||xooxoxox   CONTENT    xoooxooxoxox
-  //|||||||||||||xoxoxoxoxoooxooxoxoxoxoooxooxoxoxo
-  //|||||||||||||xoxoxoxoxoooxooxoxoxoxoooxooxoxoxo
-  //|||||||||||||xoxoxoxoxoooxooxoxoxoxoooxooxoxoxo
-
-  //|||||||||||||----------------------------------
-  //|||||||||||||-----second call horizontal-------
-  //|||||||||||||----------------------------------
-  //|first ||||||xooxoxoxoxoooxooxoxoxoxoooxooxoxox
-  //|call |||||||xooxoxox    MAIN      xoooxooxoxox
-  //|vertical |||xooxoxox   CONTENT    xoooxooxoxox
-  //|||||||||||||xooxoxoxoxoooxooxoxoxoxoooxooxoxox
-  //|||||||||||||xooxoxoxoxoooxooxoxoxoxoooxooxoxox
-  //|||||||||||||xooxoxoxoxoooxooxoxoxoxoooxooxoxox
   ImVec2 panelStart = {};
   ImVec2 panelEnd   = {};
 
@@ -115,7 +96,7 @@ bool HBMainMenuBar::draw(ImDrawList *drawList, ImColor color = ImColor(-1, -1, -
   ImVec2 vpSize  = HBUI::getViewportSize();
   ImVec2 vpEnd   = vpStart + vpSize;
 
-  ImVec2 min = vpStart;
+  ImVec2 min = {};
   ImVec2 max = {};
 
   if (isHorizontal()) {
@@ -136,8 +117,8 @@ bool HBMainMenuBar::draw(ImDrawList *drawList, ImColor color = ImColor(-1, -1, -
     drawData->cursorPos.x += windowSize.x;
   }
 
-  rect.start = min;
-  rect.end   = max;
+  rect.start = min + windowPos;
+  rect.end   = max + windowPos;
 
   ImGui::SetNextItemAllowOverlap();
 
@@ -155,7 +136,7 @@ bool HBMainMenuBar::draw(ImDrawList *drawList, ImColor color = ImColor(-1, -1, -
 
 
   bool p_Open = false;
-  p_Open = ImGui::Begin(idString.c_str(), nullptr, window_flags);
+  p_Open   = ImGui::Begin(idString.c_str(), nullptr, window_flags);
 
   ImGui::PopStyleVar(3);
 
@@ -171,7 +152,7 @@ bool HBMainMenuBar::draw(ImDrawList *drawList, ImColor color = ImColor(-1, -1, -
   if (drawList == nullptr) {
     drawList = ImGui::GetWindowDrawList();
   }
-
+  drawList = ImGui::GetForegroundDrawList();
   rect.draw(drawList, color, true);
   return p_Open;
 }
@@ -182,10 +163,10 @@ void HBMainMenuBar::update(float deltaTime) {
 void HBMainMenuBar::append(std::shared_ptr<HBMenuButton> item) {
   const ImVec2  spacing      = item->getSpacing();
   const HBStyle &style       = HBUI::getStyle();
-  const bool    checkForSize = windowSize == ImVec2(0, 0);
+  const bool    isAnimated   = flags & HB_Main_Menu_Bar_Flag_Animated;
+  const bool    checkForSize = windowSize == ImVec2(0, 0) && !isAnimated;
 
   ImVec2 start = nextItemPos + windowPos;
-
   if (isHorizontal()) {
     start.x += spacing.x;//spacing.left;
     start.y       = spacing.y; //spacing.top;
@@ -204,23 +185,21 @@ void HBMainMenuBar::append(std::shared_ptr<HBMenuButton> item) {
   } else if (isVertical()) {
     start.x = spacing.x; //spacing.left;
     start.y += spacing.y;//spacing.top;
-
-    item->pos = start + style.mainMenuBarVerticalFirstItemOffset;
+    start += style.mainMenuBarVerticalFirstItemOffset;
 
     nextItemPos.x = start.x;
     nextItemPos.y = start.y + item->size.y;// + spacing.bottom;
 
     ImVec2 totalItemSize = ImVec2(item->pos.x + item->size.x + spacing.x, // spacing.left + spacing.right,
                                   item->pos.y + item->size.y + spacing.y);// spacing.top  + spacing.bottom);
-
     if (totalItemSize.x > windowSize.y && checkForSize) {
+
       windowSize.x = totalItemSize.x;
     }
   }
 
+  item->pos = start;
   items.push_back(item);
-
-
 }
 
 bool HBMainMenuBar::isHorizontal() const {
@@ -329,6 +308,17 @@ namespace HBUI {
     ImGui::End();
   }
 
+  void mainMenubarCheck(MainMenuBarFlags flags) {
+    HBContext *ctx = HBUI::getCurrentContext();
+    IM_ASSERT(ctx->drawData->currentAppendingMenuBar == nullptr &&
+              "A menu-bar is already active! Please call EndMainMenuBar() before starting a new one.");
+
+    const bool horizontal = (HB_MAIN_MENU_BAR_FLAG_HORIZONTAL & flags) ||
+                            (HB_MAIN_MENU_BAR_FLAG_NONE & flags);
+    const bool vertical   = (HB_MAIN_MENU_BAR_FLAG_VERTICAL & flags);
+    IM_ASSERT(!(vertical && horizontal) &&
+              "Cannot create a menu-bar with both horizontal and vertical flags! Create two separate menu-bars instead.");
+  }
   /**
    *
    * ******************
@@ -339,28 +329,8 @@ namespace HBUI {
   HBUI_API bool
   beginMainMenuBar(const std::string &id, HBItemFlags itemFlags, MainMenuBarFlags flags,
                    ImVec2 windowPos, ImVec2 windowSize) {
-
+    mainMenubarCheck(flags);
     HBContext *ctx = HBUI::getCurrentContext();
-    IM_ASSERT(ctx->drawData->currentAppendingMenuBar == nullptr &&
-              "A menu-bar is already active! Please call EndMainMenuBar() before starting a new one.");
-
-    const bool horizontal = (HB_MAIN_MENU_BAR_FLAG_HORIZONTAL & flags) ||
-                            (HB_MAIN_MENU_BAR_FLAG_NONE & flags);
-    const bool vertical   = (HB_MAIN_MENU_BAR_FLAG_VERTICAL & flags);
-    IM_ASSERT(!(vertical && horizontal) &&
-              "Cannot create a menu-bar with both horizontal and vertical flags! Create two separate menu-bars instead.");
-
-    //example //todo:remove
-    bool enableAnim = false;
-    if (enableAnim) {
-      const bool isAnimatable = (HBItemFlags_Animatable & itemFlags);
-      bool       generateNew  = true;
-
-      static Animator<float> enabledAnimator(0.f, 30.f, 1.f);
-      bool                   enabled      = true;
-      ImGuiID                imId         = ImGui::GetID(id.c_str());
-      float                  enabledValue = enabledAnimator.Update(imId, &enabled, HBTime::deltaTime);
-    }
 
     auto appendingBar = std::make_shared<HBMainMenuBar>(id, itemFlags, flags, windowPos, windowSize);
     ctx->drawData->currentAppendingMenuBar = appendingBar;
@@ -368,6 +338,80 @@ namespace HBUI {
 
     return true;
   }// create and append to a full screen menu-bar
+
+  HBUI_API bool
+  beginMainMenuBar(const std::string &id, HBAnimProps<ImVec2> animProp,
+                   HBItemFlags itemFlags, MainMenuBarFlags flags
+  ) {
+    HBContext *ctx = HBUI::getCurrentContext();
+    IM_ASSERT(ctx->drawData->currentAppendingMenuBar == nullptr &&
+              "A menu-bar is already active! Please call EndMainMenuBar() before starting a new one.");
+
+    const bool horizontal = (HB_MAIN_MENU_BAR_FLAG_HORIZONTAL & flags) ||
+                            (HB_MAIN_MENU_BAR_FLAG_NONE & flags);
+    const bool vertical   = (HB_MAIN_MENU_BAR_FLAG_VERTICAL & flags);
+
+    IM_ASSERT(!(vertical && horizontal) &&
+              "Cannot create a menu-bar with both horizontal and vertical flags! Create two separate menu-bars instead.");
+
+    const bool hasAnim = ctx->hasAnimation(id);
+    if (!hasAnim) {
+      ctx->addAnimation(id, animProp);
+    }
+
+    ImVec2 val = ctx->animManager->getCurrentValue<ImVec2>(id);
+
+    std::shared_ptr<HBMainMenuBar> appendingBar = nullptr;
+    if (animProp.effect == HB_AnimEffect_Expand) {
+      appendingBar = std::make_shared<HBMainMenuBar>(id, itemFlags, flags, ImVec2(0, 0), val);
+    } else if (animProp.effect == HB_AnimEffect_Slide) {
+      appendingBar = std::make_shared<HBMainMenuBar>(id, itemFlags, flags, val, ImVec2(0, 400));
+    }
+
+    ctx->drawData->currentAppendingMenuBar = appendingBar;
+    ctx->drawData->mainMenuBars.push_back(ctx->drawData->currentAppendingMenuBar);
+
+    return true;
+
+  }
+//  HBUI_API bool//todo:combine functions
+//  beginMainMenuBar(const std::string &id, HBAnimV2 animProps, HBPanelAnimType_ animType,
+//                   ImVec2 windowSizeOrPos,
+//                   HBItemFlags itemFlags, MainMenuBarFlags flags
+//  ) {
+//    HBContext *ctx = HBUI::getCurrentContext();
+//    IM_ASSERT(ctx->drawData->currentAppendingMenuBar == nullptr &&
+//              "A menu-bar is already active! Please call EndMainMenuBar() before starting a new one.");
+//
+//    const bool horizontal = (HB_MAIN_MENU_BAR_FLAG_HORIZONTAL & flags) ||
+//                            (HB_MAIN_MENU_BAR_FLAG_NONE & flags);
+//    const bool vertical   = (HB_MAIN_MENU_BAR_FLAG_VERTICAL & flags);
+//    IM_ASSERT(!(vertical && horizontal) &&
+//              "Cannot create a menu-bar with both horizontal and vertical flags! Create two separate menu-bars instead.");
+//
+//    ImGuiID    imId    = ImGui::GetID(id.c_str());
+//    const bool hasAnim = ctx->hasAnimation(imId, animProps);
+//    if (!hasAnim) {
+//      ctx->addAnimation(animProps.start, animProps.end, animProps.speed, imId);
+//    }
+//
+//    ImVec2 val = ctx->vec2AnimManager->getCurrentValue(imId);
+//
+//    std::shared_ptr<HBMainMenuBar> appendingBar = nullptr;
+//    if(animType == HB_PANEL_ANIM_TYPE_SCALE) {
+//      appendingBar = std::make_shared<HBMainMenuBar>(id, itemFlags, flags, windowSizeOrPos, val, animType);
+//    }else if(animType == HB_PANEL_ANIM_TYPE_SLIDE){
+//      appendingBar = std::make_shared<HBMainMenuBar>(id, itemFlags, flags, val, windowSizeOrPos, animType);
+//    }else{
+//      IM_ASSERT(false && "Invalid animation type");
+//    }
+//
+//
+//    ctx->drawData->currentAppendingMenuBar = appendingBar;
+//    ctx->drawData->mainMenuBars.push_back(ctx->drawData->currentAppendingMenuBar);
+//
+//    return true;
+//  }
 
   IMGUI_API void
   endMainMenuBar() {

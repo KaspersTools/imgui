@@ -111,6 +111,7 @@ namespace HBUI {
   }
 
   HBUI_API void update(float deltatime){
+    g_HBUICTX->update();
   }
   /*********************************************
     * Rendering

@@ -33,6 +33,8 @@ option(HBUI_GLFW "Use VULKAN WITH GLFW" OFF)
 ###############################################################################
 set(HBUI_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(HBUI SHARED
+        include/HBUI/HBTime.h
+        include/HBUI/types/HBFloat.h
 )
 
 list(APPEND HBUI_SOURCES

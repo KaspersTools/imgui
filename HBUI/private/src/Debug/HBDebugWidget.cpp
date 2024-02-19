@@ -29,6 +29,101 @@ namespace HBUI {
       "ctx.mainWindowSettings.MainWindowFlags:   No Move                       ",
   };
 
+  void drawAnimDebugNode() {
+    const HBContext  &ctx      = *HBUI::getCurrentContext();
+    const HBDrawData &drawData = *ctx.drawData;
+
+    ImGui::Text("Anim");
+    ImGui::Spacing();
+
+    for (auto &anim: ctx.animManager->getAnimations()) {
+      const std::string title = "Animation: " + anim.second->getId();
+      ImGui::Spacing();
+      ImGui::Spacing();
+      ImGui::SeparatorText(title.c_str());
+      //id data
+      {
+        ImGui::Text("id:     %f", anim.first);
+        ImGui::Text("id str: %s", anim.second->getId().c_str());
+      }
+      //ImVec2 data
+      auto animPtr = std::dynamic_pointer_cast<HBAnim<ImVec2>>(anim.second);
+      if (animPtr) {
+        ImGui::Text("type:   ImVec2");
+
+        ImGui::Text("current value:  %f, %f", animPtr->getCurrentValue().x, animPtr->getCurrentValue().y);
+        ImGui::Text("start   value:  %f, %f", animPtr->getStartValue().x, animPtr->getStartValue().y);
+        ImGui::Text("end     value:  %f, %f", animPtr->getEndValue().x, animPtr->getEndValue().y);
+      }
+      //state data
+      {
+        auto        state = animPtr->getState();
+        std::string txt   = "state: ";
+        switch (state) {
+          case HB_AnimState_Idle:
+            txt += "Idle";
+            break;
+          case HB_AnimState_Playing:
+            txt += "Playing";
+            break;
+          case HB_AnimState_Paused:
+            txt += "Paused";
+            break;
+          case HB_AnimState_Stopped:
+            txt += "Stopped";
+            break;
+          case HB_AnimState_Finished:
+            txt += "Finished";
+            break;
+          default:
+            txt += "Unknown";
+            break;
+        }
+
+        ImGui::Text(txt.c_str());
+        //play
+        if (ImGui::Button("Play")) {
+          animPtr->play();
+        }
+      }
+      ImGui::Spacing();
+
+      //time data
+      {
+        bool looping = animPtr->isLooping();
+        if (ImGui::Checkbox("looping", &looping)) {
+          animPtr->setLooping(looping);
+        }
+
+        float duration = animPtr->getDuration();
+        if (ImGui::DragFloat("durations", &duration, .1f, 0, 40)) {
+          animPtr->setDuration(duration);
+        }
+
+        float playbackSpeed = animPtr->getPlaybackSpeed();
+        if (ImGui::DragFloat("playbackSpeed", &playbackSpeed, 0.1f, 0, 40)) {
+          animPtr->setPlaybackSpeed(playbackSpeed);
+        }
+      }
+
+      //dir
+      {
+        const std::string dir = animPtr->getDirection();
+        ImGui::Text("direction: %s", dir.c_str());
+        if (ImGui::Button("Forward")) {
+          animPtr->setDirection(HB_AnimDirection_Forward);
+        }
+        ImGui::SameLine();
+        ImGui::Dummy({20, 0});
+        if (ImGui::Button("Backward")) {
+          animPtr->setDirection(HB_AnimDirection_Backward);
+        }
+      }
+      ImGui::Spacing();
+
+    }
+  }
+
   void drawMainMenubarDebugNode() {
     const HBContext  &ctx      = *HBUI::getCurrentContext();
     const HBDrawData &drawData = *ctx.drawData;
@@ -82,6 +177,9 @@ namespace HBUI {
     if (ImGui::CollapsingHeader("Debug Draw Data")) {
       drawDebugDrawDataNode();
     }
+    if (ImGui::CollapsingHeader("Debug Animations")) {
+      drawAnimDebugNode();
+    }
     if (ImGui::CollapsingHeader("Debug Main Menu Bars")) {
       drawMainMenubarDebugNode();
     }
@@ -124,13 +222,16 @@ namespace HBUI {
           ImGui::Checkbox("mainMenuBar   ---UseMenuBarColor-------------  | ",
                           (bool *) &style.useHBUIStyleMenuBarColor);
 
-          ImGui::ColorEdit4("mainMenuBar   ---ItemColor-------------------- | ", (float *) &style.mainMenuBarItemColor);
+          ImGui::ColorEdit4("mainMenuBar   ---ItemColor-------------------- | ",
+                            (float *) &style.mainMenuBarItemColor);
           ImGui::Checkbox("mainMenuBar   ---UseItemColor----------------- | ",
                           (bool *) &style.useHBUIStyleMainMenuItemColor);
 
           ImGui::DragFloat2("mainMenuItem  ---Size------------------------- | ", (float *) &style.mainMenuItemSize);
-          ImGui::DragFloat2("mainMenuItems ---Padding---------------------- | ", (float *) &style.mainMenuItemsPadding);
-          ImGui::DragFloat2("mainMenuItems ---Spacing---------------------- | ", (float *) &style.mainMenuItemsSpacing);
+          ImGui::DragFloat2("mainMenuItems ---Padding---------------------- | ",
+                            (float *) &style.mainMenuItemsPadding);
+          ImGui::DragFloat2("mainMenuItems ---Spacing---------------------- | ",
+                            (float *) &style.mainMenuItemsSpacing);
 
           if (ImGui::Button("Reset Style")) {
             style = HBStyle();
@@ -185,7 +286,8 @@ namespace HBUI {
   HBUI_API void printVec4(const ImVec4 &vec4, const std::string &name) {
     std::string type = "ImVec4";
     ImVec4      val  = vec4;
-    ImGui::LogText("%s %s = {%.2ff, %.2ff, %.2ff, %.2ff};" IM_NEWLINE, type.c_str(), name.c_str(), val.x, val.y, val.z,
+    ImGui::LogText("%s %s = {%.2ff, %.2ff, %.2ff, %.2ff};" IM_NEWLINE, type.c_str(), name.c_str(), val.x, val.y,
+                   val.z,
                    val.w);
   }
 }// namespace HBUI
