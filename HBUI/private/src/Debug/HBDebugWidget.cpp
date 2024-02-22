@@ -47,23 +47,12 @@ namespace HBUI {
       //id data
       {
         ImGui::Text("imgui id: %f", anim.first);
-//        ImGui::Text("id str:   %s", anim.second->setId());
       }
-      //ImVec2 data
       auto currentData = std::dynamic_pointer_cast<HBUI::Animation::HBAnim<ImVec2>>(anim.second);
 
       if (currentData) {
         ImGui::Text("type:   ImVec2");
         ImGui::SeparatorText("ImVec2 StartData");
-        //    start         = other.start;
-        //    end           = other.end;
-        //    duration      = other.duration;
-        //    playbackSpeed = other.playbackSpeed;
-        //    looping       = other.looping;
-        //    type          = other.type;
-        //    direction     = other.direction;
-        //    state         = other.state;
-        //    effect        = other.effect;
         ImGui::Text("start   value:  %f, %f", currentData->getDefaultStartValue().x,
                     currentData->getDefaultStartValue().y);
         ImGui::Text("end     value:  %f, %f", currentData->getDefaultEndValue().x, currentData->getDefaultEndValue().y);
@@ -252,22 +241,33 @@ namespace HBUI {
     ImGui::Text("MainMenuBar");
     ImGui::Spacing();
 
-    for (auto &bar: drawData.mainMenuBars) {
-      ImGui::SeparatorText(bar->idString.c_str());
-
-      ImGui::Text("pos  = %f, %f", bar->windowPos.x, bar->windowPos.y);
-      ImGui::Text("size = %f, %f", bar->windowSize.x, bar->windowSize.y);
-      {
-        ImGui::BeginDisabled();
-        bool hor = bar->isHorizontal();
-        bool ver = bar->isVertical();
-        ImGui::Checkbox("horizontal:   ", &hor);
-        ImGui::Checkbox("vertical  :   ", &ver);
-        ImGui::EndDisabled();
-      }
-
-      ImGui::Spacing();
-    }
+//    for (auto &bar: drawData.sideBars) {
+//      ImGui::SeparatorText(bar->idString.c_str());
+//
+//      ImGui::Text("pos  = %f, %f", bar->windowPos.x, bar->windowPos.y);
+//      ImGui::Text("size = %f, %f", bar->windowSize.x, bar->windowSize.y);
+//
+//      {
+//        ImGui::BeginDisabled();
+//        bool hor = bar->isHorizontal();
+//        bool ver = bar->isVertical();
+//        ImGui::Checkbox("horizontal:   ", &hor);
+//        ImGui::Checkbox("vertical  :   ", &ver);
+//        ImGui::EndDisabled();
+//      }
+//      ImGui::Spacing();
+//      ImGui::Text("childs");
+//      ImGui::Spacing();
+//      if(bar->items.empty()){
+//        ImGui::Text("No items");
+//      }else {
+//        for (auto &child: bar->items) {
+//          ImGui::Text("id: %s", child->idString.c_str());
+//          ImGui::Text("start  = %f, %f", child->m_primitive.getStart().x, child->m_primitive.getStart().y);
+//          ImGui::Text("end    = %f, %f", child->m_primitive.getEnd().x, child->m_primitive.getEnd().y);
+//        }
+//      }
+//    }
   }
 
   void drawDebugDrawDataNode() {
@@ -276,17 +276,23 @@ namespace HBUI {
 
     ImGui::Text("DrawData");
     ImGui::Spacing();
-
-    ImGui::Text("DockspaceFlags: %d", drawData.dockspaceFlags);
-    ImGui::Text("currentAppendingMenuBar: %p", drawData.currentAppendingMenuBar.get());
   }
 
-  HBUI_API void showDebugWindow(bool *p_open) {
-    ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
-    HBContext *ctx = HBUI::getCurrentContext();
+  HBUI_API void printVec2(const ImVec2 &vec2, const std::string &name) {
+    // Set the width for the first column
+    int width = 70;
 
+    std::string type = "ImVec2";
+    ImVec2      val  = vec2;
+
+    ImGui::LogText("%s %s = {%.2ff, %.2ff};" IM_NEWLINE, type.c_str(), name.c_str(), val.x, val.y);
+    //todo: add a log to file option
+  }
+
+
+  HBUI_API void showDebugWindow(bool *p_open) {
+    HBContext *ctx = HBUI::getCurrentContext();
     if (!ImGui::Begin("Debug HBUI Window", p_open)) {
-      // Early out if the window is collapsed, as an optimization.
       ImGui::End();
       return;
     }
@@ -313,10 +319,10 @@ namespace HBUI {
                          "Best to set these before window creation but they are here for testing purposes only!:");
 
       std::map<std::string, MainWindowFlags> flagsMap = {
-          {"ctx.mainWindowSettings.MainWindowFlags:   No Decoration                 ", HBUI_MAIN_WINDOW_FLAG_NO_DECORATION},
-          {"ctx.mainWindowSettings.MainWindowFlags:   No Resize                     ", HBUI_MAIN_WINDOW_FLAG_NO_RESIZE},
-          {"ctx.mainWindowSettings.MainWindowFlags:   No Move                       ", HBUI_MAIN_WINDOW_FLAG_NO_MOVE},
-          {"ctx.mainWindowSettings.MainWindowFlags:   No TitleBar                   ", HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR},
+          {"ctx.mainWindowSettings.MainWindowFlags:   No Decoration                 ", HBMainWindowFlags_NoDecoration},
+          {"ctx.mainWindowSettings.MainWindowFlags:   No Resize                     ", HBMainWindowFlags_NoResize},
+          {"ctx.mainWindowSettings.MainWindowFlags:   No Move                       ", HBMainWindowFlags_NoMove},
+          {"ctx.mainWindowSettings.MainWindowFlags:   No TitleBar                   ", HBMeinWindowFlags_NoTitleBar},
       };
 
       for (auto &flag: flagsMap) {
@@ -335,24 +341,24 @@ namespace HBUI {
 
       if (ImGui::BeginTabBar("StyleTabBar")) {
         if (ImGui::BeginTabItem("HBUIStyle")) {
-          ImGui::DragFloat2("mainMenuBar   ---VerticalFirstItemOffset----   | ",
-                            (float *) &style.mainMenuBarVerticalFirstItemOffset);
-          ImGui::DragFloat2("mainMenuBar   ---HorizontalFirstItemOffset---  | ",
-                            (float *) &style.mainMenuBarHorizontalFirstItemOffset);
-          ImGui::ColorEdit4("mainMenuBar   ---Color------------------------ | ", (float *) &style.menuBarColor);
+//          ImGui::DragFloat2("mainMenuBar   ---VerticalFirstItemOffset----   | ",
+//                            (float *) &style.sideBarVerticalFirstItemOffset);
+//          ImGui::DragFloat2("mainMenuBar   ---HorizontalFirstItemOffset---  | ",
+//                            (float *) &style.mainMenuBarHorizontalFirstItemOffset);
+          ImGui::ColorEdit4("mainMenuBar   ---Color------------------------ | ", (float *) &style.sideBarColor);
           ImGui::Checkbox("mainMenuBar   ---UseMenuBarColor-------------  | ",
                           (bool *) &style.useHBUIStyleMenuBarColor);
 
           ImGui::ColorEdit4("mainMenuBar   ---ItemColor-------------------- | ",
-                            (float *) &style.mainMenuBarItemColor);
-          ImGui::Checkbox("mainMenuBar   ---UseItemColor----------------- | ",
-                          (bool *) &style.useHBUIStyleMainMenuItemColor);
+                            (float *) &style.sideBarItemColor);
+//          ImGui::Checkbox("mainMenuBar   ---UseItemColor----------------- | ",
+//                          (bool *) &style.useHBUIStyleMainMenuItemColor);
 
-          ImGui::DragFloat2("mainMenuItem  ---Size------------------------- | ", (float *) &style.mainMenuItemSize);
-          ImGui::DragFloat2("mainMenuItems ---Padding---------------------- | ",
-                            (float *) &style.mainMenuItemsPadding);
+          ImGui::DragFloat2("mainMenuItem  ---Size------------------------- | ", (float *) &style.menuItemSide);
+//          ImGui::DragFloat2("mainMenuItems ---Padding---------------------- | ",
+//                            (float *) &style.menuItemPadding);
           ImGui::DragFloat2("mainMenuItems ---Spacing---------------------- | ",
-                            (float *) &style.mainMenuItemsSpacing);
+                            (float *) &style.menuItemSpacing);
 
           if (ImGui::Button("Reset Style")) {
             style = HBStyle();
@@ -360,7 +366,7 @@ namespace HBUI {
 
           ImGui::SameLine();
           if (ImGui::Button("Print Style")) {
-            getStyle().logToTTY();
+//            getStyle().logToTTY();
           }
 
           ImGui::EndTabItem();
@@ -380,28 +386,6 @@ namespace HBUI {
     }
 
     ImGui::End();
-  }
-
-
-  HBUI_API void printVec2(const ImVec2 &vec2, const std::string &name) {
-    // Set the width for the first column
-    int width = 70;
-
-    std::string type = "ImVec2";
-    ImVec2      val  = vec2;
-
-    ImGui::LogText("%s %s = {%.2ff, %.2ff};" IM_NEWLINE, type.c_str(), name.c_str(), val.x, val.y);
-
-    std::cout << std::left << std::setw(width) << "ImVec2 mainMenuBarVerticalFirstItemOffset"
-              << " = {" << val.x << ", " << val.y << "}\n";
-    std::cout << std::setw(width) << "ImVec2 mainMenuBarHorizontalFirstItemOffset"
-              << " = {" << val.x << ", " << val.y << "}\n";
-    std::cout << std::setw(width) << "ImVec2 mainMenuItemSize"
-              << " = {" << val.x << ", " << val.y << "}\n";
-    std::cout << std::setw(width) << "ImVec2 mainMenuItemsPadding"
-              << " = {" << val.x << ", " << val.y << "}\n";
-    std::cout << std::setw(width) << "ImVec2 mainMenuItemsSpacing"
-              << " = {" << val.x << ", " << val.y << "}\n";
   }
 
   HBUI_API void printVec4(const ImVec4 &vec4, const std::string &name) {

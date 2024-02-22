@@ -5,8 +5,6 @@
 #ifndef IMGUI_ANIMATIONS_H
 #define IMGUI_ANIMATIONS_H
 
-#include "../HBUI.h"
-
 template<typename T>
 static inline T Clamp(T v, T mn, T mx) { return (v < mn) ? mn : (v > mx) ? mx : v; }
 

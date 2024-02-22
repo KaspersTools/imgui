@@ -52,7 +52,7 @@ target_sources(imgui PRIVATE ${sources} misc/cpp/imgui_stdlib.cpp)
 ###############################################################################
 # EXAMPLE
 ###############################################################################
-option(HBUI_BUILD_EXAMPLE "Build example" OFF)
+option(HBUI_BUILD_EXAMPLE "Build example" ON)
 if(HBUI_BUILD_EXAMPLE)
     set(IMVK_DOWNLOAD_GLFW ON)
     add_subdirectory(HBUI)

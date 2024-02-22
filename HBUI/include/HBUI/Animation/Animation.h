@@ -3,10 +3,6 @@
 #include <iostream>
 #include <cmath>
 #include <unordered_map>
-#include "../HBUI.h"
-#include "../HBTime.h"
-#include "../types/HBFloat.h"
-#include "Animations.h"
 
 struct GlobalAnimState {
   static inline hb_u_float playbackSpeed = 1.0f;
@@ -56,10 +52,14 @@ struct HBAnimProps {
   HB_AnimState_     state     = HB_AnimState_Idle;
   HB_AnimEffect_    effect    = HB_AnimEffect_Slide;
 };
+
 namespace HBUI::Animation {
+  template<typename T>
+  class HBAnim;
 
   class HBAnimBase {
   public:
+
     HBAnimBase(const std::string &id) : m_strId(id) {
       m_id = ImGui::GetID(id.c_str());
     }
@@ -70,6 +70,11 @@ namespace HBUI::Animation {
     }
 
   public:
+    template<typename T>
+    HBAnim<T>* getPtr(){
+      return dynamic_cast<HBAnim<T>*>(this);
+    }
+
     virtual ~HBAnimBase() = default;
 
     virtual void update() = 0;
@@ -128,6 +133,14 @@ namespace HBUI::Animation {
     }
 
     void onFinish() {
+      if (m_currentTime >= m_currentProps.duration) {
+        if (m_currentProps.direction == HB_AnimDirection_Forward) {
+          m_currentProps.current = m_currentProps.end;
+        } else if (m_currentProps.direction == HB_AnimDirection_Backward) {
+          m_currentProps.current = m_currentProps.start;
+        }
+      }
+
       if (m_currentProps.looping) {
         m_currentTime = m_currentProps.startTime;
       } else {
@@ -144,7 +157,7 @@ namespace HBUI::Animation {
     }
 
     void stop() {
-      m_currentProps.state = HB_AnimState_Stopped;
+      m_currentProps.state   = HB_AnimState_Stopped;
       m_currentProps.current = m_currentProps.start;
 
       m_currentTime = 0;
@@ -177,7 +190,7 @@ namespace HBUI::Animation {
       return m_currentProps.playbackSpeed;
     }
 
-    T& getCurrentValue() {
+    T &getCurrentValue() {
       return m_currentProps.current;
     }
 
@@ -185,7 +198,7 @@ namespace HBUI::Animation {
       return m_startingProps.start;
     }
 
-    T& getStartValue() {
+    T &getStartValue() {
       return m_currentProps.start;
     }
 
@@ -193,11 +206,11 @@ namespace HBUI::Animation {
       return m_startingProps.end;
     }
 
-    T& getEndValue() {
+    T &getEndValue() {
       return m_currentProps.end;
     }
 
-    float& getCurrentTime() {
+    float &getCurrentTime() {
       return m_currentTime;
     }
 
@@ -279,10 +292,7 @@ namespace HBUI::Animation {
 
   };
 
-  class HBAnimManager {
-  private:
-
-
+  class HBAnimManager : public HBIUpdateable{
   public:
     HBAnimManager() = default;
 
@@ -298,16 +308,16 @@ namespace HBUI::Animation {
     }
 
     template<typename T>
-    T getAnimation(const std::string &id) {
+    HBAnim<T> getAnimation(const std::string &id) {
       const ImGuiID imID = ImGui::GetID(id.c_str());
       return getAnimation<T>(imID);
     }
 
     template<typename T>
-    T getAnimation(const ImGuiID &id) {
+    HBAnim<T> getAnimation(const ImGuiID &id) {
       auto it = animations.find(id);
       if (it != animations.end()) {
-        auto anim = std::dynamic_pointer_cast<HBAnim<T>>(it->second);
+        auto anim = (it->second);
         if (anim) {
           return anim;
         } else {
@@ -319,18 +329,49 @@ namespace HBUI::Animation {
     }
 
     template<typename T>
-    T getCurrentValue(const std::string &id) {
+    T getCurrentValue(const std::string &id) const {
       const ImGuiID imID = ImGui::GetID(id.c_str());
       return getCurrentValue<T>(imID);
     }
 
     template<typename T>
-    T getCurrentValue(const ImGuiID &id) {
+    T getCurrentValue(const ImGuiID &id) const {
+      auto it = animations.find(id);
+      if (it != animations.end()) {
+        auto anim = it->second->getPtr<T>();
+        if (anim) {
+          return anim->getCurrentValue();
+        } else {
+          IM_ASSERT(false && "Animation type mismatch.");
+        }
+      } else {
+        IM_ASSERT(false && "Animation not found.");
+      }
+    }
+
+    void startFrame() override{
+      for (auto &anim: animations) {
+        anim.second->update();
+      }
+    }
+
+    void endFrame() override{
+
+    }
+
+    template<typename T>
+    void pause(const std::string &id) {
+      const ImGuiID imID = ImGui::GetID(id.c_str());
+      pause<T>(imID);
+    }
+
+    template<typename T>
+    void resume(const ImGuiID &id) {
       auto it = animations.find(id);
       if (it != animations.end()) {
         auto anim = std::dynamic_pointer_cast<HBAnim<T>>(it->second);
         if (anim) {
-          return anim->getCurrentValue();
+          anim->play();
         } else {
           IM_ASSERT(false && "Animation type mismatch.");
         }
@@ -340,12 +381,12 @@ namespace HBUI::Animation {
     }
 
     template<typename T>
-    T getValue(const ImGuiID &id) const {
+    void reverse(const ImGuiID &id) {
       auto it = animations.find(id);
       if (it != animations.end()) {
         auto anim = std::dynamic_pointer_cast<HBAnim<T>>(it->second);
         if (anim) {
-          return anim->getCurrentValue();
+          anim->reverse();
         } else {
           IM_ASSERT(false && "Animation type mismatch.");
         }
@@ -353,13 +394,6 @@ namespace HBUI::Animation {
         IM_ASSERT(false && "Animation not found.");
       }
     }
-
-    void update() {
-      for (auto &anim: animations) {
-        anim.second->update();
-      }
-    }
-
 
     std::unordered_map<ImGuiID, std::shared_ptr<HBAnimBase>> getAnimations() const {
       return animations;

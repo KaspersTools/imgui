@@ -759,25 +759,25 @@ IMVK_IMPL_API void
 setBackendWindowFlags(const HBContext &ctx) {
 
 	ImGui::GetStyleVarInfo(ImGuiStyleVar_WindowRounding);
-	if (ctx.io.mainWindowFlags & HBUI_MAIN_WINDOW_FLAG_NO_DECORATION) {
+	if (ctx.io.mainWindowFlags & HBMainWindowFlags_NoDecoration) {
 		glfwSetWindowAttrib(g_ImVKData->window, GLFW_DECORATED, GLFW_FALSE);
 	} else {
 		glfwSetWindowAttrib(g_ImVKData->window, GLFW_DECORATED, GLFW_TRUE);
 	}
 
-	if (ctx.io.mainWindowFlags & HBUI_MAIN_WINDOW_FLAG_NO_RESIZE) {
+	if (ctx.io.mainWindowFlags & HBMainWindowFlags_NoResize) {
 		glfwSetWindowAttrib(g_ImVKData->window, GLFW_RESIZABLE, GLFW_FALSE);
 	} else {
 		glfwSetWindowAttrib(g_ImVKData->window, GLFW_RESIZABLE, GLFW_TRUE);
 	}
 
-	if (ctx.io.mainWindowFlags & HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR) {
+	if (ctx.io.mainWindowFlags & HBMeinWindowFlags_NoTitleBar) {
 		glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_FALSE);
 	} else {
 		glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_TRUE);
 	}
 
-	if (ctx.io.mainWindowFlags & HBUI_MAIN_WINDOW_FLAG_NO_MOVE) {
+	if (ctx.io.mainWindowFlags & HBMainWindowFlags_NoMove) {
 		glfwSetWindowAttrib(g_ImVKData->window, GLFW_FLOATING, GLFW_TRUE);
 	} else {
 		glfwSetWindowAttrib(g_ImVKData->window, GLFW_FLOATING, GLFW_FALSE);

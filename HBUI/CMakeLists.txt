@@ -33,16 +33,17 @@ option(HBUI_GLFW "Use VULKAN WITH GLFW" OFF)
 ###############################################################################
 set(HBUI_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(HBUI SHARED
-        include/HBUI/HBTime.h
-        include/HBUI/types/HBFloat.h
-        include/HBUI/Animation/Animations.h
 )
 
 list(APPEND HBUI_SOURCES
+        ${HBUI_DIR}/private/src/HBUIEnums.cpp
         ${HBUI_DIR}/private/src/HBUI.cpp
-        ${HBUI_DIR}/private/src/WindowManager.cpp
-        ${HBUI_DIR}/private/src/UIWindow.cpp
         ${HBUI_DIR}/private/src/HBWidgets.cpp
+        ${HBUI_DIR}/private/src/HBUIItemBase.cpp
+        ${HBUI_DIR}/private/src/Debug/HBDebugWidget.cpp
+)
+set(HBUI_HEADERS
+        ${HBUI_DIR}/include/HBUI/HBUI.h
 )
 
 option(HBUI_WITH_DEBUG_WINDOW "HBUI_WITH_DEBUG_WINDOW" ON)
@@ -53,27 +54,17 @@ if (HBUI_WITH_DEBUG_WINDOW)
     target_compile_definitions(HBUI PUBLIC HBUI_WITH_DEBUG_WINDOW)
 endif ()
 
-set(HBUI_HEADERS
-        ${HBUI_DIR}/include/HBUI/HBUI.h
-        ${HBUI_DIR}/include/HBUI/UIWindow.h
-        ${HBUI_DIR}/include/HBUI/WindowManager.h
-        ${HBUI_DIR}/include/HBUI/HBMath.h
-        ${HBUI_DIR}/include/HBUI/fonts/IconsFontAwesome6.h
-        ${HBUI_DIR}/include/HBUI/Animation/Animation.h
-)
+
 
 list(APPEND HBUI_PRIVATE_HEADERS
         ${HBUI_DIR}/private/headers/Backend.h
 )
 
-target_sources(HBUI PRIVATE ${HBUI_SOURCES} ${HBUI_PRIVATE_HEADERS})
-target_sources(HBUI PUBLIC ${HBUI_HEADERS})
+target_sources(HBUI PRIVATE ${HBUI_SOURCES})
+target_sources(HBUI PRIVATE ${HBUI_HEADERS})
 
 target_compile_definitions(HBUI PUBLIC HBUI_VERSION="${PROJECT_VERSION}")
-
 target_include_directories(HBUI PUBLIC ${HBUI_DIR}/include)
-target_include_directories(HBUI PUBLIC ${HBUI_DIR}/include/HBUI/fonts)
-target_include_directories(HBUI PUBLIC ${HBUI_DIR}/include/HBUI/Animation)
 
 target_include_directories(HBUI PUBLIC ${HBUI_DIR}/include/imgui)
 target_include_directories(HBUI PRIVATE ${HBUI_DIR}/private)

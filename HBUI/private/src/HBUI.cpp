@@ -4,10 +4,41 @@
 
 #include "../headers/Backend.h"
 #include <HBUI/HBUI.h>
+
 #ifndef g_HBUICTX
 HBContext *g_HBUICTX = NULL;
 #endif
 
+
+//-------------------------------------
+// [SECTION] HBContext
+//-------------------------------------
+void HBContext::startFrame() {
+  if (!initialized) {
+    std::cerr << "HBUI not initialized" << std::endl;
+    return;
+  }
+
+  if (!drawData) {
+    drawData = std::make_shared<HBDrawData>();
+  }
+  drawData->startFrame();
+
+  animManager->startFrame();
+  widgetManager->startFrame();
+}
+
+void HBContext::endFrame() {
+  animManager->endFrame();
+  widgetManager->endFrame();
+
+  drawData->endFrame();
+  drawData.reset();
+}
+
+//-------------------------------------
+// [SECTION] HBUI
+//-------------------------------------
 namespace HBUI {
   HBUI_API HBContext *
   initialize(const std::string &title, int width, int height, MainWindowFlags flags) {
@@ -17,10 +48,10 @@ namespace HBUI {
     g_HBUICTX->initialized = true;//fixme delete old context first
 
     auto io = HBIO{
-            .title = title,
-            .width = width,
-            .height = height,
-            .mainWindowFlags = flags};
+        .title = title,
+        .width = width,
+        .height = height,
+        .mainWindowFlags = flags};
     g_HBUICTX->io = io;
 
 
@@ -32,7 +63,6 @@ namespace HBUI {
     }
 
     HBTime::init();
-
     return g_HBUICTX;
   }
 
@@ -60,41 +90,41 @@ namespace HBUI {
     return getCurrentContext()->io;
   }
 
-  HBUI_API HBDrawData &
+  HBUI_API HBDrawData *
   getDrawData() {
-    return *getCurrentContext()->drawData;
+    return getCurrentContext()->drawData.get();
   }
 
   HBUI_API ImVec2
-  getCursorViewportPos(){
-    auto windowPos  = HBUI::getDrawData().cursorPos;
-    auto vp         = ImGui::GetMainViewport();
+  getCursorViewportPos() {
+    auto windowPos = ImVec2(0, 0);
+    auto vp        = ImGui::GetMainViewport();
 
     return ImVec2(windowPos.x + vp->Pos.x,
                   windowPos.y + vp->Pos.y);
   }
 
   HBUI_API ImVec2
-  getContentRegionAvail(){
-    auto windowPos = HBUI::getDrawData().cursorPos;
-    auto vp = ImGui::GetMainViewport();
+  getContentRegionAvail() {
+    ImVec2 windowPos = ImGui::GetCursorScreenPos();
+    auto   vp        = ImGui::GetMainViewport();
 
     return ImVec2(vp->Size.x - windowPos.x,
                   vp->Size.y - windowPos.y);
   }
 
   HBUI_API ImVec2
-  getWindowSize(){
+  getWindowSize() {
     return ImGui::GetIO().DisplaySize;
   }
 
   HBUI_API ImVec2
-  getViewportPos(){
+  getViewportPos() {
     return ImGui::GetMainViewport()->Pos;
   }
 
   HBUI_API ImVec2
-  getViewportSize(){
+  getViewportSize() {
     return ImGui::GetMainViewport()->Size;
   }
 
@@ -103,32 +133,34 @@ namespace HBUI {
     * *********************************************/
   HBUI_API bool
   isMaximized() {
-    ImVec2 size = getWindowSize();
+    ImVec2 size      = getWindowSize();
     ImVec2 frameSize = getWindowFrameSize();
 
     return (size.x + frameSize.x == getMonitorWidth() &&
             size.y + frameSize.y == getMonitorHeight());
   }
 
-  HBUI_API void update(float deltatime){
-    g_HBUICTX->update();
+  HBUI_API void update(float deltatime) {
+
   }
+
   /*********************************************
     * Rendering
     * *********************************************/
 
   void fullScreenemptyWindow() {
   }
+
   HBUI_API void
   startFrame() {
     HBTime::startFrame();
-    update(g_HBUICTX->time.deltaTime);
-    g_HBUICTX->drawData = std::make_shared<HBDrawData>();
+    g_HBUICTX->startFrame();
     startRenderBackend();
   }
 
   HBUI_API void
   endFrame() {
+    g_HBUICTX->endFrame();
     endRenderBackend();
     HBTime::endFrame();
   }
@@ -158,7 +190,8 @@ namespace HBUI {
   HBUI_API bool
   mouseOverCircle(const ImVec2 &center, float radius) {
     ImVec2 mousePos = ImGui::GetMousePos();
-    return (mousePos.x - center.x) * (mousePos.x - center.x) + (mousePos.y - center.y) * (mousePos.y - center.y) < radius * radius;
+    return (mousePos.x - center.x) * (mousePos.x - center.x) + (mousePos.y - center.y) * (mousePos.y - center.y) <
+           radius * radius;
   }
 
   /*********************************************
@@ -171,6 +204,14 @@ namespace HBUI {
 
   HBUI_API bool isFlagSet(int *flags, int flag) {
     return (*flags & flag) == flag;
+  }
+
+  HBUI_API ImGuiID getId(const char *str) {
+//    ImGuiID seed = HBUI::getDrawData().IDStack.back();
+//    ImGuiID id = ImHashStr(str, str_end ? (str_end - str) : 0, seed);
+//    ImGuiContext& g = *Ctx;
+    ImGuiID id = 10;
+    return id;
   }
 
 }// namespace HBUI

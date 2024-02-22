@@ -3,11 +3,9 @@
 //
 #include "MainWindow.h"
 #include <HBUI/HBUI.h>
-#include <HBUI/WindowManager.h>
-#include <IconsFontAwesome6.h>
 
 void MainWindow::init() {
-  HBUI::initialize("Hello, World!", 1280, 720, HBUI_MAIN_WINDOW_FLAG_NO_TITLEBAR);
+  HBUI::initialize("Hello, World!", 1280, 720, HBMeinWindowFlags_NoTitleBar);
 
   //load font
   ImGuiIO &io = ImGui::GetIO();
@@ -51,75 +49,47 @@ bool MainWindow::run() {
   return true;
 }
 
-void renderMenuBar(const std::string &id,
-                   HBItemFlags itemFlags, MainMenuBarFlags flags,
-                   ImVec2 pos, ImVec2 size) {
-}
-
 void MainWindow::createMainMenuBars() {
-//  renderMenuBar("vertical", HBItemFlags_None, HB_MAIN_MENU_BAR_FLAG_VERTICAL, {}, {});
-//  renderMenuBar("horizontal", HBItemFlags_None, HB_MAIN_MENU_BAR_FLAG_HORIZONTAL, {}, {});
-//  renderMenuBar("somewherehorizontal", HBItemFlags_None, HB_MAIN_MENU_BAR_FLAG_HORIZONTAL, {}, {});
-
-//  const std::string &id,
-//  HBItemFlags itemFlags, MainMenuBarFlags flags,
-//      Vec2Anim animProps, ImVec2 windowSize;
-  bool looping = false;
-  HBAnimProps<ImVec2> animProps = {
-      .start          = {0, 0},
-      .end            = {0, 500},
-      .current        = {0, 0},
-      .duration       = 10.f,
-      .playbackSpeed  = 1.f,
-      .looping        = false,
-      .type           = HB_AnimType_Linear,
-      .direction      = HB_AnimDirection_Forward,
-      .state          = HB_AnimState_Idle,
-      .effect         = HB_AnimEffect_Expand,
-  };
-
-  if (HBUI::beginMainMenuBar("mainMenuBar", animProps, HBItemFlags_None,
-                             HB_MAIN_MENU_BAR_FLAG_HORIZONTAL | HB_Main_Menu_Bar_Flag_Animated)) {
-    if (HBUI::menuBarButton("test2")) {}
-    if (HBUI::menuBarButton("test1")) {}
-    if (HBUI::menuBarButton("test1")) {}
-    if (HBUI::menuBarButton("test1")) {}
-    if (HBUI::menuBarButton("test1")) {}
-    if (HBUI::menuBarButton("test1")) {}
-    if (HBUI::menuBarButton("test1")) {}
-    if (HBUI::menuBarButton("test1")) {}
-    if (HBUI::menuBarButton("test1")) {}
-    if (HBUI::menuBarButton("test1")) {}
-    if (HBUI::menuBarButton("test1")) {}
-    if (HBUI::menuBarButton("test1")) {}
-    HBUI::endMainMenuBar();
-  }
 }
 
 void MainWindow::createDockSpace() {
-  if (HBUI::beginFullScreenDockspace(HB_DOCKSPACE_FLAG_NONE)) {
-  }
 }
 
 void MainWindow::render() {
   HBUI::startFrame();
 
+  if(HBUI::beginSideBar(ImGui::GetID("SideBar"),
+                        HBSideBarFlags_OverviewPort | HBSideBarFlags_Horizontal,
+                        {150, 150}, {150, 500})) {
+    HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0,0}, {32,32});
+    HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0,0}, {32,32});
+    HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0,0}, {32,32});
+    HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0,0}, {32,32});
+    HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0,0}, {32,32});
+    HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0,0}, {32,32});
+    HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0,0}, {32,32});
+    HBUI::endSideBar();
+  }
 
-  if (withMenuBar) { createMainMenuBars(); }
-  if (withDockSpace) { createDockSpace(); }
+  if(HBUI::beginSideBar(ImGui::GetID("SideBar"), HBSideBarFlags_OverviewPort | HBSideBarFlags_Horizontal,
+                        {150, 150}, {150, 500})) {
+    HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0,0}, {32,32});
+    HBUI::endSideBar();
+  }
 
-  ImGui::ShowDemoWindow(&showDemoWindow);
-  ImGui::Begin("Fonts");
-//  ImGui::Text  (ICON_FA_0  " Home");  // Example of using a home icon
-//  ImGui::Text  (ICON_FA_AWARD  " Home");  // Example of using a home icon
-//  ImGui::Button(ICON_FA_QRCODE  " Play");  // Example of using a play icon in a button
-  ImGui::End();
+  if(HBUI::beginSideBar(ImGui::GetID("SideBar"), HBSideBarFlags_OverviewPort | HBSideBarFlags_Horizontal,
+                        {150, 150}, {150, 500})) {
+    HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0,0}, {32,32});
+    HBUI::endSideBar();
+  }
+
+  if(showDemoWindow) {
+    ImGui::ShowDemoWindow(&showDemoWindow);
+  }
 
 #ifdef HBUI_WITH_DEBUG_WINDOW
   HBUI::showDebugWindow(&showDebugWindow);
 #endif
-
-  HummingBirdCore::UI::WindowManager::getInstance()->render();
 
   HBUI::endFrame();
 }
