@@ -10,17 +10,22 @@ namespace HBUI {
   public:
     HBSideBar(
         const ImGuiID &id, const std::string &label,
-        const HBSideBarFlags flags, const ImVec2 &position,
-        const ImVec2 &size, const HBDrawLocation drawLocationFlag
+        const HBSideBarFlags flags,
+        const ImVec2 &position, const ImVec2 &size,
+        const HBDrawLocation drawLocationFlag,
+        const HBLayoutType_ layoutType,
+        const HBWidgetResizeType_ widthResizeType,
+        const HBWidgetResizeType_ heightResizeType
     ) : RectWidget(id, label,
-                   HBUIType_::HBSIDEBAR, nullptr,
+                   HBUIType_::HBSIDEBAR,
                    position, size,
                    true,
                    drawLocationFlag,
-                   HBLayoutType_::Horizontal,
-                   HBWidgetResizeType_ScaleToChildren, HBWidgetResizeType_ScaleToChildren
-    ) {
-      m_flags = flags;
+                   layoutType,
+                   widthResizeType, heightResizeType
+    ),
+        m_flags(flags) {
+
     }
 
     ~HBSideBar() {

@@ -4,13 +4,116 @@
 
 #include "HBUI/HBUI.h"
 #include <iomanip>
-#include <iostream>
 #include <map>
 
 namespace HBUI {
-  struct debugData {
+  struct debugWidgetItem {
+  public:
+    debugWidgetItem(
+        const std::string &name,
+        IWidgetBase *widget
+    ) : name(name), widget(widget) {
+
+    }
+
+    ~debugWidgetItem() {
+
+    }
+
+    static void drawWidget(IWidgetBase *widget) {
+      if (widget == nullptr) {
+        return;
+      }
+      if (widget->getUIType() == HBUIType_::HBNEWLINE) {
+        return;
+      }
+      if (widget->getLabel().empty()) {
+        return;
+      }
+      if (widget->getLabel() == "\0\0") {
+        return;
+      }
+
+      if (ImGui::TreeNode(widget->getLabel().c_str())) {
+        ImGui::Text("Label: %s", widget->getLabel().c_str());
+        ImGui::Text("ID: %i", widget->getId());
+        ImGui::Spacing();
+
+        if (ImGui::CollapsingHeader("Position Data")) {
+          ImGui::Text("Local Position: (%f, %f)", widget->getLocalPosition().x, widget->getLocalPosition().y);
+          ImGui::Text("Cursor Position: (%f, %f)", widget->getDrawData().m_CursorPos.x,
+                      widget->getDrawData().m_CursorPos.y);
+          ImGui::Separator();
+
+          RectWidget *rectWidget = dynamic_cast<RectWidget *>(widget);
+          if (rectWidget) {
+            ImGui::Text("IMVEC2");
+            ImVec2 size = rectWidget->getSize();
+            ImGui::Text("Width: %f", size.x);
+            ImGui::Text("Height: %f", size.y);
+          }
+        }
+        if (ImGui::CollapsingHeader("Draw data")) {
+          ImGui::Text("UI Type: %d", static_cast<int>(widget->getUIType()));
+          ImGui::Text("Is Visible: %s", widget->isVisible() ? "True" : "False");
+          ImGui::Text("With Background: %s", widget->withBackground() ? "True" : "False");
+          ImGui::Separator();
+        }
+
+        ImGui::Spacing();
+        ImGui::Text("Children: %d", widget->getChildren().size());
+        for (auto &child: widget->getChildren()) {
+          drawWidget(child);
+        }
+        ImGui::TreePop();
+      }
+    }
+
+    void render() {
+      ImGui::Text("Widget: %s", name.c_str());
+      ImGui::Spacing();
+
+      if (widget != nullptr) {
+        drawWidget(widget);
+
+      } else {
+        ImGui::Text("No widget available to display.");
+      }
+    }
+
+
+  private:
+    std::string name;
+    IWidgetBase *widget;
   };
 
+  struct debugData {
+    debugData() {
+
+    }
+
+    ~debugData() {
+      items.clear();
+    }
+
+    void renderItems() {
+      if (items.empty()) {
+        ImGui::TextColored(ImVec4(1.f, 0.5f, 0.5f, 1.0f), "No debug items available");
+      } else {
+        for (auto &item: items) {
+          item.render();
+        }
+      }
+    }
+
+    void addItem(const std::string &name, IWidgetBase *widget) {
+      debugWidgetItem newItem(name, widget);
+//      newItem.render();
+      items.push_back(newItem);
+    }
+
+    std::vector<debugWidgetItem> items = {};
+  };
 
   static void HelpMarker(const char *desc) {
     ImGui::TextDisabled("(?)");
@@ -22,12 +125,13 @@ namespace HBUI {
     }
   }
 
-  std::vector<std::string> flagsNames = {
-      "ctx.mainWindowSettings.MainWindowFlags:   No Decoration                 ",
-      "ctx.mainWindowSettings.MainWindowFlags:   No Resize                     ",
-      "ctx.mainWindowSettings.MainWindowFlags:   No TitleBar                   ",
-      "ctx.mainWindowSettings.MainWindowFlags:   No Move                       ",
-  };
+  static std::unique_ptr<debugData> debugDataInstance = std::make_unique<debugData>();
+
+  void drawDebugWidgets() {
+    debugDataInstance->renderItems();
+    debugDataInstance.reset();
+    debugDataInstance = std::make_unique<debugData>();
+  }
 
   void drawAnimDebugNode() {
     const HBContext  &ctx      = *HBUI::getCurrentContext();
@@ -234,63 +338,7 @@ namespace HBUI {
     }
   }
 
-  void drawMainMenubarDebugNode() {
-    const HBContext  &ctx      = *HBUI::getCurrentContext();
-    const HBDrawData &drawData = *ctx.drawData;
-
-    ImGui::Text("MainMenuBar");
-    ImGui::Spacing();
-
-//    for (auto &bar: drawData.sideBars) {
-//      ImGui::SeparatorText(bar->idString.c_str());
-//
-//      ImGui::Text("pos  = %f, %f", bar->windowPos.x, bar->windowPos.y);
-//      ImGui::Text("size = %f, %f", bar->windowSize.x, bar->windowSize.y);
-//
-//      {
-//        ImGui::BeginDisabled();
-//        bool hor = bar->isHorizontal();
-//        bool ver = bar->isVertical();
-//        ImGui::Checkbox("horizontal:   ", &hor);
-//        ImGui::Checkbox("vertical  :   ", &ver);
-//        ImGui::EndDisabled();
-//      }
-//      ImGui::Spacing();
-//      ImGui::Text("childs");
-//      ImGui::Spacing();
-//      if(bar->items.empty()){
-//        ImGui::Text("No items");
-//      }else {
-//        for (auto &child: bar->items) {
-//          ImGui::Text("id: %s", child->idString.c_str());
-//          ImGui::Text("start  = %f, %f", child->m_primitive.getStart().x, child->m_primitive.getStart().y);
-//          ImGui::Text("end    = %f, %f", child->m_primitive.getEnd().x, child->m_primitive.getEnd().y);
-//        }
-//      }
-//    }
-  }
-
-  void drawDebugDrawDataNode() {
-    const HBContext  &ctx      = *HBUI::getCurrentContext();
-    const HBDrawData &drawData = *ctx.drawData;
-
-    ImGui::Text("DrawData");
-    ImGui::Spacing();
-  }
-
-  HBUI_API void printVec2(const ImVec2 &vec2, const std::string &name) {
-    // Set the width for the first column
-    int width = 70;
-
-    std::string type = "ImVec2";
-    ImVec2      val  = vec2;
-
-    ImGui::LogText("%s %s = {%.2ff, %.2ff};" IM_NEWLINE, type.c_str(), name.c_str(), val.x, val.y);
-    //todo: add a log to file option
-  }
-
-
-  HBUI_API void showDebugWindow(bool *p_open) {
+  void showDebugWindow(bool *p_open) {
     HBContext *ctx = HBUI::getCurrentContext();
     if (!ImGui::Begin("Debug HBUI Window", p_open)) {
       ImGui::End();
@@ -300,15 +348,8 @@ namespace HBUI {
     ImGui::Text("HBUI says hello! (%s)", HBUI_VERSION);
     ImGui::Text("also dear imgui says hello ;)! (%s) (%d)", IMGUI_VERSION, IMGUI_VERSION_NUM);
     ImGui::Spacing();
-
-    if (ImGui::CollapsingHeader("Debug Draw Data")) {
-      drawDebugDrawDataNode();
-    }
     if (ImGui::CollapsingHeader("Debug Animations")) {
       drawAnimDebugNode();
-    }
-    if (ImGui::CollapsingHeader("Debug Main Menu Bars")) {
-      drawMainMenubarDebugNode();
     }
     if (ImGui::CollapsingHeader("Backend Flags")) {
       HelpMarker(
@@ -378,21 +419,18 @@ namespace HBUI {
         ImGui::EndTabBar();
       }
     }
-
     if (ImGui::CollapsingHeader("Degubg Info")) {
       ImGui::SeparatorText("ABOUT THIS DEMO:");
       ImGui::BulletText("This HBUI Debug Window is a simple example of how to use HBUI.");
       ImGui::BulletText("All the UI elements are available and shown in this window.");
     }
-
+    if (ImGui::CollapsingHeader("Debug Widgets")) {
+      drawDebugWidgets();
+    }
     ImGui::End();
   }
 
-  HBUI_API void printVec4(const ImVec4 &vec4, const std::string &name) {
-    std::string type = "ImVec4";
-    ImVec4      val  = vec4;
-    ImGui::LogText("%s %s = {%.2ff, %.2ff, %.2ff, %.2ff};" IM_NEWLINE, type.c_str(), name.c_str(), val.x, val.y,
-                   val.z,
-                   val.w);
+  void addDebugWidget(const std::string &name, IWidgetBase *widget) {
+    debugDataInstance->addItem(name, widget);
   }
 }// namespace HBUI

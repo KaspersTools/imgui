@@ -6,13 +6,14 @@
 // [SECTION] HBWidgetManager
 //-----------------------------------------------------------------------------
 enum HBDrawLocation {
-  HBDrawFlags_ForegroundDrawList                = 0, //default
-  HBDrawFlags_DrawOnParent                      = 1,
-  HBDrawFlags_CreateOwnImGuiWindow              = 2,
-  HBDrawFlags_BackgroundDrawList                = 3,
-  HBDrawFlags_CurrentViewportForegroundDrawList = 4,
-  HBDrawFlags_CurrentViewportBackgroundDrawList = 5,
-  HBDrawFlags_CurrentWindowDrawList             = 7,
+  HBDrawFlags_NonDrawable        = 0,
+  HBDrawFlags_ForegroundDrawList,
+  HBDrawFlags_DrawOnParent,
+  HBDrawFlags_CreateOwnImGuiWindow,
+  HBDrawFlags_BackgroundDrawList,
+  HBDrawFlags_CurrentViewportForegroundDrawList,
+  HBDrawFlags_CurrentViewportBackgroundDrawList,
+  HBDrawFlags_CurrentWindowDrawList,
 };
 
 enum HBWidgetResizeType_ {
@@ -23,24 +24,25 @@ enum HBWidgetResizeType_ {
 
 typedef int HBSideBarFlags;
 enum HBSideBarFlags_ {
-  HBSideBarFlags_Horizontal   = 0,      //default
-  HBSideBarFlags_Vertical     = 1 << 1,
-  HBSideBarFlags_Animated     = 1 << 3,
-  HBSideBarFlags_OverviewPort = 1 << 4
+  HBSideBarFlags_None       = 0,
+  HBSideBarFlags_Horizontal = 1 << 1,      //default
+  HBSideBarFlags_Vertical   = 1 << 2,
+  HBSideBarFlags_Animated   = 1 << 3,
+  HBSideBarFlags_FullSize   = 1 << 4, //if horizontal then full width, if vertical then full height
 };
 
-typedef int HBLayoutType;
 enum HBLayoutType_ {
-  Horizontal = 0,
-  Vertical   = 1
+  HBLayoutType_None       = 0,
+  HBLayoutType_Horizontal = 1,
+  HBLayoutType_Vertical   = 2
 };
 
 typedef int HBUIType;
 enum HBUIType_ {
-  HBNONE    = 0,
-  HBSIDEBAR = 1,
+  HBNONE = 0,
+  HBSIDEBAR,
   HBSIDEBARBUTTON,
-  HBWINDOW  = 2,
+  HBNEWLINE,
 };
 
 //-----------------------------------------------------------------------------

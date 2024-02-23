@@ -30,6 +30,7 @@
 #include "Animation/Animation.h"
 
 class HBWidgetManager;
+class IWidgetBase;
 
 struct HBDrawData : public HBIUpdateable {
 
@@ -98,10 +99,6 @@ struct HBContext {
 };
 
 namespace HBUI {
-  HBUI_API void printVec2(const ImVec2 &vec2, const std::string &name);
-
-  HBUI_API void printVec4(const ImVec4 &vec4, const std::string &name);
-
   HBUI_API HBContext *getCurrentContext();
 
   HBUI_API HBContext *
@@ -144,17 +141,29 @@ namespace HBUI {
   HBUI_API void
   setMainWindowFlags(MainWindowFlags flags);
 
-  HBUI_API bool
-  isMaximized();
+  HBUI_API bool isMaximized();
 
-  //---------------------------------------------------------------------------------
-  // [SECTION] Input
-  //---------------------------------------------------------------------------------
-  HBUI_API bool
-  mouseOverRect(const ImVec2 &start, const ImVec2 &end);
 
-  HBUI_API bool
-  mouseOverCircle(const ImVec2 &center, float radius);
+
+  /**
+   * @brief Jump to the next line
+   * @details Jumps to the next line of the current appending widget.
+   * @example This is an example of how to use the newLine function.s
+   * @code
+   *  if (HBUI::beginSideBar(ImGui::GetID("SideBar"), HBSideBarFlags_Horizontal, {510, 510}, {150, 150}, )) {
+   *     HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0, 0}, {32, 32});
+   *     HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0, 0}, {32, 32});
+   *     HBUI::newLine();
+   *     HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0, 0}, {32, 32});
+   *     HBUI::endSideBar();
+   *  }
+   * @endcode
+   * @param size       The height of the current line, can be 0
+   * @param resizeType The resize type of the current line. If set to HBWidgetResizeType_ScaleToChildren the height/width gets calculated based on the biggest child of the current line.
+   *                        If set to HBWidgetResizeType_Fixed the height/width is the size parameter.
+   */
+  HBUI_API void newLine(float size = 0,
+                        HBWidgetResizeType_ resizeType = HBWidgetResizeType_ScaleToChildren);
 
   //---------------------------------------------------------------------------------
   // [SECTION] Panels/Bars
@@ -164,7 +173,7 @@ namespace HBUI {
       const ImGuiID &id,
       const HBSideBarFlags flags = 0, //default horizontal
       const ImVec2 &position = {0, 0},
-      const ImVec2 &size = {1000, 1000},
+      ImVec2 size = ImVec2(0,0),
       const std::string &label = "",
       const HBDrawLocation itemFlags = HBDrawFlags_ForegroundDrawList
   );
@@ -173,7 +182,7 @@ namespace HBUI {
   endSideBar();
 
   IMGUI_API bool
-  sideBarBarButton(const ImGuiID id,
+  sideBarBarButton(const ImGuiID id, const std::string& label,
                    const ImVec2 &position = {0, 0}, const ImVec2 &size = {0, 0});
 
   //---------------------------------------------------------------------------------
@@ -181,6 +190,8 @@ namespace HBUI {
   //---------------------------------------------------------------------------------
   HBUI_API void
   showDebugWindow(bool *p_open);
+
+  HBUI_API void addDebugWidget(const std::string &name, IWidgetBase *widget);
 
   //---------------------------------------------------------------------------------
   // [SECTION] Updating
@@ -215,6 +226,15 @@ namespace HBUI {
   toggleFlag(int flag);
 
   //---------------------------------------------------------------------------------
+  // [SECTION] Fonts
+  //---------------------------------------------------------------------------------
+  HBUI_API bool
+  loadFont(const std::string &fontPath, float fontSize, const std::string &fontName);
+
+  HBUI_API bool
+  loadFont(const std::string &fontPath, float fontSize, const std::string &fontName, const std::string &fontGlyphRanges);
+
+  //---------------------------------------------------------------------------------
   // [SECTION] IDS
   //---------------------------------------------------------------------------------
   HBUI_API ImGuiID
@@ -222,6 +242,9 @@ namespace HBUI {
 
 }// namespace HBUI
 
+//#include "fonts/FontLoader.h"
 
-#include "Utils/HBUIItemBase.h"
+#include "UIItems/HBUIItemBase.h"
+#include "UIItems/HBDefaultItems.h"
 #include "Panels/HBPanels.h"
+

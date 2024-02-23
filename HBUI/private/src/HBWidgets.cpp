@@ -84,15 +84,53 @@ void renderWindowOuterBorders(ImGuiWindow *window) {
 }
 
 namespace HBUI {
+  HBUI_API void
+  newLine(float size, HBWidgetResizeType_ resizeType) {
+    HBNewLine *nl = new HBNewLine(size, resizeType);
+    HBWidgetManager::appendWidget(nl);
+  }
+
+
   HBUI_API bool
   beginSideBar(
       const ImGuiID &id,
       const HBSideBarFlags flags,
-      const ImVec2 &position, const ImVec2 &size,
+      const ImVec2 &position,
+      ImVec2 size,
       const std::string &label,
       const HBDrawLocation drawLocationFlag
   ) {
-    HBSideBar* sideBar = new HBSideBar(id, label, flags, position, size, drawLocationFlag);
+    bool isHorizontal = flags & HBSideBarFlags_Horizontal;
+    bool isVertical   = flags & HBSideBarFlags_Vertical;
+
+    IM_ASSERT((isHorizontal || isVertical) && "A sidebar must be either horizontal or vertical");
+    IM_ASSERT(!(isHorizontal && isVertical) && "A sidebar cannot be both horizontal and vertical");
+    HBLayoutType_ layoutType = HBLayoutType_::HBLayoutType_Horizontal;
+
+    if (isVertical) {
+      layoutType = HBLayoutType_::HBLayoutType_Vertical;
+    }
+    HBWidgetResizeType_ resizeTypeXAxis = HBWidgetResizeType_::HBWidgetResizeType_ScaleToChildren;
+    HBWidgetResizeType_ resizeTypeYAxis = HBWidgetResizeType_::HBWidgetResizeType_ScaleToChildren;
+
+    if (flags & HBSideBarFlags_FullSize) {
+      if (isHorizontal) {//todo: add cursor position if not over vp or foreground drawlist
+        size.x = HBUI::getViewportSize().x;
+        if (size.y != 0) {
+          resizeTypeYAxis = HBWidgetResizeType_::HBWidgetResizeType_Fixed;
+        }
+      } else {
+        size.y = HBUI::getViewportSize().y;
+        if(size.x != 0) {
+          resizeTypeXAxis = HBWidgetResizeType_::HBWidgetResizeType_Fixed;
+        }
+      }
+    }
+
+    HBSideBar *sideBar = new HBSideBar(id, label, flags, position, size, drawLocationFlag, layoutType,
+                                       resizeTypeXAxis, resizeTypeYAxis);
+
+
     HBWidgetManager::appendWidget(sideBar);
     return true;
   }
@@ -104,8 +142,8 @@ namespace HBUI {
 
   //menu items
   IMGUI_API bool
-  sideBarBarButton(const ImGuiID id, const ImVec2 &position, const ImVec2 &size) {
-    HBSideBarButton *button = new HBSideBarButton(id, "Button",
+  sideBarBarButton(const ImGuiID id, const std::string& label, const ImVec2 &position, const ImVec2 &size) {
+    HBSideBarButton *button = new HBSideBarButton(id, label,
                                                   position, size,
                                                   HBDrawLocation::HBDrawFlags_DrawOnParent);
 

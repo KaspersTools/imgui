@@ -25,11 +25,13 @@ void HBWidgetManager::endAppendingWidget(const HBUIType type) {
   if (sp_AppendingWidget->isVisible()) {
     sp_AppendingWidget->render();
 
-    if (s_layoutType == HBLayoutType_::Horizontal) {
-      s_cursorPos.x += sp_AppendingWidget->calculateTotalWidth() + 23;
+    if (s_layoutType == HBLayoutType_::HBLayoutType_Horizontal) {
+      s_cursorPos.x += sp_AppendingWidget->calculateTotalWidth() + 23; //fixme: add real spacing / padding
     } else {
-      s_cursorPos.y += sp_AppendingWidget->calculateTotalHeight() + 2;
+      s_cursorPos.y += sp_AppendingWidget->calculateTotalHeight() + 2; //fixme: add real spacing / padding
     }
   }
+
+  HBUI::addDebugWidget(sp_AppendingWidget->getLabel(), sp_AppendingWidget);
   sp_AppendingWidget = nullptr;
 }

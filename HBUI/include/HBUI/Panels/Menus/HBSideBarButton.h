@@ -13,10 +13,10 @@ namespace HBUI {
         const ImVec2 &localPositionOffset, const ImVec2 &size,
         const HBDrawLocation drawLocationFlag
     ) : RectWidget(id, label,
-                   HBUIType_::HBSIDEBARBUTTON, nullptr,
+                   HBUIType_::HBSIDEBARBUTTON,
                    localPositionOffset, size, false,
                    drawLocationFlag,
-                   HBLayoutType_::Horizontal,
+                   HBLayoutType_::HBLayoutType_Horizontal,
                    HBWidgetResizeType_ScaleToChildren, HBWidgetResizeType_ScaleToChildren
     )
     {

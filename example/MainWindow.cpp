@@ -24,6 +24,8 @@ void MainWindow::init() {
     io.Fonts->AddFontFromFileTTF("assets/fonts/FontAwesome6Free/ttfs/fa-regular-400.ttf", 17.0f, &icons_config);
   }
 
+
+  //fixme fix this with the right fonts and headers.
   {
     ImFontConfig icons_config2 = ImFontConfig();
     icons_config2.MergeMode          = true;
@@ -49,51 +51,105 @@ bool MainWindow::run() {
   return true;
 }
 
-void MainWindow::createMainMenuBars() {
-}
-
-void MainWindow::createDockSpace() {
-}
-
 void MainWindow::render() {
   HBUI::startFrame();
 
-  if(HBUI::beginSideBar(ImGui::GetID("SideBar"),
-                        HBSideBarFlags_OverviewPort | HBSideBarFlags_Horizontal,
-                        {150, 150}, {150, 500})) {
-    HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0,0}, {32,32});
-    HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0,0}, {32,32});
-    HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0,0}, {32,32});
-    HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0,0}, {32,32});
-    HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0,0}, {32,32});
-    HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0,0}, {32,32});
-    HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0,0}, {32,32});
-    HBUI::endSideBar();
-  }
+  static bool drawMultiRowSideBar = false;
+  static bool drawIconSideBar     = true;
+  //sidebars
+  {
+    if (drawMultiRowSideBar) {
+      //Top Full screen "Side Bar"
+      if (HBUI::beginSideBar(         //begin the side bar
+          ImGui::GetID("SideBar"),    //id
+          HBSideBarFlags_Vertical |   //flags -> horizontal = direction
+          HBSideBarFlags_FullSize,    //full size = take the full screen width/height from the satart pos
+          {0, 0},                     //start position
+          {0,
+           0}                      //size -> 0,0 means in combination with the flags it will take the full screen width, and the height will be calculated from the content
+      )) {
+        HBUI::sideBarBarButton( //add a button to the side bar
+            ImGui::GetID("BTN1"), "BTN1",//id
+            {0, 0},   //start position 0,0 for auto positioning //fixme: padding
+            {32, 32}  //size
+        );
 
-  if(HBUI::beginSideBar(ImGui::GetID("SideBar"), HBSideBarFlags_OverviewPort | HBSideBarFlags_Horizontal,
-                        {150, 150}, {150, 500})) {
-    HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0,0}, {32,32});
-    HBUI::endSideBar();
-  }
+        HBUI::sideBarBarButton( //add a button to the side bar
+            ImGui::GetID("BTN(2)"), "BTN(2)", //id
+            {0, 0},   //start position 0,0 for auto positioning
+            {32, 64}  //size
+        );
 
-  if(HBUI::beginSideBar(ImGui::GetID("SideBar"), HBSideBarFlags_OverviewPort | HBSideBarFlags_Horizontal,
-                        {150, 150}, {150, 500})) {
-    HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0,0}, {32,32});
-    HBUI::endSideBar();
-  }
+        HBUI::sideBarBarButton(ImGui::GetID("BTN3"), "BTN3", {0, 0}, {32, 32});
+        HBUI::sideBarBarButton(ImGui::GetID("BTN4"), "BTN4", {0, 0}, {32, 32});
+        HBUI::sideBarBarButton(ImGui::GetID("BTN5"), "BTN5", {0, 0}, {32, 32});
+        HBUI::sideBarBarButton(ImGui::GetID("BTN6"), "BTN6", {0, 0}, {32, 32});
+        HBUI::newLine();
+        HBUI::sideBarBarButton(ImGui::GetID("BTN7"), "BTN7", {0, 0}, {32, 32});
+        HBUI::sideBarBarButton(ImGui::GetID("BTN8"), "BTN8", {0, 0}, {32, 32});
+        HBUI::newLine();
+        HBUI::sideBarBarButton(ImGui::GetID("BTN9"), "BTN9", {0, 0}, {32, 32});
+        HBUI::sideBarBarButton(ImGui::GetID("BT10"), "BT10", {0, 0}, {32, 32});
+        HBUI::sideBarBarButton(ImGui::GetID("BT11"), "BT11", {0, 0}, {32, 32});
+        HBUI::endSideBar(); //end the side bar
 
-  if(showDemoWindow) {
-    ImGui::ShowDemoWindow(&showDemoWindow);
-  }
+        //|~~~~~RESULT       ~~~~~~~~|
+        //|--------------------------|
+        //|[BTN1]    [BTN7]  [BTN9]  |
+        //|[BTN(2)]  [BTN8]  [BT10]  |
+        //|[BTN(2)]          [BT11]  |
+        //|[BTN3]                    |
+        //|[BTN4]                    |
+        //|[BTN5]                    |
+        //|[BTN6]                    |
+        //|                          |
+        //|                          |
+        //|                          |
+        //|                          |
+        //|                          |
+        //|                          |
+        //|~~~~~~~~~~~~~~~~~~~~~~~~~~|
+      }
+    }
+    if (drawIconSideBar) {
+      if (HBUI::beginSideBar(         //begin the side bar
+          ImGui::GetID("SideBar"),    //id
+          HBSideBarFlags_Vertical |   //flags -> horizontal = direction
+          HBSideBarFlags_FullSize,    //full size = take the full screen width/height from the satart pos
+          {0, 0},                     //start position
+          {0,
+           0}                      //size -> 0,0 means in combination with the flags it will take the full screen width, and the height will be calculated from the content
+      )) {
+        HBUI::sideBarBarButton( //add a button to the side bar
+            ImGui::GetID("BTN1"), "BTN1",//id
+            {0, 0},   //start position 0,0 for auto positioning //fixme: padding
+            {64, 64}  //size
+        );
+
+        HBUI::sideBarBarButton(ImGui::GetID("BTN2"), "BTN2", {0, 0}, {64, 64});
+        HBUI::sideBarBarButton(ImGui::GetID("BTN3"), "BTN3", {0, 0}, {64, 64});
+        HBUI::sideBarBarButton(ImGui::GetID("BTN4"), "BTN4", {0, 0}, {64, 64});
+        HBUI::sideBarBarButton(ImGui::GetID("BTN5"), "BTN5", {0, 0}, {64, 64});
+        HBUI::sideBarBarButton(ImGui::GetID("BTN6"), "BTN6", {0, 0}, {64, 64});
+
+        HBUI::endSideBar();
+      }
+    }
+    if (showDemoWindow) {
+      ImGui::ShowDemoWindow(&showDemoWindow);
+    }
 
 #ifdef HBUI_WITH_DEBUG_WINDOW
-  HBUI::showDebugWindow(&showDebugWindow);
+    //only call this function at the end of a frame.
+    HBUI::showDebugWindow(&showDebugWindow);
 #endif
 
-  HBUI::endFrame();
+    HBUI::endFrame();
+  }
 }
 
 void MainWindow::shutdown() {
   HBUI::shutdown();
 }
+
+
