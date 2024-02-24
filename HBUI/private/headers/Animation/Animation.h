@@ -3,6 +3,10 @@
 #include <iostream>
 #include <cmath>
 #include <unordered_map>
+#include <HBUI/HBUI.h>
+
+#include <Utils/HBIUpdatable.h>
+#include <types/HBFloat.h>
 
 struct GlobalAnimState {
   static inline hb_u_float playbackSpeed = 1.0f;

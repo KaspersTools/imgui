@@ -5,6 +5,9 @@
 #ifndef IMGUI_HBUIITEMBASE_H
 #define IMGUI_HBUIITEMBASE_H
 
+#include <HBUI/HBUI.h>
+#include <Utils/HBIUpdatable.h>
+
 class IWidgetBase;
 
 class HBWidgetManager : public HBIUpdateable {

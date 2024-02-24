@@ -2,6 +2,8 @@
 // Created by Kasper de Bruin on 22/02/2024.
 //
 
+#include "imgui.h"
+
 //-----------------------------------------------------------------------------
 // [SECTION] HBWidgetManager
 //-----------------------------------------------------------------------------
@@ -55,4 +57,27 @@ enum HBMainWindowFlags_ {
   HBMainWindowFlags_NoResize     = 1 << 2,
   HBMainWindowFlags_NoMove       = 1 << 3,
   HBMeinWindowFlags_NoTitleBar   = 1 << 4
+};
+
+//-----------------------------------------------------------------------------
+// [SECTION] Time
+//-----------------------------------------------------------------------------
+struct HBTime {
+  inline static float deltaTime = 0.0f;
+  inline static float lastTime  = 0.0f;
+  inline static float frameTime = 0.0f;
+
+  inline static void init() {
+    lastTime = ImGui::GetTime();
+  }
+
+  inline static void startFrame() {
+    float time = ImGui::GetTime();
+    deltaTime = time - lastTime;
+    lastTime  = time;
+  }
+
+  inline static void endFrame() {
+    frameTime = ImGui::GetTime() - lastTime;
+  }
 };

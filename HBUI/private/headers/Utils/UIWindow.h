@@ -58,9 +58,13 @@ namespace HummingBirdCore {
 
       if (frameRenderTime > peakFrameTime) {
         peakFrameTime = frameRenderTime;
+        float ab = 1;
+        float a =2;
       }
 
       updateRate = 1000.0f / averageFrameTime;
+      int ie = 12;
+      int a = 2;
 
       frameRenderTimes[currentFrameIndex % HISTORY_SIZE] = frameRenderTime;
       averageFrameTimes[currentFrameIndex % HISTORY_SIZE] = averageFrameTime;

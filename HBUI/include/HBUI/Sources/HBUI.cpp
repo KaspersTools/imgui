@@ -3,7 +3,15 @@
 //todo: cleanup with sections
 
 #include "../headers/Backend.h"
+
+#include <UIItems/HBUIItemBase.h>
+#include <Animation/Animation.h>
+#include <Animation/Animations.h>
+#include <fonts/FontLoader.h>
+#include <fa-brands/fontAwesome_codes.hpp>
 #include <HBUI/HBUI.h>
+
+
 
 #ifndef g_HBUICTX
 HBContext *g_HBUICTX = NULL;
@@ -13,27 +21,45 @@ HBContext *g_HBUICTX = NULL;
 //-------------------------------------
 // [SECTION] HBContext
 //-------------------------------------
-void HBContext::startFrame() {
-  if (!initialized) {
-    std::cerr << "HBUI not initialized" << std::endl;
-    return;
-  }
 
-  if (!drawData) {
-    drawData = std::make_shared<HBDrawData>();
-  }
-  drawData->startFrame();
+HBContext::~HBContext() {
+  delete widgetManager;
+  delete animManager;
+}
+
+void HBContext::initialize(){
+  initialized = true;
+
+  widgetManager = new HBWidgetManager();
+  animManager = new HBUI::Animation::HBAnimManager();
+}
+void HBContext::startFrame() {
+  IM_ASSERT(initialized && "HBContext::startFrame() called before HBContext::initialize()");
 
   animManager->startFrame();
   widgetManager->startFrame();
 }
-
 void HBContext::endFrame() {
+  IM_ASSERT(initialized && "HBContext::endFrame() called before HBContext::initialize()");
+
   animManager->endFrame();
   widgetManager->endFrame();
+}
+bool HBContext::hasAnimation(const ImGuiID &id) {
+  IM_ASSERT(initialized && "HBContext::hasAnimation() called before HBContext::initialize()");
 
-  drawData->endFrame();
-  drawData.reset();
+
+  return animManager->hasAnimation(id);
+}
+bool HBContext::hasAnimation(const std::string &id) {
+  IM_ASSERT(initialized && "HBContext::hasAnimation() called before HBContext::initialize()");
+
+  return animManager->hasAnimation(ImGui::GetID(id.c_str()));
+}
+ImVec2 HBContext::addAnimation(const std::string &id, HBAnimProps<ImVec2> props) {
+  IM_ASSERT(initialized && "HBContext::addAnimation() called before HBContext::initialize()");
+
+  animManager->addAnimation(id, props);
 }
 
 //-------------------------------------
@@ -45,7 +71,7 @@ namespace HBUI {
     if (g_HBUICTX == NULL) {
       g_HBUICTX = new HBContext();
     }
-    g_HBUICTX->initialized = true;//fixme delete old context first
+    g_HBUICTX->initialize();
 
     auto io = HBIO{
         .title = title,
@@ -57,14 +83,28 @@ namespace HBUI {
 
     if (!initPlatformBackend(g_HBUICTX)) {
       std::cerr << "Failed to initialize platform backend" << std::endl;
-    }
-    if (!initGraphicsBackend(g_HBUICTX)) {
-      std::cerr << "Failed to initialize graphics backend" << std::endl;
+      return nullptr;
     }
 
-    HBTime::init();
-    return g_HBUICTX;
+		if(!initGraphicsBackend(g_HBUICTX)){
+			std::cerr << "Failed to initialize graphics backend" << std::endl;
+			return nullptr;
+		}
+
+		ImGuiIO& imIo = ImGui::GetIO();
+		imIo.FontAllowUserScaling = true; // activate zoom feature with ctrl + mousewheel
+
+
+		afterBackendInitialized();
+		return g_HBUICTX;
   }
+
+	HBUI_API void afterBackendInitialized(){
+	    g_HBUICTX->fontLoader = new HBUI::Fonts::FontLoader(true);
+
+
+		  HBTime::init();
+	}
 
   HBUI_API void
   setCurrentContext(HBContext *ctx) {
@@ -88,11 +128,6 @@ namespace HBUI {
   HBUI_API HBIO &
   getIO() {
     return getCurrentContext()->io;
-  }
-
-  HBUI_API HBDrawData *
-  getDrawData() {
-    return getCurrentContext()->drawData.get();
   }
 
   HBUI_API ImVec2
@@ -128,18 +163,6 @@ namespace HBUI {
     return ImGui::GetMainViewport()->Size;
   }
 
-  /*********************************************
-    * MainWin
-    * *********************************************/
-  HBUI_API bool
-  isMaximized() {
-    ImVec2 size      = getWindowSize();
-    ImVec2 frameSize = getWindowFrameSize();
-
-    return (size.x + frameSize.x == getMonitorWidth() &&
-            size.y + frameSize.y == getMonitorHeight());
-  }
-
   HBUI_API void update(float deltatime) {
 
   }
@@ -155,7 +178,12 @@ namespace HBUI {
   startFrame() {
     HBTime::startFrame();
     g_HBUICTX->startFrame();
+
     startRenderBackend();
+
+		ImGui::Begin("test");
+		ImGui::Text("This is a text with icons %s ...",  fontAwesome::java);
+		ImGui::End();
   }
 
   HBUI_API void

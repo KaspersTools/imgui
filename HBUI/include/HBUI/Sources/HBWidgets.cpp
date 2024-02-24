@@ -1,7 +1,13 @@
 //
 // Created by Kasper de Bruin on 10/02/2024.
 //
-#include <HBUI/HBUI.h>
+
+#include <UIItems/HBUIItemBase.h>
+#include <UIItems/HBNewLine.h>
+#include <Panels/Menus/HBSideBar.h>
+#include <Panels/Menus/HBSideBarButton.h>
+
+#include <imgui.h>
 
 static bool aabb(const ImVec2 &min1, const ImVec2 &max1, const ImVec2 &min2, const ImVec2 &max2) {
   return (min1.x < max2.x && max1.x > min2.x) && (min1.y < max2.y && max1.y > min2.y);

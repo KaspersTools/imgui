@@ -2,9 +2,13 @@
 // Created by Kasper de Bruin on 14/02/2024.
 //
 
-#include "HBUI/HBUI.h"
+#include <HBUI/HBUI.h>
 #include <iomanip>
 #include <map>
+
+#include <UIItems/HBUIItemBase.h>
+#include <Animation/Animation.h>
+#include <Animation/Animations.h>
 
 namespace HBUI {
   struct debugWidgetItem {
@@ -135,7 +139,6 @@ namespace HBUI {
 
   void drawAnimDebugNode() {
     const HBContext  &ctx      = *HBUI::getCurrentContext();
-    const HBDrawData &drawData = *ctx.drawData;
 
     ImGui::Text("Anim");
     ImGui::Spacing();

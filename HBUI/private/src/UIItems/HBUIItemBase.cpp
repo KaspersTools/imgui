@@ -1,7 +1,7 @@
 //
 // Created by Kasper de Bruin on 21/02/2024.
 //
-//#include "HBUIItemBase.h"
+#include <UIItems/HBUIItemBase.h>
 #include <HBUI/HBUI.h>
 
 void HBWidgetManager::appendWidget(IWidgetBase *widget) {
