@@ -12,6 +12,12 @@ cmake_minimum_required(VERSION 3.13)
 project(HBUI LANGUAGES CXX)
 set(HBUI_VERSION 0.1.0)
 
+enable_language(CXX)
+enable_language(OBJC)
+
+MESSAGE( STATUS "CMAKE_CXX_FLAGS: " ${CMAKE_CXX_FLAGS} )
+MESSAGE( STATUS "CMAKE_OBJC_FLAGS: " ${CMAKE_OBJC_FLAGS} )
+
 ###############################################################################
 if (NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -110,7 +116,6 @@ message(STATUS "GENERATED_SOURCES: ${GENERATED_SOURCES}")
 
 target_sources(HBUI PRIVATE ${GENERATED_SOURCES})
 target_sources(HBUI PRIVATE ${HBUI_SOURCES})
-
 target_sources(HBUI PUBLIC ${HBUI_HEADERS})
 target_sources(HBUI PRIVATE ${HBUI_PRIVATE_HEADERS})
 
@@ -141,3 +146,27 @@ endif ()
 # imgui
 ###############################################################################
 target_link_libraries(HBUI PUBLIC imgui)
+#
+## Find the frameworks
+#find_library(APPKIT_FRAMEWORK AppKit)
+#find_library(FOUNDATION_FRAMEWORK Foundation)
+#
+#target_link_libraries(HBUI PUBLIC ${APPKIT_FRAMEWORK})
+#target_link_libraries(HBUI PUBLIC ${FOUNDATION_FRAMEWORK})
+
+
+find_library(APPKIT_LIBRARY AppKit)
+if (NOT APPKIT_LIBRARY)
+    message(STATUS "AppKit.framework NOT found!")
+else()
+    message(STATUS "AppKit.framework found! ${APPKIT_LIBRARY}")
+endif()
+
+find_library(FOUNDATION_LIBRARY Foundation)
+if (NOT FOUNDATION_LIBRARY)
+    message(STATUS "Foundation.framework NOT found!")
+else()
+    message(STATUS "Foundation.framework found! ${FOUNDATION_LIBRARY}")
+endif()
+
+target_link_libraries(ImVk PRIVATE ${FOUNDATION_LIBRARY})

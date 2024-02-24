@@ -56,14 +56,18 @@ struct HBFontConfig {
 	const int c_MaxFontNameLength = 32;
 
 	//sizes
-	const int c_MinFontSize = 8;
-	const int c_MaxFontSize = 42;
+	const float c_MinFontSize = 8;
+	const float c_MaxFontSize = 42;
+
+	float defaultFontSize        = 19;
+	float defaultIconSize        = 19;
+	//dpi
+	float defaultDpi             = 96;
+
 
 	ImFontConfig defaultImGUIFontConfig;
 	ImFontConfig defaultImGUIIconFontConfig;
 
-	int defaultFontSize        = 24;
-	int defaultIconSize        = 24;
 	HBFontType defaultFontType = HBFontType_Regular;
 
 	const HBFont getDefaultFont() const {
@@ -93,11 +97,13 @@ public:
 
 		void loadFont(const HBFont &font);
 		void loadFont(const std::string &fontName, const std::filesystem::path &path,
-		              const int fontSize, const HBFontType type, const ImFontConfig &config, const bool makeDefault);
+		              float fontSize, const HBFontType type, const ImFontConfig &config, const bool makeDefault);
 
 		void loadIcons();
 		void pushFont(const std::string &name);
 		void popFont();
+
+		float calculateDpiScale();
 		/*
 				void loadDefaultFont(const std::string &name, const std::filesystem::path &path, int size, HBFontType type);
 				void loadDefaultFont(const HBFont &font);

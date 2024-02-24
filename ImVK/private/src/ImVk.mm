@@ -1,3 +1,6 @@
+// main.mm
+
+
 #ifndef IMVK_IMPL_API
 #define IMVK_IMPL_API
 #endif
@@ -8,7 +11,6 @@
 
 #define GLFW_INCLUDE_NONE  // GLFW including its own vulkan will break the build
 #define GLFW_INCLUDE_VULKAN// GLFW including its own vulkan will break the build
-
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_beta.h>
@@ -21,7 +23,6 @@
 
 #ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
-
 #include "../../misc/stb_image/stb_image.h"
 
 #endif
@@ -458,10 +459,7 @@ static void FramePresent(ImGui_ImplVulkanH_Window *wd) {
 	wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->ImageCount;// Now we can use the next set of semaphores
 }
 
-/***********************************
- ** Implementation of the ImVK API**
- ***********************************
- ***********************************/
+
 //ImVK API
 IMVK_IMPL_API bool
     initPlatformBackend(HBContext *context, void *errorCallback) {
@@ -594,6 +592,31 @@ IMVK_IMPL_API bool
 
 	return true;
 }
+
+
+#include <chrono>
+#include <cassert>
+#include <filesystem>
+#include <cstdio>
+#include <optional>
+
+#ifdef HELLOIMGUI_HAS_OPENGL
+#include "hello_imgui/hello_imgui_include_opengl.h"
+#include "imgui_impl_opengl3.h"
+#endif
+
+
+#if __APPLE__
+#include <TargetConditionals.h>
+#endif
+
+#ifdef __APPLE__
+#import <AppKit/NSScreen.h>
+#endif
+#if TARGET_OS_IOS
+#include "hello_imgui/internal/platform/getAppleBundleResourcePath.h"
+#endif
+
 
 IMVK_IMPL_API void
     startRenderBackend() {
@@ -782,4 +805,24 @@ IMVK_IMPL_API void
 	} else {
 		glfwSetWindowAttrib(g_ImVKData->window, GLFW_FLOATING, GLFW_FALSE);
 	}
+}
+
+ImVec2
+    getWindowScaleFactor() {
+	float x_scale, y_scale;
+	glfwGetWindowContentScale((GLFWwindow *) g_ImVKData->window, &x_scale, &y_scale);
+	return ImVec2(x_scale, y_scale);
+}
+float getWindowSizeDpiScaleFactor() {
+#ifdef __APPLE__
+	return 1.f;
+#else
+	  ImVec2 scale = GetWindowScaleFactor(GLFWwindow *) g_ImVKData->window);
+	  return scale.x;
+#endif
+}
+
+float getFontSizeIncreaseFactor() {
+	float fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
+	return fontSizeIncreaseFactor;
 }

@@ -45,6 +45,9 @@ struct HBIO {
 	int width  = 1280;
 	int height = 720;
 
+	float dpiWindowSizeFactor = 1.0f;
+	float fontRenderingScale  = 1.0f;
+
 	MainWindowFlags mainWindowFlags = HBMainWindowFlags_None;
 };
 

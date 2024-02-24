@@ -20,6 +20,8 @@
 #define HB_DefaultFontIconsCodes "fa-brands/fontAwesome_codes.hpp"
 #endif
 
+#include <HBUI/HBUI.h>
+
 #include HB_DefaultFontIconsLoader
 #include HB_DefaultFontIconsCodes
 
@@ -54,7 +56,8 @@ namespace HBUI::Fonts {
 		ImFontConfig cfg;
 		cfg.MergeMode = true;
 		cfg.PixelSnapH = true;
-		icons::Font::Load(ImGui::GetIO(), 40w, &cfg);//fixme use current font size
+
+		icons::Font::Load(ImGui::GetIO(), 40, &cfg);//fixme use current font size
 	}
 
 	void FontLoader::loadFont(const HBFont &font) {
@@ -62,13 +65,15 @@ namespace HBUI::Fonts {
 	}
 
 	void FontLoader::loadFont(const std::string &fontName, const std::filesystem::path& path,
-	                          const int fontSize, const HBFontType type, const ImFontConfig &config, const bool makeDefault) {
+	                          float fontSize, const HBFontType type, const ImFontConfig &config, const bool makeDefault) {
 		IM_ASSERT(!fontName.empty() && "Font name cannot be empty");
 		IM_ASSERT(!path.empty() && "Font path cannot be empty");
 		IM_ASSERT(fontSize > 0 && "Font size must be greater than 0");
 
 		IM_ASSERT(m_Fonts.find(fontName) == m_Fonts.end() && "Font already loaded");
 		IM_ASSERT(m_Fonts.size() < m_Config.c_MaxFonts && "Maximum number of fonts loaded");
+		HBIO& hbio = getIO();
+		fontSize *= hbio.dpiWindowSizeFactor / hbio.fontRenderingScale;
 
 		auto io = ImGui::GetIO();
 		auto fontImGui = io.Fonts->AddFontFromFileTTF(path.string().c_str(), fontSize, &config);

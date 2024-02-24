@@ -104,7 +104,7 @@ list(APPEND ${ImVk_PRIVATE_INCLUDE_DIRS} ${GLFW_DIR}/deps)
 set(ImVk_SOURCES
         backends/imgui_impl_glfw.cpp
         backends/imgui_impl_vulkan.cpp
-        private/src/ImVk.cpp
+        private/src/ImVk.mm
         private/src/Image.cpp
 )
 
