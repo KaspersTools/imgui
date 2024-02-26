@@ -1,38 +1,38 @@
 //
 // Created by Kasper de Bruin on 21/02/2024.
 //
-#include <UIItems/HBUIItemBase.h>
 #include <HBUI/HBUI.h>
+#include <UIItems/HBUIItemBase.h>
 
-void HBWidgetManager::appendWidget(IWidgetBase *widget) {
-  if(sp_AppendingWidget != nullptr){
-    sp_AppendingWidget->appendChild(widget);
-    return;
-  }
+void HBWidgetManager::appendWidget(IWidgetBase* widget) {
+	auto type = widget->getUIType();
+	IM_ASSERT(type != HBUIType_None && "The widget type is not set");
 
-  IM_ASSERT(sp_AppendingWidget == nullptr && "A widget is already being appended");
-  if (widget->getLocalPosition() == ImVec2(0, 0)) {//(0,0)means take the current cursor position
-    widget->setLocalPosition(s_cursorPos);
-  }
-  sp_AppendingWidget = widget;
+	if (sp_AppendingWidget != nullptr) {
+		sp_AppendingWidget = 	sp_AppendingWidget->appendChild(widget);
+	}else{
+		sp_AppendingWidget = widget;
+	}
 }
 
 void HBWidgetManager::endAppendingWidget(const HBUIType type) {
-  IM_ASSERT(sp_AppendingWidget != nullptr && "No widget is being appended");
-  IM_ASSERT(sp_AppendingWidget->getUIType() == type &&
-            "The id of the widget being ended does not match the id of the appending widget");
 
-  if (sp_AppendingWidget->isVisible()) {
-    sp_AppendingWidget->render();
+	if(sp_AppendingWidget == nullptr) {
+		IM_ASSERT(false && "No widget to end");
+		return;
+	}
 
-    if (s_layoutType == HBLayoutType_::HBLayoutType_Horizontal) {
-      s_cursorPos.x += sp_AppendingWidget->calculateTotalWidth() + 23; //fixme: add real spacing / padding
-    } else {
-      s_cursorPos.y += sp_AppendingWidget->calculateTotalHeight() + 2; //fixme: add real spacing / padding
-    }
-  }
+	if(sp_AppendingWidget->getParent() == nullptr) {
+		sp_AppendingWidget->render();
+		delete sp_AppendingWidget;
+		sp_AppendingWidget = nullptr;
+	}else{
+		sp_AppendingWidget = sp_AppendingWidget->getParent();
+	}
+}
 
-  HBUI::addDebugWidget(sp_AppendingWidget->getLabel(), sp_AppendingWidget);
-  delete sp_AppendingWidget;
-	sp_AppendingWidget = nullptr;
+void IWidgetBase::render() {
+	for (auto &child: m_Children) {
+		child->render();
+	}
 }

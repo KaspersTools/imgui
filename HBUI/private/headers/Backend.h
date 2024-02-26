@@ -21,7 +21,7 @@ IMVK_IMPL_API bool
 initPlatformBackend(HBContext *context, void *errorCallback = nullptr);
 
 IMVK_IMPL_API bool
-initGraphicsBackend(HBContext *context);
+initGraphicsBackend();
 
 IMVK_IMPL_API void
 startRenderBackend();

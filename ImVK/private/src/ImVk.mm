@@ -8,6 +8,7 @@
 #include <map>
 #include <stdio.h> // printf, fprintf
 #include <stdlib.h>// abort
+#include <functional>
 
 #define GLFW_INCLUDE_NONE  // GLFW including its own vulkan will break the build
 #define GLFW_INCLUDE_VULKAN// GLFW including its own vulkan will break the build
@@ -502,7 +503,7 @@ IMVK_IMPL_API bool
 }
 
 IMVK_IMPL_API bool
-    initGraphicsBackend(HBContext *context) {
+    initGraphicsBackend() {
 	if (!glfwVulkanSupported()) {
 		(g_ImVKData->g_GlfwErrorCallback)(900, "GLFW: Vulkan Not Supported");
 		return false;

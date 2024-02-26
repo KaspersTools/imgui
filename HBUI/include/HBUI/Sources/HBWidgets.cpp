@@ -4,6 +4,7 @@
 
 #include <UIItems/HBUIItemBase.h>
 #include <UIItems/HBNewLine.h>
+#include <Panels/HBFlexPanel.h>
 #include <Panels/Menus/HBSideBar.h>
 #include <Panels/Menus/HBSideBarButton.h>
 
@@ -92,8 +93,9 @@ void renderWindowOuterBorders(ImGuiWindow *window) {
 namespace HBUI {
   HBUI_API void
   newLine(float size, HBWidgetResizeType_ resizeType) {
-    HBNewLine *nl = new HBNewLine(size, resizeType);
+    HBNewLine* nl = new HBNewLine(size, resizeType);
     HBWidgetManager::appendWidget(nl);
+		HBWidgetManager::endAppendingWidget(HBUIType_NewLine);
   }
 
 
@@ -133,27 +135,39 @@ namespace HBUI {
       }
     }
 
-    HBSideBar *sideBar = new HBSideBar(id, label, flags, position, size, drawLocationFlag, layoutType,
+    HBSideBar* sideBar = new HBSideBar(id, label, flags, position, size, drawLocationFlag, layoutType,
                                        resizeTypeXAxis, resizeTypeYAxis);
-
-
     HBWidgetManager::appendWidget(sideBar);
     return true;
   }
 
   IMGUI_API void
   endSideBar() {
-    HBUI::getCurrentContext()->widgetManager->endAppendingWidget(HBUIType_::HBSIDEBAR);
+    HBUI::getCurrentContext()->widgetManager->endAppendingWidget(HBUIType_SideBar);
   }
 
   //menu items
   IMGUI_API bool
   sideBarBarButton(const ImGuiID id, const std::string& label, const ImVec2 &position, const ImVec2 &size) {
-    HBSideBarButton *button = new HBSideBarButton(id, label,
+    HBSideBarButton* button = new HBSideBarButton(id, label,
                                                   position, size,
                                                   HBDrawLocation::HBDrawFlags_DrawOnParent);
 
     HBWidgetManager::appendWidget(button);
-
+		HBWidgetManager::endAppendingWidget(HBUIType_SideBarButton);
+		return  true;//fixme: return true if the button is clicked
   }
+
+
+
+	bool beginFlexPanel(const std::string &id,
+	                    const ImVec2 &position,
+	                    const ImVec2 &size) {
+		return true;
+	}
+
+
+	void endFlexPanel(){
+
+	}
 }// namespace HBUI

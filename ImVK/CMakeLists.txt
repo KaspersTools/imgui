@@ -1,49 +1,12 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION ${CMAKE_VERSION})
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
 endif ()
 
-project(IMVK C CXX)
-
-cmake_policy(SET CMP0077 NEW)
-###############################################################################
-if (NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-endif ()
-if (NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-endif ()
-if (NOT DEFINED CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-endif ()
-if (NOT DEFINED CMAKE_CXX_STANDARD)
-    set(CMAKE_CXX_STANDARD 23)
-endif ()
-
-###############################################################################
-# Warnings
-###############################################################################
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    add_compile_options(-Wall -Wextra -Wunused-parameter -Wformat -Wnarrowing -Wno-sign-conversion -Wno-error=declaration-after-statement) # $<$<COMPILE_LANGUAGE:CXX>:-pedantic>
-    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        add_compile_options(-Wnontrivial-memaccess)
-    endif ()
-    if (NOT APPLE)
-        add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-copy>)
-    endif ()
-endif ()
-
-# These warnings are overzealous in GCC and only practical to use with Clang.
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(-Wshadow)
-endif ()
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DVK_PROTOTYPES")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVK_PROTOTYPES")
-
-# Set the default build type to 'Debug'
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
-endif ()
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS ON)
+include(../cmake/defaultsetup.cmake)
 
 # Make list of include directories
 list(APPEND ImVk_PUBLIC_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -57,34 +20,39 @@ list(APPEND ImVk_PRIVATE_INCLUDE_DIRS
 # Dependencies
 ###############################################################################
 #glfw
-if(NOT DEFINED IMVK_DOWNLOAD_GLFW)
+if (NOT DEFINED IMVK_DOWNLOAD_GLFW)
     option(IMVK_DOWNLOAD_GLFW "Download GLFW" OFF)
-endif()
+endif ()
 
 if (NOT TARGET glfw)
     #-Wunused-parameter]
     #disable warnings for glfw
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-parameter")
-
     set(GLFW_DIR ../../glfw) # Set this to point to an up-to-date GLFW repo
 
-    if(NOT EXISTS ../../glfw/CMakeLists.txt)
-        if(NOT IMVK_DOWNLOAD_GLFW)
+    if (NOT EXISTS ../../glfw/CMakeLists.txt)
+        if (NOT IMVK_DOWNLOAD_GLFW)
             message(FATAL_ERROR "The GLFW submodule was not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
-        else()
+        else ()
             message(WARNING "The GLFW submodule was not found. Downloading GLFW from github.")
             #downlaod from github
             execute_process(COMMAND git clone https://github.com/KaspersTools/glfw.git ../../glfw
                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-        endif()
-    endif()
+        endif ()
+    endif ()
 
-    option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
-    option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
-    option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
-    option(GLFW_INSTALL "Generate installation target" OFF)
-    option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
-    add_subdirectory(${GLFW_DIR} binary_dir)
+    set(GLFW_BUILD_EXAMPLES OFF)
+    set(GLFW_BUILD_TESTS OFF)
+    set(GLFW_DOCUMENT_INTERNALS OFF)
+    set(GLFW_STANDALONE OFF)
+    set(GLFW_INSTALL OFF)
+    set(GLFW_BUILD_DOCS OFF)
+
+    #disable all warnings for glfw
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-parameter")
+
+    add_subdirectory(${GLFW_DIR} ${CMAKE_CURRENT_BINARY_DIR}/glfw)
     list(APPEND ImVk_PRIVATE_INCLUDE_DIRS ${GLFW_DIR}/include)
 endif ()
 
@@ -93,6 +61,7 @@ find_package(Vulkan REQUIRED)
 if (NOT Vulkan_FOUND)
     message(FATAL_ERROR "Could not find Vulkan library!")
 endif ()
+
 set(ImVk_LIBS "glfw;Vulkan::Vulkan")
 
 # Use vulkan headers from glfw:

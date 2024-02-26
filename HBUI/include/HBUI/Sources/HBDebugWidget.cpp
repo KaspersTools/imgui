@@ -15,7 +15,7 @@ namespace HBUI {
   public:
     debugWidgetItem(
         const std::string &name,
-        IWidgetBase *widget
+        std::shared_ptr<IWidgetBase> widget
     ) : name(name), widget(widget) {
 
     }
@@ -24,51 +24,48 @@ namespace HBUI {
 
     }
 
-    static void drawWidget(IWidgetBase *widget) {
-      if (widget == nullptr) {
+    static void drawWidget(const IWidgetBase &widget) {
+      if (widget.getUIType() == HBUIType_NewLine) {
         return;
       }
-      if (widget->getUIType() == HBUIType_::HBNEWLINE) {
+      if (widget.getLabel().empty()) {
         return;
       }
-      if (widget->getLabel().empty()) {
-        return;
-      }
-      if (widget->getLabel() == "\0\0") {
+      if (widget.getLabel() == "\0\0") {
         return;
       }
 
-      if (ImGui::TreeNode(widget->getLabel().c_str())) {
-        ImGui::Text("Label: %s", widget->getLabel().c_str());
-        ImGui::Text("ID: %i", widget->getId());
+      if (ImGui::TreeNode(widget.getLabel().c_str())) {
+        ImGui::Text("Label: %s", widget.getLabel().c_str());
+        ImGui::Text("ID: %i", widget.getId());
         ImGui::Spacing();
 
         if (ImGui::CollapsingHeader("Position Data")) {
-          ImGui::Text("Local Position: (%f, %f)", widget->getLocalPosition().x, widget->getLocalPosition().y);
-          ImGui::Text("Cursor Position: (%f, %f)", widget->getDrawData().m_CursorPos.x,
-                      widget->getDrawData().m_CursorPos.y);
+          ImGui::Text("Local Position: (%f, %f)", widget.getLocalPosition().x, widget.getLocalPosition().y);
+//          ImGui::Text("Cursor Position: (%f, %f)", widget.getDrawData().m_CursorPos.x,
+//                      widget.getDrawData().m_CursorPos.y);
           ImGui::Separator();
 
-          RectWidget *rectWidget = dynamic_cast<RectWidget *>(widget);
-          if (rectWidget) {
-            ImGui::Text("IMVEC2");
-            ImVec2 size = rectWidget->getSize();
-            ImGui::Text("Width: %f", size.x);
-            ImGui::Text("Height: %f", size.y);
-          }
+//          RectWidget *rectWidget = dynamic_cast<RectWidget *>(widget.get());
+//          if (rectWidget) {
+//            ImGui::Text("IMVEC2");
+//            ImVec2 size = rectWidget.getSize();
+//            ImGui::Text("Width: %f", size.x);
+//            ImGui::Text("Height: %f", size.y);
+//          }
         }
-        if (ImGui::CollapsingHeader("Draw data")) {
-          ImGui::Text("UI Type: %d", static_cast<int>(widget->getUIType()));
-          ImGui::Text("Is Visible: %s", widget->isVisible() ? "True" : "False");
-          ImGui::Text("With Background: %s", widget->withBackground() ? "True" : "False");
-          ImGui::Separator();
-        }
+//        if (ImGui::CollapsingHeader("Draw data")) {
+//          ImGui::Text("UI Type: %d", static_cast<int>(widget.getUIType()));
+//          ImGui::Text("Is Visible: %s", widget.isVisible() ? "True" : "False");
+//          ImGui::Text("With Background: %s", widget.withBackground() ? "True" : "False");
+//          ImGui::Separator();
+//        }
 
-        ImGui::Spacing();
-        ImGui::Text("Children: %d", widget->getChildren().size());
-        for (auto &child: widget->getChildren()) {
-          drawWidget(child);
-        }
+//        ImGui::Spacing();
+//        ImGui::Text("Children: %d", widget.getChildren().size());
+//        for (IWidgetBase& child: widget.getChildren()) {
+//          drawWidget(child);
+//        }
         ImGui::TreePop();
       }
     }
@@ -78,7 +75,7 @@ namespace HBUI {
       ImGui::Spacing();
 
       if (widget != nullptr) {
-        drawWidget(widget);
+        drawWidget(*widget);
 
       } else {
         ImGui::Text("No widget available to display.");
@@ -88,7 +85,7 @@ namespace HBUI {
 
   private:
     std::string name;
-    IWidgetBase *widget;
+		std::shared_ptr<IWidgetBase> widget;
   };
 
   struct debugData {
@@ -110,9 +107,9 @@ namespace HBUI {
       }
     }
 
-    void addItem(const std::string &name, IWidgetBase *widget) {
+    void addItem(const std::string &name, std::shared_ptr<IWidgetBase> widget) {
       debugWidgetItem newItem(name, widget);
-//      newItem.render();
+      newItem.render();
       items.push_back(newItem);
     }
 
@@ -433,7 +430,7 @@ namespace HBUI {
     ImGui::End();
   }
 
-  void addDebugWidget(const std::string &name, IWidgetBase *widget) {
+  void addDebugWidget(const std::string &name, std::shared_ptr<IWidgetBase> widget) {
     debugDataInstance->addItem(name, widget);
   }
 }// namespace HBUI

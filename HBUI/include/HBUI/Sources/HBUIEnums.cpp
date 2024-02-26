@@ -41,10 +41,10 @@ enum HBLayoutType_ {
 
 typedef int HBUIType;
 enum HBUIType_ {
-  HBNONE = 0,
-  HBSIDEBAR,
-  HBSIDEBARBUTTON,
-  HBNEWLINE,
+	HBUIType_None = 0,
+	HBUIType_SideBar,
+	HBUIType_SideBarButton,
+	HBUIType_NewLine,
 };
 
 //-----------------------------------------------------------------------------

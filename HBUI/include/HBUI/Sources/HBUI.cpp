@@ -84,7 +84,7 @@ namespace HBUI {
 			return nullptr;
 		}
 
-		if (!initGraphicsBackend(g_HBUICTX)) {
+		if (!initGraphicsBackend()) {
 			std::cerr << "Failed to initialize graphics backend" << std::endl;
 			return nullptr;
 		}
@@ -426,7 +426,6 @@ namespace HBUI {
 	HBUI_API bool isFlagSet(int *flags, int flag) {
 		return (*flags & flag) == flag;
 	}
-
 	HBUI_API ImGuiID getId(const char *str) {
 		//    ImGuiID seed = HBUI::getDrawData().IDStack.back();
 		//    ImGuiID id = ImHashStr(str, str_end ? (str_end - str) : 0, seed);

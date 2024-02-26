@@ -1,7 +1,3 @@
-################################################################################
-cmake_minimum_required(VERSION 3.27.8)
-project(imgui VERSION 1.0.0
-        LANGUAGES CXX C)
 cmake_policy(SET CMP0077 NEW)
 
 
@@ -42,35 +38,3 @@ endif ()
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compile_options(-Wshadow)
 endif ()
-
-
-#
-#include(cmake/defaultsetup.cmake)
-set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-
-file(GLOB sources *.cpp)
-file(GLOB headers *.h)
-
-message(STATUS "IMGUI_DIR: ${IMGUI_DIR}")
-message(STATUS "sources: ${sources}")
-
-add_library(imgui SHARED)
-target_sources(imgui PRIVATE ${sources} misc/cpp/imgui_stdlib.cpp)
-target_include_directories(imgui PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-
-#################################################################################
-## HBUI
-#################################################################################
-add_subdirectory(HBUI)
-message(STATUS "CMAKEPROJECT NAME: ${CMAKE_PROJECT_NAME}")
-#
-################################################################################
-## EXAMPLE
-################################################################################
-option(HBUI_BUILD_EXAMPLE "Build example" ON)
-if(HBUI_BUILD_EXAMPLE)
-    set(IMVK_DOWNLOAD_GLFW ON)
-    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/example/ ${CMAKE_BINARY_DIR}/example)
-    target_link_libraries(ImVk-example PRIVATE HBUI)
-endif()
-

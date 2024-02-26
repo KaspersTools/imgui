@@ -34,9 +34,8 @@ struct HBStyle {
 	    5, 9};// The spacing for the menu items (top, right, bottom, left). If
 	          // not set the imgui frame spacing
 
-	ImColor sideBarColor = (163, 255, 0, 255);
-	ImColor sideBarItemColor =
-	    (255, 0, 266, 255);// The color/Tint of the menu items
+	ImColor sideBarColor = {163, 255, 0, 255};
+	ImColor sideBarItemColor ={255, 0, 266, 255};// The color/Tint of the menu items
 };
 
 struct HBIO {
@@ -142,6 +141,11 @@ namespace HBUI {
 	//---------------------------------------------------------------------------------
 	// [SECTION] Panels/Bars
 	//---------------------------------------------------------------------------------
+	HBUI_API bool beginFlexPanel(const std::string& id,
+	                             const ImVec2& position = {0,0},
+	                             const ImVec2& size = {0,0});
+	HBUI_API void endFlexPanel();
+
 	HBUI_API bool beginSideBar(
 	    const ImGuiID &id,
 	    const HBSideBarFlags flags = 0,                             //test
@@ -160,7 +164,7 @@ namespace HBUI {
 	//---------------------------------------------------------------------------------
 	HBUI_API void showDebugWindow(bool *p_open);
 
-	HBUI_API void addDebugWidget(const std::string &name, IWidgetBase *widget);
+	HBUI_API void addDebugWidget(const std::string &name, std::shared_ptr<IWidgetBase> widget);
 
 	//---------------------------------------------------------------------------------
 	// [SECTION] Updating

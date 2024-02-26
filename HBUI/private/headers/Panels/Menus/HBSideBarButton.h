@@ -6,29 +6,26 @@
 #define IMGUI_SIDEBARBUTTON_H
 
 namespace HBUI {
-  class HBSideBarButton : public RectWidget {
-  public:
-    HBSideBarButton(
-        const ImGuiID &id, const std::string &label,
-        const ImVec2 &localPositionOffset, const ImVec2 &size,
-        const HBDrawLocation drawLocationFlag
-    ) : RectWidget(id, label,
-                   HBUIType_::HBSIDEBARBUTTON,
-                   localPositionOffset, size, false,
-                   drawLocationFlag,
-                   HBLayoutType_::HBLayoutType_Horizontal,
-                   HBWidgetResizeType_ScaleToChildren, HBWidgetResizeType_ScaleToChildren
-    )
-    {
-    }
+	class HBSideBarButton : public RectWidget {
+public:
+		HBSideBarButton(
+		    const ImGuiID &id, const std::string &label,
+		    const ImVec2 &localPositionOffset, const ImVec2 &size,
+		    const HBDrawLocation drawLocationFlag) : RectWidget(id, label,
+		                                                        HBUIType_SideBarButton,
+		                                                        localPositionOffset, size, false,
+		                                                        drawLocationFlag,
+		                                                        HBLayoutType_::HBLayoutType_Horizontal,
+		                                                        HBWidgetResizeType_ScaleToChildren, HBWidgetResizeType_ScaleToChildren) {
+		}
 
-    ~HBSideBarButton() {
-    }
+		~HBSideBarButton() {
+		}
 
-    void
-    render() override {
-      RectWidget::render();
-    }
-  };
-}
-#endif //IMGUI_SIDEBARBUTTON_H
+		void
+		    render() override {
+			RectWidget::render();
+		}
+	};
+}// namespace HBUI
+#endif//IMGUI_SIDEBARBUTTON_H
