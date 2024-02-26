@@ -154,6 +154,6 @@ namespace HBUI {
                                                   HBDrawLocation::HBDrawFlags_DrawOnParent);
 
     HBWidgetManager::appendWidget(button);
-    return true;
+
   }
 }// namespace HBUI

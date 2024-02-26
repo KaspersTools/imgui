@@ -110,6 +110,10 @@ set(GENERATED_SOURCES
         ${HBUI_DIR}/private/Generated/fa-brands/fontAwesome.hpp
         ${HBUI_DIR}/private/Generated/fa-brands/fontAwesome_codes.hpp
         ${HBUI_DIR}/private/Generated/fa-brands/fontAwesome_loader.hpp
+
+
+        ${HBUI_DIR}/private/headers/fonts/IconsFontAwesome6.h
+        ${HBUI_DIR}/private/headers/fonts/IconsFontAwesome6Brands.h
 )
 
 message(STATUS "GENERATED_SOURCES: ${GENERATED_SOURCES}")
@@ -126,13 +130,7 @@ target_include_directories(HBUI PRIVATE ${HBUI_DIR}/private/Generated)
 message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 
 
-target_compile_definitions(HBUI PUBLIC HBUI_VERSION="${PROJECT_VERSION}")
-#target_include_directories(HBUI PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/Fonts/Generated/fa-brands)
-
-#target_include_directories(HBUI PUBLIC ${HBUI_DIR}/../imgui)
-###############################################################################
-# ImVk
-###############################################################################
+target_compile_definitions(HBUI PUBLIC HBUI_VERSION="${PROJECT_VERSION}")#
 
 if (HBUI_GLFW)
     add_subdirectory(../ImVK ${CMAKE_BINARY_DIR}/ImVK)

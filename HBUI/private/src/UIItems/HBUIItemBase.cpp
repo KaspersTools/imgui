@@ -33,5 +33,6 @@ void HBWidgetManager::endAppendingWidget(const HBUIType type) {
   }
 
   HBUI::addDebugWidget(sp_AppendingWidget->getLabel(), sp_AppendingWidget);
-  sp_AppendingWidget = nullptr;
+  delete sp_AppendingWidget;
+	sp_AppendingWidget = nullptr;
 }

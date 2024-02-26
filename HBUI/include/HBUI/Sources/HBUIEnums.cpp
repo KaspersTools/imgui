@@ -67,6 +67,8 @@ struct HBTime {
   inline static float lastTime  = 0.0f;
   inline static float frameTime = 0.0f;
 
+	inline static float timerTime = 0;
+
   inline static void init() {
     lastTime = ImGui::GetTime();
   }
@@ -80,4 +82,22 @@ struct HBTime {
   inline static void endFrame() {
     frameTime = ImGui::GetTime() - lastTime;
   }
+
+	inline static void startTimer() {
+		timerTime = ImGui::GetTime();
+	}
+
+	inline static float endTimer() {
+		return ImGui::GetTime() - timerTime;
+	}
+};
+
+//-----------------------------------------------------------------------------
+// [SECTION] Fonts
+//-----------------------------------------------------------------------------
+enum HBFontStyle_ {
+	HBFontStyle_Regular,
+	HBFontStyle_Bold,
+	HBFontStyle_Italic,
+	HBFontStyle_BoldItalic
 };
