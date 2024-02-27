@@ -152,7 +152,9 @@ namespace HBUI {
 	                           ImVec2 size,
 	                           const ImVec2 &cursorPos,
 	                           const ImVec4 &padding,
-	                           const std::string &label, const HBDrawLocation itemFlags);
+	                           const ImVec4 & margin,
+	                           const std::string &label,
+	                           const HBDrawLocation itemFlags);
 
 	IMGUI_API void endSideBar();
 
@@ -160,7 +162,9 @@ namespace HBUI {
 	                                const ImVec2 &position  = {0, 0},
 	                                const ImVec2 &size      = {0, 0},
 	                                const ImVec2 &cursorPos = {0, 0},
-	                                const ImVec4 padding    = {0, 0, 0, 0});
+	                                const ImVec4 padding    = {0, 0, 0, 0},
+	                                const ImVec4 margin     = {0, 0, 0, 0}
+ );
 
 	//---------------------------------------------------------------------------------
 	// [SECTION] Sample/Debug Windows

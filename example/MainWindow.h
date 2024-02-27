@@ -44,6 +44,8 @@ class MainWindow {
 
 
 	ImVec4 m_Padding = ImVec4(10,73,10,0);
+	ImVec4 m_ButtonMargin = ImVec4(0,10,0,10);
+
 	ImVec4 m_PaddingTopBar = ImVec4(0,10,0,10);
 };
 

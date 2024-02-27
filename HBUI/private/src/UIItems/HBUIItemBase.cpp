@@ -21,7 +21,6 @@ void HBWidgetManager::appendWidget(IWidgetBase* widget) {
 }
 
 void HBWidgetManager::endAppendingWidget(const HBUIType type) {
-
 	if(sp_AppendingWidget == nullptr) {
 		IM_ASSERT(false && "No widget to end");
 		return;

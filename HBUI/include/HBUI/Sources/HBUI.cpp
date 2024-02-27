@@ -426,7 +426,7 @@ namespace HBUI {
 	HBUI_API bool isFlagSet(int *flags, int flag) {
 		return (*flags & flag) == flag;
 	}
-	HBUI_API ImGuiID getId(const char *str) {
+	HBUI_API ImGuiID getId(const char *str) {//fixme: implement ids
 		//    ImGuiID seed = HBUI::getDrawData().IDStack.back();
 		//    ImGuiID id = ImHashStr(str, str_end ? (str_end - str) : 0, seed);
 		//    ImGuiContext& g = *Ctx;

@@ -14,11 +14,13 @@ public:
 		    const ImVec2 &size,
 		    const ImVec2 &cursorPos,
 		    const ImVec4 &padding,
+		    const ImVec4 & margin,
 		    const HBDrawLocation drawLocationFlag) : HBButton(id, label,
 		                                                      localPositionOffset,
 		                                                      size,
 		                                                      cursorPos,
 		                                                      padding,
+		                                                      margin,
 		                                                      drawLocationFlag) {
 		}
 

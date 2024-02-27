@@ -97,9 +97,6 @@ void renderWindowOuterBorders(ImGuiWindow *window) {
 namespace HBUI {
 	HBUI_API void
 	    newLine(float size, HBWidgetResizeType_ resizeType) {
-//		HBNewLine *nl = new HBNewLine(size, resizeType);
-//		HBWidgetManager::appendWidget(nl);
-//		HBWidgetManager::endAppendingWidget(HBUIType_NewLine);
 	}
 
 
@@ -110,6 +107,7 @@ namespace HBUI {
 	                 ImVec2 size,
 	                 const ImVec2 &cursorPos,
 	                 const ImVec4 &padding,
+	                 const ImVec4 &margin,
 	                 const std::string &label,
 	                 const HBDrawLocation drawLocationFlag
 	                 ) {
@@ -140,7 +138,7 @@ namespace HBUI {
 			}
 		}
 
-		HBSideBar *sideBar = new HBSideBar(id, label, flags, position, size, cursorPos, padding, drawLocationFlag, layoutType,
+		HBSideBar *sideBar = new HBSideBar(id, label, flags, position, size, cursorPos, padding,margin, drawLocationFlag, layoutType,
 		                                   resizeTypeXAxis, resizeTypeYAxis);
 		HBWidgetManager::appendWidget(sideBar);
 		return true;
@@ -154,12 +152,13 @@ namespace HBUI {
 	//menu items
 	IMGUI_API bool
 	    sideBarBarButton(const ImGuiID id, const std::string &label, const ImVec2 &position, const ImVec2 &size, const ImVec2 &cursorPos,
-	                     const ImVec4 padding) {
+	                     const ImVec4 padding, const ImVec4 margin) {
 		HBSideBarButton *button = new HBSideBarButton(id, label,
 		                                              position,
 		                                              size,
 		                                              cursorPos,
 		                                              padding,
+		                                              margin,
 		                                              HBDrawLocation::HBDrawFlags_DrawOnParent);
 //		const ImGuiID &id, const std::string &label,
 //		const ImVec2 &localPositionOffset,

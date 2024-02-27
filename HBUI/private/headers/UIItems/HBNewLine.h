@@ -45,6 +45,7 @@ public:
 		                                                            size,                     //const SizeType &size,
 		                                                            {0, 0},                   //const ImVec2 &cursorPos,
 		                                                            {0, 0, 0, 0},             //const ImVec4 &padding,
+		                                                            {0, 0, 0, 0},             //const ImVec4 &margin,
 		                                                            resizeType,               //HBWidgetResizeType_ resizeTypeXAxis,
 		                                                            resizeType,               //HBWidgetResizeType_ resizeTypeYAxis,
 		                                                            HBLayoutType_None         //HBLayoutType layoutType
