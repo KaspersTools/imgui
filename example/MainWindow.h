@@ -41,6 +41,10 @@ class MainWindow {
 
   float horizontalMenuBarFixedHeight = 0;
   float verticalMenuBarFixedWidth = 0;
+
+
+	ImVec4 m_Padding = ImVec4(10,73,10,0);
+	ImVec4 m_PaddingTopBar = ImVec4(0,10,0,10);
 };
 
 

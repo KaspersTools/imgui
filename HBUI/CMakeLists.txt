@@ -136,6 +136,8 @@ list(APPEND HBUI_PRIVATE_HEADERS
         ${HBUI_DIR}/private/headers/Panels/HBFlexPanel.h
 
         ${HBUI_DIR}/private/headers/Panels/Menus/HBSideBar.h
+
+        ${HBUI_DIR}/private/headers/UIItems/HBButton.h
         ${HBUI_DIR}/private/headers/Panels/Menus/HBSideBarButton.h
 
         ${HBUI_DIR}/private/headers/fonts/FontLoader.h

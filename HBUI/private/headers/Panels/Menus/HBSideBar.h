@@ -11,13 +11,19 @@ public:
 		HBSideBar(
 		    const ImGuiID &id, const std::string &label,
 		    const HBSideBarFlags flags,
-		    const ImVec2 &position, const ImVec2 &size,
+		    const ImVec2 &position,
+		    const ImVec2 &size,
+		    const ImVec2 &cursorPos,
+		    const ImVec4 &padding,
 		    const HBDrawLocation drawLocationFlag,
 		    const HBLayoutType_ layoutType,
 		    const HBWidgetResizeType_ widthResizeType,
 		    const HBWidgetResizeType_ heightResizeType) : RectWidget(id, label,
 		                                                             HBUIType_SideBar,
-		                                                             position, size,
+		                                                             position,
+		                                                             size,
+		                                                             cursorPos,
+		                                                             padding,
 		                                                             true,
 		                                                             drawLocationFlag,
 		                                                             layoutType,
@@ -28,9 +34,14 @@ public:
 		~HBSideBar() {
 		}
 
-		void
-		    render() override {
+		void render() override {
 			RectWidget::render();
+		}
+
+		ImColor getBackgroundColor(const bool useHBUIColor = false) const override {
+			IM_ASSERT(!useHBUIColor && "Not implemented");
+
+			return ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg);
 		}
 
 private:

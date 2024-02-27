@@ -34,8 +34,8 @@ struct HBStyle {
 	    5, 9};// The spacing for the menu items (top, right, bottom, left). If
 	          // not set the imgui frame spacing
 
-	ImColor sideBarColor = {163, 255, 0, 255};
-	ImColor sideBarItemColor ={255, 0, 266, 255};// The color/Tint of the menu items
+	ImColor sideBarColor     = {163, 255, 0, 255};
+	ImColor sideBarItemColor = {255, 0, 266, 255};// The color/Tint of the menu items
 };
 
 struct HBIO {
@@ -141,23 +141,26 @@ namespace HBUI {
 	//---------------------------------------------------------------------------------
 	// [SECTION] Panels/Bars
 	//---------------------------------------------------------------------------------
-	HBUI_API bool beginFlexPanel(const std::string& id,
-	                             const ImVec2& position = {0,0},
-	                             const ImVec2& size = {0,0});
+	HBUI_API bool beginFlexPanel(const std::string &id,
+	                             const ImVec2 &position  = {0, 0},
+	                             const ImVec2 &size      = {0, 0},
+	                             const ImVec2 &cursorPos = {0, 0});
 	HBUI_API void endFlexPanel();
 
-	HBUI_API bool beginSideBar(
-	    const ImGuiID &id,
-	    const HBSideBarFlags flags = 0,                             //test
-	    const ImVec2 &position = {0, 0}, ImVec2 size = ImVec2(0, 0),//test
-	    const std::string &label       = "",                        //test
-	    const HBDrawLocation itemFlags = HBDrawFlags_ForegroundDrawList);
+	HBUI_API bool beginSideBar(const ImGuiID &id, const HBSideBarFlags flags,
+	                           const ImVec2 &position,
+	                           ImVec2 size,
+	                           const ImVec2 &cursorPos,
+	                           const ImVec4 &padding,
+	                           const std::string &label, const HBDrawLocation itemFlags);
 
 	IMGUI_API void endSideBar();
 
 	IMGUI_API bool sideBarBarButton(const ImGuiID id, const std::string &label,
-	                                const ImVec2 &position = {0, 0},
-	                                const ImVec2 &size     = {0, 0});
+	                                const ImVec2 &position  = {0, 0},
+	                                const ImVec2 &size      = {0, 0},
+	                                const ImVec2 &cursorPos = {0, 0},
+	                                const ImVec4 padding    = {0, 0, 0, 0});
 
 	//---------------------------------------------------------------------------------
 	// [SECTION] Sample/Debug Windows

@@ -41,8 +41,8 @@ namespace HBUI {
         ImGui::Spacing();
 
         if (ImGui::CollapsingHeader("Position Data")) {
-          ImGui::Text("Local Position: (%f, %f)", widget.getLocalPosition().x, widget.getLocalPosition().y);
-//          ImGui::Text("Cursor Position: (%f, %f)", widget.getDrawData().m_CursorPos.x,
+//          ImGui::Text("Local Position: (%f, %f)", widget.getLocalPosition().x, widget.getLocalPosition().y);
+//          ImGui::Text("Cursor Position: (%f, %f)", widgets.getDrawData().m_CursorPos.x,
 //                      widget.getDrawData().m_CursorPos.y);
           ImGui::Separator();
 

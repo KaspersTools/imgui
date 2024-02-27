@@ -6,17 +6,20 @@
 #define IMGUI_SIDEBARBUTTON_H
 
 namespace HBUI {
-	class HBSideBarButton : public RectWidget {
+	class HBSideBarButton : public HBButton {
 public:
 		HBSideBarButton(
 		    const ImGuiID &id, const std::string &label,
-		    const ImVec2 &localPositionOffset, const ImVec2 &size,
-		    const HBDrawLocation drawLocationFlag) : RectWidget(id, label,
-		                                                        HBUIType_SideBarButton,
-		                                                        localPositionOffset, size, false,
-		                                                        drawLocationFlag,
-		                                                        HBLayoutType_::HBLayoutType_Horizontal,
-		                                                        HBWidgetResizeType_ScaleToChildren, HBWidgetResizeType_ScaleToChildren) {
+		    const ImVec2 &localPositionOffset,
+		    const ImVec2 &size,
+		    const ImVec2 &cursorPos,
+		    const ImVec4 &padding,
+		    const HBDrawLocation drawLocationFlag) : HBButton(id, label,
+		                                                      localPositionOffset,
+		                                                      size,
+		                                                      cursorPos,
+		                                                      padding,
+		                                                      drawLocationFlag) {
 		}
 
 		~HBSideBarButton() {

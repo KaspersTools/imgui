@@ -11,7 +11,12 @@ void HBWidgetManager::appendWidget(IWidgetBase* widget) {
 	if (sp_AppendingWidget != nullptr) {
 		sp_AppendingWidget = 	sp_AppendingWidget->appendChild(widget);
 	}else{
+		if(widget->getDrawData().m_Position.x == 0 || widget->getDrawData().m_Position.y == 0) {
+			widget->setPosition(s_cursorPos);
+		}
+
 		sp_AppendingWidget = widget;
+		ImGui::Begin(widget->getLabel().c_str());
 	}
 }
 
@@ -24,6 +29,20 @@ void HBWidgetManager::endAppendingWidget(const HBUIType type) {
 
 	if(sp_AppendingWidget->getParent() == nullptr) {
 		sp_AppendingWidget->render();
+
+		ImGui::Text("Screen min %f %f", sp_AppendingWidget->getScreenPosMin().x, sp_AppendingWidget->getScreenPosMin().y);
+		ImGui::Text("Screen max %f %f", sp_AppendingWidget->getScreenPosMax().x, sp_AppendingWidget->getScreenPosMax().y);
+		ImGui::Text("End of %s", sp_AppendingWidget->getLabel().c_str());
+		ImGui::End();
+
+		if(s_layoutType == HBLayoutType_Horizontal)
+		{
+			s_cursorPos.x += sp_AppendingWidget->getXSize();
+		}
+		else if(s_layoutType == HBLayoutType_Vertical)
+		{
+			s_cursorPos.y += sp_AppendingWidget->getYSize();
+		}
 		delete sp_AppendingWidget;
 		sp_AppendingWidget = nullptr;
 	}else{

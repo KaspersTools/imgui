@@ -4,6 +4,7 @@
 
 #ifndef IMGUI_HBNEWLINE_H
 #define IMGUI_HBNEWLINE_H
+
 namespace HBUI {
 	class HBNewLine : public IWidget<float> {
 
@@ -12,21 +13,25 @@ private:
 			IWidgetBase::render();
 		};
 
-		virtual float calculateTotalWidth() override{
-
+		virtual bool isHovered() const override {
+			return false;
 		};
 
-		virtual float calculateTotalHeight() override{
-
-		};
-
-		virtual void addWidth(float toAdd) override{
-
-		};
-
-		virtual void addHeight(float toAdd) override{
-
-		};
+//		virtual float calculateEndScreenX() const override{
+//
+//		};
+//
+//		virtual float calculateEndScreenY() const override{
+//
+//		};
+//
+//		virtual void addWidth(float toAdd) override{
+//
+//		};
+//
+//		virtual void addHeight(float toAdd) override{
+//
+//		};
 
 public:
 		HBNewLine(float size, HBWidgetResizeType_ resizeType) : IWidget(
@@ -36,12 +41,18 @@ public:
 		                                                            HBUIType_NewLine,         //HBUIType uiType,
 		                                                            "",                       //const std::string &label,
 		                                                            false,                    //bool isVisible,
-		                                                            {},                       //const ImVec2 &position,
+		                                                            {0, 0},                   //const ImVec2 &position,
 		                                                            size,                     //const SizeType &size,
+		                                                            {0, 0},                   //const ImVec2 &cursorPos,
+		                                                            {0, 0, 0, 0},             //const ImVec4 &padding,
 		                                                            resizeType,               //HBWidgetResizeType_ resizeTypeXAxis,
 		                                                            resizeType,               //HBWidgetResizeType_ resizeTypeYAxis,
 		                                                            HBLayoutType_None         //HBLayoutType layoutType
 		                                                        ) {
+		}
+
+		ImColor getBackgroundColor(const bool useHBUIColor = false) const override {
+			return {0, 0, 0, 0};
 		}
 	};
 }// namespace HBUI
