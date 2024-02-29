@@ -1,97 +1,22 @@
 //
 // Created by Kasper de Bruin on 10/02/2024.
 //
-
 #include <UIItems/HBUIItemBase.h>
-
+#include <UIItems/HBButton.h>
+#include <UIItems/HBNewLine.h>
 
 #include <Panels/HBFlexPanel.h>
-#include <UIItems/HBNewLine.h>
 #include <Panels/Menus/HBSideBar.h>
-
-#include <UIItems/HBButton.h>
 #include <Panels/Menus/HBSideBarButton.h>
 
+#include <codecvt>
 #include <imgui.h>
+#include <locale>
+
+
 
 static bool aabb(const ImVec2 &min1, const ImVec2 &max1, const ImVec2 &min2, const ImVec2 &max2) {
 	return (min1.x < max2.x && max1.x > min2.x) && (min1.y < max2.y && max1.y > min2.y);
-}
-
-void renderWindowOuterBorders(ImGuiWindow *window) {
-	struct ImGuiResizeBorderDef {
-		ImVec2 InnerDir;
-		ImVec2 SegmentN1, SegmentN2;
-		float OuterAngle;
-	};
-
-	static const ImGuiResizeBorderDef resize_border_def[4] =
-	    {
-	        {ImVec2(+1, 0), ImVec2(0, 1), ImVec2(0, 0), IM_PI * 1.00f},// Left
-	        {ImVec2(-1, 0), ImVec2(1, 0), ImVec2(1, 1), IM_PI * 0.00f},// Right
-	        {ImVec2(0, +1), ImVec2(0, 0), ImVec2(1, 0), IM_PI * 1.50f},// Up
-	        {ImVec2(0, -1), ImVec2(1, 1), ImVec2(0, 1), IM_PI * 0.50f} // Down
-	    };
-
-	auto GetResizeBorderRect = [](ImGuiWindow *window, int border_n, float perp_padding, float thickness) {
-		ImRect rect = window->Rect();
-		if (thickness == 0.0f) {
-			rect.Max.x -= 1;
-			rect.Max.y -= 1;
-		}
-		if (border_n == ImGuiDir_Left) {
-			return ImRect(rect.Min.x - thickness, rect.Min.y + perp_padding, rect.Min.x + thickness,
-			              rect.Max.y - perp_padding);
-		}
-		if (border_n == ImGuiDir_Right) {
-			return ImRect(rect.Max.x - thickness, rect.Min.y + perp_padding, rect.Max.x + thickness,
-			              rect.Max.y - perp_padding);
-		}
-		if (border_n == ImGuiDir_Up) {
-			return ImRect(rect.Min.x + perp_padding, rect.Min.y - thickness, rect.Max.x - perp_padding,
-			              rect.Min.y + thickness);
-		}
-		if (border_n == ImGuiDir_Down) {
-			return ImRect(rect.Min.x + perp_padding, rect.Max.y - thickness, rect.Max.x - perp_padding,
-			              rect.Max.y + thickness);
-		}
-		IM_ASSERT(0);
-		return ImRect();
-	};
-
-	ImGuiContext &g   = *GImGui;
-	float rounding    = window->WindowRounding;
-	float border_size = 1.0f;// window->WindowBorderSize;
-	if (border_size > 0.0f && !(window->Flags & ImGuiWindowFlags_NoBackground)) {
-		window->DrawList->AddRect(window->Pos, {window->Pos.x + window->Size.x, window->Pos.y + window->Size.y},
-		                          ImGui::GetColorU32(ImGuiCol_Border), rounding, 0, border_size);
-	}
-
-	int border_held = window->ResizeBorderHeld;
-	if (border_held != -1) {
-		const ImGuiResizeBorderDef &def = resize_border_def[border_held];
-		ImRect border_r                 = GetResizeBorderRect(window, border_held, rounding, 0.0f);
-		ImVec2 p1                       = ImLerp(border_r.Min, border_r.Max, def.SegmentN1);
-		const float offsetX             = def.InnerDir.x * rounding;
-		const float offsetY             = def.InnerDir.y * rounding;
-		p1.x += 0.5f + offsetX;
-		p1.y += 0.5f + offsetY;
-
-		ImVec2 p2 = ImLerp(border_r.Min, border_r.Max, def.SegmentN2);
-		p2.x += 0.5f + offsetX;
-		p2.y += 0.5f + offsetY;
-
-		window->DrawList->PathArcTo(p1, rounding, def.OuterAngle - IM_PI * 0.25f, def.OuterAngle);
-		window->DrawList->PathArcTo(p2, rounding, def.OuterAngle, def.OuterAngle + IM_PI * 0.25f);
-		window->DrawList->PathStroke(ImGui::GetColorU32(ImGuiCol_SeparatorActive), 0,
-		                             ImMax(2.0f, border_size));// Thicker than usual
-	}
-	if (g.Style.FrameBorderSize > 0 && !(window->Flags & ImGuiWindowFlags_NoTitleBar) && !window->DockIsActive) {
-		float y = window->Pos.y + window->TitleBarHeight() - 1;
-		window->DrawList->AddLine(ImVec2(window->Pos.x + border_size, y),
-		                          ImVec2(window->Pos.x + window->Size.x - border_size, y),
-		                          ImGui::GetColorU32(ImGuiCol_Border), g.Style.FrameBorderSize);
-	}
 }
 
 namespace HBUI {
@@ -99,6 +24,10 @@ namespace HBUI {
 	    newLine(float size, HBWidgetResizeType_ resizeType) {
 	}
 
+	HBUI_API std::string wchar32ToUtf8(const ImWchar &wchar) {
+		std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
+		return converter.to_bytes(wchar);
+	}
 
 	HBUI_API bool
 	    beginSideBar(const ImGuiID &id,
@@ -109,8 +38,8 @@ namespace HBUI {
 	                 const ImVec4 &padding,
 	                 const ImVec4 &margin,
 	                 const std::string &label,
-	                 const HBDrawLocation drawLocationFlag
-	                 ) {
+	                 const HBDrawLocation drawLocationFlag) {
+
 		bool isHorizontal = flags & HBSideBarFlags_Horizontal;
 		bool isVertical   = flags & HBSideBarFlags_Vertical;
 
@@ -138,7 +67,7 @@ namespace HBUI {
 			}
 		}
 
-		HBSideBar *sideBar = new HBSideBar(id, label, flags, position, size, cursorPos, padding,margin, drawLocationFlag, layoutType,
+		HBSideBar *sideBar = new HBSideBar(id, label, flags, position, size, cursorPos, padding, margin, drawLocationFlag, layoutType,
 		                                   resizeTypeXAxis, resizeTypeYAxis);
 		HBWidgetManager::appendWidget(sideBar);
 		return true;
@@ -151,21 +80,32 @@ namespace HBUI {
 
 	//menu items
 	IMGUI_API bool
-	    sideBarBarButton(const ImGuiID id, const std::string &label, const ImVec2 &position, const ImVec2 &size, const ImVec2 &cursorPos,
-	                     const ImVec4 padding, const ImVec4 margin) {
+	    sideBarBarButton(const ImGuiID id, const ImWchar label, const ImVec2 &position, const ImVec2 &size,
+	                     const float fontSize, const ImVec2 &cursorPos,
+	                     const ImVec4 padding, const ImVec4 margin, ImFont *font) {
+		const std::string lblString = HBUI::wchar32ToUtf8(label);
+		if (font == nullptr) font = HBUI::getBigFont();
+		return sideBarBarButton(id, lblString, position, size, fontSize, cursorPos, padding, margin, font);
+	}
+
+	IMGUI_API bool
+	    sideBarBarButton(const ImGuiID id, const std::string &label, const ImVec2 &position, const ImVec2 &size,
+	                     const float fontSize, const ImVec2 &cursorPos,
+	                     const ImVec4 padding, const ImVec4 margin, ImFont *font) {
+		if (font == nullptr) {
+			font = HBUI::getBigFont();//fixme:  get regular font
+		}
+
+		IM_ASSERT(font != nullptr && "Font not found/loaded???");
+
 		HBSideBarButton *button = new HBSideBarButton(id, label,
 		                                              position,
 		                                              size,
 		                                              cursorPos,
 		                                              padding,
 		                                              margin,
-		                                              HBDrawLocation::HBDrawFlags_DrawOnParent);
-//		const ImGuiID &id, const std::string &label,
-//		const ImVec2 &localPositionOffset,
-//		const ImVec2 &size,
-//		const ImVec2 &cursorPos,
-//		const ImVec4 &padding,
-//		const HBDrawLocation drawLocationFlag
+		                                              HBDrawLocation::HBDrawFlags_DrawOnParent,
+		                                              font);
 		HBWidgetManager::appendWidget(button);
 		HBWidgetManager::endAppendingWidget(HBUIType_SideBarButton);
 		return true;//fixme: return true if the button is clicked

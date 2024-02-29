@@ -63,12 +63,12 @@ IMVK_IMPL_API void
 setBackendWindowFlags(const HBContext &ctx);
 
 IMVK_IMPL_API ImVec2
-getWindowScaleFactor();
+getWindowScaleFactorBackend();
 
 IMVK_IMPL_API float
-getWindowSizeDpiScaleFactor();
+getWindowSizeDpiScaleFactorBackend();
 
 IMVK_IMPL_API float
-getFontSizeIncreaseFactor();
+getFontSizeIncreaseFactorBackend();
 
 #endif//HBUI_BACKEND_H

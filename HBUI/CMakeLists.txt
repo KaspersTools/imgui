@@ -144,21 +144,16 @@ list(APPEND HBUI_PRIVATE_HEADERS
 )
 
 set(GENERATED_SOURCES
-        ${HBUI_DIR}/private/Generated/fa-brands/fontAwesome.cpp
-        ${HBUI_DIR}/private/Generated/fa-brands/fontAwesome.hpp
-        ${HBUI_DIR}/private/Generated/fa-brands/fontAwesome_codes.hpp
-        ${HBUI_DIR}/private/Generated/fa-brands/fontAwesome_loader.hpp
-
-
-        ${HBUI_DIR}/private/headers/fonts/IconsFontAwesome6.h
-        ${HBUI_DIR}/private/headers/fonts/IconsFontAwesome6Brands.h
+        ${HBUI_DIR}/include/HBUI/fonts/FontHeaders/IconsFontAwesome6.h
+        ${HBUI_DIR}/include/HBUI/fonts/FontHeaders/IconsFontAwesome6Brands.h
+        ${HBUI_DIR}/include/HBUI/fonts/FontHeaders/IconsNerdFont.h
 )
 
 message(STATUS "GENERATED_SOURCES: ${GENERATED_SOURCES}")
 
 target_sources(HBUI PUBLIC  ${HBUI_HEADERS})
+target_sources(HBUI PUBLIC  ${GENERATED_SOURCES})
 
-target_sources(HBUI PRIVATE ${GENERATED_SOURCES})
 target_sources(HBUI PRIVATE ${HBUI_SOURCES})
 target_sources(HBUI PRIVATE ${HBUI_PRIVATE_HEADERS})
 

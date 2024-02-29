@@ -12,22 +12,21 @@
 //// Call IMGUI_CHECKVERSION() from your .cpp file to verify that the data structures your files are using are matching the ones imgui.cpp is using.
 ////-----------------------------------------------------------------------------
 //
-//#pragma once
-//
-//
-//#ifndef IMGUI_DEFINE_MATH_OPERATORS
-//#define IMGUI_DEFINE_MATH_OPERATORS
-//#endif
-//
-//#include <KDB_ImGui/math/ImVec2.h>
-//#ifndef IM_VEC2_CLASS_EXTRA
-//#define IM_VEC2_CLASS_EXTRA
-//#endif
-//
-//#ifndef IM_VEC4_CLASS_EXTRA
-//#define IM_VEC4_CLASS_EXTRA
-//#endif
-//
+#pragma once
+
+
+#ifndef IMGUI_DEFINE_MATH_OPERATORS
+#define IMGUI_DEFINE_MATH_OPERATORS
+#endif
+
+#ifndef IM_VEC2_CLASS_EXTRA
+#define IM_VEC2_CLASS_EXTRA
+#endif
+
+#ifndef IM_VEC4_CLASS_EXTRA
+#define IM_VEC4_CLASS_EXTRA
+#endif
+#define IMGUI_USE_WCHAR32
 ////#ifndef IMGUI_INCLUDE_IMGUI_USER_INL
 ////#define IMGUI_INCLUDE_IMGUI_USER_INL
 ////#endif

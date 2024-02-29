@@ -17,21 +17,21 @@ private:
 			return false;
 		};
 
-//		virtual float calculateEndScreenX() const override{
-//
-//		};
-//
-//		virtual float calculateEndScreenY() const override{
-//
-//		};
-//
-//		virtual void addWidth(float toAdd) override{
-//
-//		};
-//
-//		virtual void addHeight(float toAdd) override{
-//
-//		};
+		//		virtual float calculateEndScreenX() const override{
+		//
+		//		};
+		//
+		//		virtual float calculateEndScreenY() const override{
+		//
+		//		};
+		//
+		//		virtual void addWidth(float toAdd) override{
+		//
+		//		};
+		//
+		//		virtual void addHeight(float toAdd) override{
+		//
+		//		};
 
 public:
 		HBNewLine(float size, HBWidgetResizeType_ resizeType) : IWidget(
@@ -48,7 +48,8 @@ public:
 		                                                            {0, 0, 0, 0},             //const ImVec4 &margin,
 		                                                            resizeType,               //HBWidgetResizeType_ resizeTypeXAxis,
 		                                                            resizeType,               //HBWidgetResizeType_ resizeTypeYAxis,
-		                                                            HBLayoutType_None         //HBLayoutType layoutType
+		                                                            HBLayoutType_None,        //HBLayoutType layoutType
+		                                                            HBItemFlags_None          //HBItemFlags flags
 		                                                        ) {
 		}
 

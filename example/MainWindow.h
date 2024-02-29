@@ -8,45 +8,47 @@
 #include <HBUI/HBUI.h>
 
 class MainWindow {
-  public:
-  MainWindow() {
-    init();
-  }
+	public:
+	MainWindow() {
+		init();
+	}
 
-  ~MainWindow() {
-    shutdown();
-  }
+	~MainWindow() {
+		shutdown();
+	}
 
-  bool run();
+	bool run();
 
-  private:
-  void init();
+	private:
+	void init();
 
-  void createMainMenuBars();
+	void createMainMenuBars();
 
-  void createDockSpace();
+	void createDockSpace();
 
-  void render();
+	void render();
 
-  void shutdown();
+	void shutdown();
 
-  private:
-  bool showDebugWindow = true;
-  bool showDemoWindow = true;
-  bool withMenuBar = true;
-  bool horizontalMenuBar = true;
-  bool verticalMenuBar = true;
-  bool withDockSpace = true;
-
-
-  float horizontalMenuBarFixedHeight = 0;
-  float verticalMenuBarFixedWidth = 0;
+	private:
+	bool showDebugWindow   = true;
+	bool showDemoWindow    = true;
+	bool withMenuBar       = true;
+	bool horizontalMenuBar = true;
+	bool verticalMenuBar   = true;
+	bool withDockSpace     = true;
 
 
-	ImVec4 m_Padding = ImVec4(10,73,10,0);
-	ImVec4 m_ButtonMargin = ImVec4(0,10,0,10);
+	float horizontalMenuBarFixedHeight = 0;
+	float verticalMenuBarFixedWidth    = 0;
 
-	ImVec4 m_PaddingTopBar = ImVec4(0,10,0,10);
+
+	ImVec4 m_Padding = ImVec4(0, 0, 0, 0);
+
+	ImVec4 m_PaddingButtons = {10,10,10,10};
+	ImVec4 m_ButtonMargin   = {4,4,4,4};
+
+	ImVec4 m_PaddingTopBar = ImVec4(10, 10, 10, 10);
 };
 
 

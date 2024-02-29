@@ -1,33 +1,35 @@
-////-----------------------------------------------------------------------------
-//// DEAR IMGUI COMPILE-TIME OPTIONS
-//// Runtime options (clipboard callbacks, enabling various features, etc.) can generally be set via the ImGuiIO structure.
-//// You can use ImGui::SetAllocatorFunctions() before calling ImGui::CreateContext() to rewire memory allocation functions.
-////-----------------------------------------------------------------------------
-//// A) You may edit imconfig.h (and not overwrite it when updating Dear ImGui, or maintain a patch/rebased branch with your modifications to it)
-//// B) or '#define IMGUI_USER_CONFIG "my_imgui_config.h"' in your project and then add directives in your own file without touching this template.
-////-----------------------------------------------------------------------------
-//// You need to make sure that configuration settings are defined consistently _everywhere_ Dear ImGui is used, which include the imgui*.cpp
-//// files but also _any_ of your code that uses Dear ImGui. This is because some compile-time options have an affect on data structures.
-//// Defining those options in imconfig.h will ensure every compilation unit gets to see the same data structure layouts.
-//// Call IMGUI_CHECKVERSION() from your .cpp file to verify that the data structures your files are using are matching the ones imgui.cpp is using.
-////-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// DEAR IMGUI COMPILE-TIME OPTIONS
+// Runtime options (clipboard callbacks, enabling various features, etc.) can generally be set via the ImGuiIO structure.
+// You can use ImGui::SetAllocatorFunctions() before calling ImGui::CreateContext() to rewire memory allocation functions.
+//-----------------------------------------------------------------------------
+// A) You may edit imconfig.h (and not overwrite it when updating Dear ImGui, or maintain a patch/rebased branch with your modifications to it)
+// B) or '#define IMGUI_USER_CONFIG "my_imgui_config.h"' in your project and then add directives in your own file without touching this template.
+//-----------------------------------------------------------------------------
+// You need to make sure that configuration settings are defined consistently _everywhere_ Dear ImGui is used, which include the imgui*.cpp
+// files but also _any_ of your code that uses Dear ImGui. This is because some compile-time options have an affect on data structures.
+// Defining those options in imconfig.h will ensure every compilation unit gets to see the same data structure layouts.
+// Call IMGUI_CHECKVERSION() from your .cpp file to verify that the data structures your files are using are matching the ones imgui.cpp is using.
+//-----------------------------------------------------------------------------
 //
-//#pragma once
-//
-//
-//#ifndef IMGUI_DEFINE_MATH_OPERATORS
-//#define IMGUI_DEFINE_MATH_OPERATORS
-//#endif
-//
-//#include <KDB_ImGui/math/ImVec2.h>
-//#ifndef IM_VEC2_CLASS_EXTRA
-//#define IM_VEC2_CLASS_EXTRA
-//#endif
-//
-//#ifndef IM_VEC4_CLASS_EXTRA
-//#define IM_VEC4_CLASS_EXTRA
-//#endif
-//
+#pragma once
+
+
+#ifndef IMGUI_DEFINE_MATH_OPERATORS
+#define IMGUI_DEFINE_MATH_OPERATORS
+#endif
+
+#define IMGUI_USE_WCHAR32            // ImWchar [configurable type: override in imconfig.h with '#define IMGUI_USE_WCHAR32' to support
+
+
+#ifndef IM_VEC2_CLASS_EXTRA
+#define IM_VEC2_CLASS_EXTRA
+#endif
+
+#ifndef IM_VEC4_CLASS_EXTRA
+#define IM_VEC4_CLASS_EXTRA
+#endif
+
 ////#ifndef IMGUI_INCLUDE_IMGUI_USER_INL
 ////#define IMGUI_INCLUDE_IMGUI_USER_INL
 ////#endif

@@ -3,13 +3,17 @@
 //
 
 #include "imgui.h"
+#include <vector>
+#include <iostream>
+#include <array>
 
 //-----------------------------------------------------------------------------
 // [SECTION] HBWidgetManager
 //-----------------------------------------------------------------------------
 enum HBDrawLocation {
   HBDrawFlags_NonDrawable        = 0,
-  HBDrawFlags_ForegroundDrawList,
+	HBDrawFlags_MainImguiWindowDrawlist,
+//  HBDrawFlags_ForegroundDrawList,
   HBDrawFlags_DrawOnParent,
   HBDrawFlags_CreateOwnImGuiWindow,
   HBDrawFlags_BackgroundDrawList,
@@ -37,6 +41,12 @@ enum HBLayoutType_ {
   HBLayoutType_None       = 0,
   HBLayoutType_Horizontal = 1,
   HBLayoutType_Vertical   = 2
+};
+
+typedef int HBItemFlags;
+enum HBItemFlags_{
+	HBItemFlags_None = 0,
+	HBItemFlags_DrawChildrenCentered = 1 << 1,
 };
 
 typedef int HBUIType;
@@ -92,9 +102,11 @@ struct HBTime {
 	}
 };
 
+
 //-----------------------------------------------------------------------------
 // [SECTION] Fonts
 //-----------------------------------------------------------------------------
+typedef unsigned int        HBFontID;// A unique ID used by widgets (typically the result of hashing a stack of string)
 enum HBFontStyle_ {
 	HBFontStyle_Regular,
 	HBFontStyle_Bold,

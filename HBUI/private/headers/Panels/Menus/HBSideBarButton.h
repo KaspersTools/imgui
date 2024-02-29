@@ -8,28 +8,28 @@
 namespace HBUI {
 	class HBSideBarButton : public HBButton {
 public:
+
 		HBSideBarButton(
 		    const ImGuiID &id, const std::string &label,
 		    const ImVec2 &localPositionOffset,
 		    const ImVec2 &size,
 		    const ImVec2 &cursorPos,
 		    const ImVec4 &padding,
-		    const ImVec4 & margin,
-		    const HBDrawLocation drawLocationFlag) : HBButton(id, label,
-		                                                      localPositionOffset,
-		                                                      size,
-		                                                      cursorPos,
-		                                                      padding,
-		                                                      margin,
-		                                                      drawLocationFlag) {
+		    const ImVec4 &margin,
+		    const HBDrawLocation drawLocationFlag,
+		    ImFont *font = nullptr,
+		    const HBItemFlags itemFlags = HBItemFlags_DrawChildrenCentered) : HBButton(id, label,
+		                                                                               localPositionOffset,
+		                                                                               size,
+		                                                                               cursorPos,
+		                                                                               padding,
+		                                                                               margin,
+		                                                                               drawLocationFlag,
+		                                                                               font == nullptr ? ImGui::GetFont() : font,
+		                                                                               itemFlags) {
 		}
 
 		~HBSideBarButton() {
-		}
-
-		void
-		    render() override {
-			RectWidget::render();
 		}
 	};
 }// namespace HBUI

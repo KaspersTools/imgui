@@ -19,7 +19,8 @@ public:
 		    const HBDrawLocation drawLocationFlag,
 		    const HBLayoutType_ layoutType,
 		    const HBWidgetResizeType_ widthResizeType,
-		    const HBWidgetResizeType_ heightResizeType) : RectWidget(id, label,
+		    const HBWidgetResizeType_ heightResizeType,
+		    const HBItemFlags itemFlags = HBItemFlags_None) : RectWidget(id, label,
 		                                                             HBUIType_SideBar,
 		                                                             position,
 		                                                             size,
@@ -29,7 +30,8 @@ public:
 		                                                             true,
 		                                                             drawLocationFlag,
 		                                                             layoutType,
-		                                                             widthResizeType, heightResizeType),
+		                                                             widthResizeType, heightResizeType,
+																																 itemFlags),
 		                                                  m_flags(flags) {
 		}
 

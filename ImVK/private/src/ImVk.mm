@@ -808,13 +808,13 @@ IMVK_IMPL_API void
 	}
 }
 
-ImVec2
-    getWindowScaleFactor() {
+//fixme: move to HBUI Core
+ImVec2 getWindowScaleFactorBackend() {
 	float x_scale, y_scale;
 	glfwGetWindowContentScale((GLFWwindow *) g_ImVKData->window, &x_scale, &y_scale);
 	return ImVec2(x_scale, y_scale);
 }
-float getWindowSizeDpiScaleFactor() {
+float getWindowSizeDpiScaleFactorBackend() {
 #ifdef __APPLE__
 	return 1.f;
 #else
@@ -823,7 +823,7 @@ float getWindowSizeDpiScaleFactor() {
 #endif
 }
 
-float getFontSizeIncreaseFactor() {
+float getFontSizeIncreaseFactorBackend() {
 	float fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
 	return fontSizeIncreaseFactor;
 }

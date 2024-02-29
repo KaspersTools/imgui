@@ -3,6 +3,7 @@
 //
 
 #pragma once
+
 #ifndef HBUI_API
 #define HBUI_API
 #endif
@@ -18,8 +19,14 @@
 
 #include "Sources/HBUIEnums.cpp"
 
+#include "fonts/FontHeaders/IconsNerdFont.h"
+
 template<typename T>
 class HBAnimProps;
+
+inline static float fontDefaultSize = 16;//fixme: move to config file
+inline static float iconDefaultSize = 24;//fixme: move to config file
+
 
 namespace HBUI::Fonts {
 	class FontLoader;
@@ -58,10 +65,12 @@ class IWidgetBase;
 class HBWidgetManager;
 
 struct HBContext {
-	bool initialized = false;
-	HBIO io          = {};
-	HBStyle style    = {};
-	HBTime time      = {};
+	bool initialized        = false;
+	HBIO io                 = {};
+	HBStyle style           = {};
+	HBTime time             = {};
+
+	ImGuiWindow *mainWindow = nullptr;
 
 	// Draw Data
 	HBUI::Animation::HBAnimManager *animManager = nullptr;
@@ -86,6 +95,8 @@ struct HBContext {
 };
 
 namespace HBUI {
+	HBUI_API std::string wchar32ToUtf8 (const ImWchar &wchar);
+
 	HBUI_API HBContext *getCurrentContext();
 
 	HBUI_API HBContext *initialize(const std::string &title, int width,
@@ -93,29 +104,17 @@ namespace HBUI {
 
 	HBUI_API void afterBackendInitialized();
 
-	HBUI_API void setCurrentContext(HBContext *ctx);
-
-	HBUI_API void setCurrentImGuiContext(ImGuiContext *ctx);
-
-	HBUI_API void clearContext();
-
 	HBUI_API HBStyle &getStyle();
 
 	HBUI_API HBIO &getIO();
 
-	HBUI_API ImVec2 getCursorViewportPos();
-
-	HBUI_API ImVec2 getContentRegionAvail();
+	HBUI_API ImGuiWindow* getMainImGuiWindow();
 
 	HBUI_API ImVec2 getWindowSize();
 
 	HBUI_API ImVec2 getViewportPos();
 
 	HBUI_API ImVec2 getViewportSize();
-
-	HBUI_API void setMainWindowFlags(MainWindowFlags flags);
-
-	HBUI_API bool isMaximized();
 
 	/**
 	 * @brief Jump to the next line
@@ -152,19 +151,29 @@ namespace HBUI {
 	                           ImVec2 size,
 	                           const ImVec2 &cursorPos,
 	                           const ImVec4 &padding,
-	                           const ImVec4 & margin,
+	                           const ImVec4 &margin,
 	                           const std::string &label,
 	                           const HBDrawLocation itemFlags);
 
 	IMGUI_API void endSideBar();
 
+	IMGUI_API bool sideBarBarButton(const ImGuiID id, const ImWchar label,
+	                                const ImVec2 &position  = {0, 0},
+	                                const ImVec2 &size      = {0, 0},
+	                                const float fontSize    = ImGui::GetFontSize(),
+	                                const ImVec2 &cursorPos = {0, 0},
+	                                const ImVec4 padding    = {0, 0, 0, 0},
+	                                const ImVec4 margin     = {0, 0, 0, 0},
+	                                ImFont *font            = nullptr);
+
 	IMGUI_API bool sideBarBarButton(const ImGuiID id, const std::string &label,
 	                                const ImVec2 &position  = {0, 0},
 	                                const ImVec2 &size      = {0, 0},
+	                                const float fontSize    = ImGui::GetFontSize(),
 	                                const ImVec2 &cursorPos = {0, 0},
 	                                const ImVec4 padding    = {0, 0, 0, 0},
-	                                const ImVec4 margin     = {0, 0, 0, 0}
- );
+	                                const ImVec4 margin     = {0, 0, 0, 0},
+	                                ImFont *font            = nullptr);
 
 	//---------------------------------------------------------------------------------
 	// [SECTION] Sample/Debug Windows
@@ -198,19 +207,13 @@ namespace HBUI {
 
 	HBUI_API void toggleFlag(int flag);
 
+	HBUI_API ImFont *getBigFont();
+
 	//---------------------------------------------------------------------------------
 	// [SECTION] Fonts
 	//---------------------------------------------------------------------------------
-	HBUI_API bool loadFont(const std::string &fontPath, float fontSize,
-	                       const std::string &fontName);
-
-	HBUI_API bool loadFont(const std::string &fontPath, float fontSize,
-	                       const std::string &fontName,
-	                       const std::string &fontGlyphRanges);
-
-	//---------------------------------------------------------------------------------
-	// [SECTION] IDS
-	//---------------------------------------------------------------------------------
-	HBUI_API ImGuiID getID(const char *str, const char *str_end);
+	HBUI_API float getWindowSizeDpiScaleFactor();
+	HBUI_API float getFontSizeIncreaseFactor();
+	HBUI_API ImVec2 getWindowScaleFactor();
 
 }// namespace HBUI
