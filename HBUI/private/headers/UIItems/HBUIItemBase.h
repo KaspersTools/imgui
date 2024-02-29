@@ -141,9 +141,9 @@ class IWidgetBase {
 	public:
 	IWidgetBase(const WidgetDrawData &data, const HBItemFlags itemFlags) : m_drawData(data),
 	                                                                       m_Parent(nullptr),
-	                                                                       m_Children(),
+																																				 m_Children(),
 	                                                                       itemFlags(itemFlags) {
-		//		setFirstCursorPos();
+		setFirstCursorPos();
 	}
 
 	virtual ~IWidgetBase() {

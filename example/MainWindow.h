@@ -43,7 +43,7 @@ class MainWindow {
 	float verticalMenuBarFixedWidth    = 0;
 
 
-	ImVec4 m_Padding = ImVec4(0, 0, 0, 0);
+	ImVec4 m_Padding = ImVec4(0, 30, 0, 0);
 
 	ImVec4 m_PaddingButtons = {10,10,10,10};
 	ImVec4 m_ButtonMargin   = {4,4,4,4};
