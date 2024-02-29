@@ -108,26 +108,54 @@ namespace HBUI {
 
 	HBUI_API HBIO &getIO();
 
+	//---------------------------------------------------------------------------------
+	// [SECTION] Main Window
+	//---------------------------------------------------------------------------------
 	HBUI_API ImGuiWindow *getMainImGuiWindow();
+	//(imgui fullscreen) Window
+	HBUI_API ImVec2 getMainWindowSize();
+	HBUI_API ImVec2 getMainWindowPos();
+	HBUI_API float getMainWindowDpiScale();
+	HBUI_API ImVec2 getMainWindowDpiScaleFactor();
 
-	HBUI_API ImVec2 getWindowSize();
+	//(glfw) Window
+	HBUI_API ImVec2 getNativeWindowPos();
+	HBUI_API ImVec2 getNativeWindowSize();
 
-	HBUI_API ImVec2 getViewportPos();
+	//ImGui Viewports
+	HBUI_API ImGuiViewport *getCurrentViewport();
+	HBUI_API ImGuiViewport *getMainViewport();
 
-	HBUI_API ImVec2 getViewportSize();
+	HBUI_API ImVec2 getViewportPos(ImGuiViewport *viewport);
+	HBUI_API ImVec2 getMainViewportPos();
+	HBUI_API ImVec2 getMainViewportSize();
+	HBUI_API ImVec2 getCurrentViewportPos();
 
-//	/**
-//	 * @brief Jump to the next line
-//	 * @details Jumps to the next line of the current appending widget.
-//	 * @example This is an example of how to use the newLine function.s
-//	 * @code
-//	 * @endcode
-//	 * @param size       The height of the current line, can be 0
-//	 * @param resizeType The resize type of the current line. If set to
-//	 * HBWidgetResizeType_ScaleToChildren the height/width gets calculated based
-//	 * on the biggest child of the current line. If set to
-//	 * HBWidgetResizeType_Fixed the height/width is the size parameter.
-//	 */
+	//---------------------------------------------------------------------------------
+	// [SECTION] Cursor
+	//---------------------------------------------------------------------------------
+	HBUI_API ImVec2 getCursorPos();
+	HBUI_API ImVec2 getCursorScreenPos();
+//todo:	HBUI_API ImVec2 getCursorScreenPos(ImGuiViewport *viewport);
+
+	HBUI_API ImVec2 getContentRegionMaxMainWindow();
+	HBUI_API ImVec2 getContentRegionAvailMainWindow();
+//todo: HBUI_API ImVec2 getContentRegionAvail(ImGuiViewport *viewport);
+	//---------------------------------------------------------------------------------
+	// [SECTION] Widgets
+	//---------------------------------------------------------------------------------
+	//		/**
+	//		 * @brief Jump to the next line
+	//		 * @details Jumps to the next line of the current appending widget.
+	//		 * @example This is an example of how to use the newLine function.s
+	//		 * @code
+	//		 * @endcode
+	//		 * @param size       The height of the current line, can be 0
+	//		 * @param resizeType The resize type of the current line. If set to
+	//		 * HBWidgetResizeType_ScaleToChildren the height/width gets calculated based
+	//		 * on the biggest child of the current line. If set to
+	//		 * HBWidgetResizeType_Fixed the height/width is the size parameter.
+	//		 */
 	HBUI_API void newLine(float size = 0, HBWidgetResizeOptions_ resizeType =
 	                                          HBWidgetResizeOptions_ScaleToChildren);
 
@@ -166,7 +194,7 @@ namespace HBUI {
 	 * @param margin
 	 * @return nothing for now
 	 */
-	    HBUI_API bool beginSideBar(const std::string &id,
+	HBUI_API bool beginSideBar(const std::string &id,
 	                           const HBSideBarFlags flags,
 	                           const ImColor &backgroundColor = ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg),
 	                           const ImVec2 &position         = {0, 0},

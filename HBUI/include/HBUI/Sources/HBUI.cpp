@@ -156,12 +156,12 @@ namespace HBUI {
 		g_HBUICTX->io = io;
 
 
-		if (!initPlatformBackend(g_HBUICTX)) {
+		if (!Backend::initPlatformBackend(g_HBUICTX)) {
 			std::cerr << "Failed to initialize platform backend" << std::endl;
 			return nullptr;
 		}
 
-		if (!initGraphicsBackend()) {
+		if (!Backend::initGraphicsBackend()) {
 			std::cerr << "Failed to initialize graphics backend" << std::endl;
 			return nullptr;
 		}
@@ -198,31 +198,91 @@ namespace HBUI {
 		return getCurrentContext()->io;
 	}
 
+	//-------------------------------------
+	// [SECTION] Main Window
+	//-------------------------------------
 	HBUI_API ImGuiWindow *getMainImGuiWindow() {
 		HBContext *ctx = getCurrentContext();
 		IM_ASSERT(ctx != nullptr && "HBUI::getMainImGuiWindow() but context is null");
 
 		return ctx->mainWindow;
 	}
-
-	HBUI_API ImVec2 getWindowSize() {
-		return ImGui::GetIO().DisplaySize;
+	HBUI_API ImGuiViewport *getCurrentViewport() {
+		return ImGui::GetCurrentContext()->CurrentViewport;
+	}
+	HBUI_API ImGuiViewport *getMainViewport() {
+		return ImGui::GetMainViewport();
 	}
 
-	HBUI_API ImVec2 getViewportPos() {
-		return ImGui::GetMainViewport()->Pos;
+	HBUI_API ImVec2 getMainWindowSize() {
+		return getMainImGuiWindow()->Size;
+	}
+	HBUI_API ImVec2 getNativeWindowSize() {
+		return Backend::getWindowSize();
+	}
+	HBUI_API ImVec2 getViewportSize(ImGuiViewport *viewport) {
+		IM_ASSERT(viewport != nullptr && "HBUI::getViewportSize() but viewport is null");
+		return viewport->Size;
+	}
+	HBUI_API ImVec2 getMainViewportSize() {
+		return getViewportSize(ImGui::GetMainViewport());
 	}
 
-	HBUI_API ImVec2 getViewportSize() {
-		return ImGui::GetMainViewport()->Size;
+	HBUI_API ImVec2 getMainWindowPos() {
+		return getMainImGuiWindow()->Pos;
 	}
+	HBUI_API ImVec2 getNativeWindowPos() {
+		return Backend::getWindowPosition();
+	}
+	HBUI_API ImVec2 getViewportPos(ImGuiViewport *viewport) {
+		IM_ASSERT(viewport != nullptr && "HBUI::getViewportPos() but viewport is null");
+		return viewport->Pos;
+	}
+	HBUI_API ImVec2 getMainViewportPos() {
+		return getViewportPos(ImGui::GetMainViewport());
+	}
+	HBUI_API ImVec2 getCurrentViewportPos() {
+		return getViewportPos(getCurrentViewport());
+	}
+
+	//-------------------------------------
+	// [SECTION] Cursor
+	//-------------------------------------
+	HBUI_API ImVec2 getCursorPos(){
+		HBContext* ctx = getCurrentContext();
+		IM_ASSERT(ctx!=nullptr && "Current Context is nullptr");
+		HBWidgetManager* widgetManager = ctx->widgetManager;
+		IM_ASSERT(widgetManager!=nullptr && "Widget Manager is nullptr in current context");
+		return widgetManager->getCursorPos(); //fixme: this should be the current window¬
+	}
+
+	HBUI_API ImVec2 getCursorScreenPos(){
+		HBContext* ctx = getCurrentContext();
+		IM_ASSERT(ctx!=nullptr && "Current Context is nullptr");
+		HBWidgetManager* widgetManager = ctx->widgetManager;
+		IM_ASSERT(widgetManager!=nullptr && "Widget Manager is nullptr in current context");
+		return widgetManager->getCursorPos() + getMainWindowPos();//fixme: this should be the current window
+	}
+
+	//todo:	HBUI_API ImVec2 getCursorScreenPos(ImGuiViewport *viewport);
+	HBUI_API ImVec2 getContentRegionMaxMainWindow(){
+		IM_ASSERT(getMainImGuiWindow()!=nullptr && "Main window is nullptr");
+		return getMainImGuiWindow()->Size;
+	}
+	HBUI_API ImVec2 getContentRegionAvailMainWindow(){
+		IM_ASSERT(getMainImGuiWindow()!=nullptr && "Main window is nullptr");
+		return getMainImGuiWindow()->Size - getCursorPos();
+	}
+	//todo: HBUI_API ImVec2 getContentRegionAvail(ImGuiViewport *viewport);
+
+
 
 	HBUI_API void update(float deltatime) {
 	}
 
 	HBUI_API void startFrame() {
 		HBTime::startFrame();
-		startRenderBackend();
+		Backend::startRenderBackend();
 
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking |
 		                                ImGuiWindowFlags_NoTitleBar |
@@ -283,16 +343,16 @@ namespace HBUI {
 
 	HBUI_API void endFrame() {
 		g_HBUICTX->endFrame();
-		endRenderBackend();
+		Backend::endRenderBackend();
 		HBTime::endFrame();
 	}
 
 	HBUI_API bool wantToClose() {
-		return getWindowShouldCloseBackend();
+		return Backend::getWindowShouldCloseBackend();
 	}
 
 	HBUI_API void shutdown() {
-		shutdownBackend();
+		Backend::shutdownBackend();
 		delete g_HBUICTX;
 		g_HBUICTX = NULL;
 	}
@@ -303,7 +363,7 @@ namespace HBUI {
 
 	HBUI_API void toggleFlag(int flag) {
 		g_HBUICTX->io.mainWindowFlags ^= flag;
-		setBackendWindowFlags(*g_HBUICTX);
+		Backend::setBackendWindowFlags(*g_HBUICTX);
 	}
 
 	HBUI_API bool isFlagSet(int *flags, int flag) {
@@ -314,14 +374,14 @@ namespace HBUI {
 	// [SECTION] Fonts
 	//-------------------------------------
 	HBUI_API float getWindowSizeDpiScaleFactor() {
-		return getWindowSizeDpiScaleFactorBackend();
+		return Backend::getWindowSizeDpiScaleFactorBackend();
 	}
 
 	HBUI_API float getFontSizeIncreaseFactor() {
-		return getFontSizeIncreaseFactorBackend();
+		return Backend::getFontSizeIncreaseFactorBackend();
 	}
 
 	HBUI_API ImVec2 getWindowScaleFactor() {
-		return getWindowScaleFactorBackend();
+		return Backend::getWindowScaleFactorBackend();
 	}
 }// namespace HBUI

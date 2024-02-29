@@ -68,17 +68,18 @@ namespace HBUI {
 		if (isVertical) {
 			layoutType = HBLayoutType_::HBLayoutType_Vertical;
 		}
+
 		HBWidgetResizeOptions_ resizeTypeXAxis = HBWidgetResizeOptions_::HBWidgetResizeOptions_ScaleToChildren;
 		HBWidgetResizeOptions_ resizeTypeYAxis = HBWidgetResizeOptions_::HBWidgetResizeOptions_ScaleToChildren;
 
 		if (flags & HBSideBarFlags_FullSize) {
 			if (isHorizontal) {//todo: add cursor position if not over vp or foreground drawlist
-				size.x = HBUI::getViewportSize().x;
+				size.x = HBUI::getContentRegionAvailMainWindow().x;
 				if (size.y != 0) {
 					resizeTypeYAxis = HBWidgetResizeOptions_::HBWidgetResizeOptions_Fixed;
 				}
 			} else {
-				size.y = HBUI::getViewportSize().y;
+				size.y = HBUI::getContentRegionAvailMainWindow().y;
 				if (size.x != 0) {
 					resizeTypeXAxis = HBWidgetResizeOptions_::HBWidgetResizeOptions_Fixed;
 				}

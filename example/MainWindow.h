@@ -33,17 +33,14 @@ class MainWindow {
 	private:
 	bool showDebugWindow   = true;
 	bool showDemoWindow    = true;
-	bool withMenuBar       = true;
-	bool horizontalMenuBar = true;
-	bool verticalMenuBar   = true;
-	bool withDockSpace     = true;
+//	bool withMenuBar       = true;
+//	bool withDockSpace     = true;
 
-	//	ImVec4 m_Padding = ImVec4(0, 30, 0, 0);
-	//
-		ImVec4 m_PaddingButtons = {10,10,10,10};
-		ImVec4 m_ButtonMargin   = {4,4,4,4};
-	//
-	//	ImVec4 m_PaddingTopBar = ImVec4(10, 10, 10, 10);
+	bool m_DrawVerticalSideBar = true;
+	bool m_DrawHorizontalSideBar = true;
+
+	ImVec4 m_PaddingButtons = {10,10,10,10};
+	ImVec4 m_ButtonMargin   = {4,4,4,4};
 
 	ImVec4 m_PaddingVerticalBar   = {0, 0, 0, 0};
 	ImVec4 m_PaddingHorizontalBar = {0, 0, 0, 0};

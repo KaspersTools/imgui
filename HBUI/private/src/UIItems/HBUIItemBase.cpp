@@ -31,6 +31,10 @@ void HBWidgetManager::endAppendingWidget(const HBUIType type) {
 
 		ImGui::Text("Screen min %f %f", sp_AppendingWidget->getScreenPosMin().x, sp_AppendingWidget->getScreenPosMin().y);
 		ImGui::Text("Screen max %f %f", sp_AppendingWidget->getScreenPosMax().x, sp_AppendingWidget->getScreenPosMax().y);
+
+		ImGui::Text("Size %f %f", sp_AppendingWidget->getXSize(), sp_AppendingWidget->getYSize());
+		ImGui::Text("Position %f %f", sp_AppendingWidget->getDrawData().m_Position.x, sp_AppendingWidget->getDrawData().m_Position.y);
+
 		ImGui::Text("End of %s", sp_AppendingWidget->getLabel().c_str());
 		ImGui::End();
 

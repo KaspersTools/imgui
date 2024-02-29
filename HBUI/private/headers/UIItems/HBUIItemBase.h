@@ -18,41 +18,14 @@ class HBWidgetManager : public HBIUpdateable {
 		s_defaultLayoutType = defaultLayoutType;
 		reset();
 	}
-
 	static void appendWidget(IWidgetBase *widget);
-
 	static void endAppendingWidget(const HBUIType type);
 
 	inline static IWidgetBase *getAppendingWidget() {
 		return sp_AppendingWidget;
 	}
-
-	inline static const ImVec2 &getDefaultCursorPos() {
-		return s_defaultCursorPos;
-	}
-
-	inline static void setDefaultCursorPos(const ImVec2 &newPos) {
-		s_defaultCursorPos = newPos;
-	}
-
-	inline static const ImVec2 getCursorPos() {
+	inline static ImVec2 getCursorPos() {
 		return s_cursorPos;
-	}
-
-	inline static const ImVec2 getCursorRealScreenPosition() {
-		return HBUI::getViewportPos() + s_cursorPos;
-	}
-
-	inline static void setCursorPos(const ImVec2 newPos) {
-		s_cursorPos = newPos;
-	}
-
-	inline static void setLayoutType(HBLayoutType_ newType) {
-		s_layoutType = newType;
-	}
-
-	inline static const HBLayoutType_ getLayoutType() {
-		return s_layoutType;
 	}
 
 	inline static void reset() {
@@ -64,7 +37,6 @@ class HBWidgetManager : public HBIUpdateable {
 	void startFrame() override {
 		reset();
 	}
-
 	void endFrame() override {
 		IM_ASSERT(sp_AppendingWidget == nullptr && "A widget was not ended properly");
 	}
@@ -267,7 +239,6 @@ class IWidgetBase {
 		m_drawData.m_CursorPos = cursorPos;
 		return cursorPos;
 	}
-
 	void resizeToChild(IWidgetBase *child) {
 		ImVec2 cursorPos = m_drawData.m_CursorPos;
 
@@ -295,17 +266,13 @@ class IWidgetBase {
 		if (m_Parent != nullptr) {
 			return m_drawData.m_Position + m_Parent->getScreenPosMin();
 		} else {
-			return m_drawData.m_Position + HBUI::getViewportPos();
+			return m_drawData.m_Position + HBUI::getMainViewportPos();
 		}
-		return HBWidgetManager::getCursorRealScreenPosition();
+		return HBUI::getCursorScreenPos();
 	}
 
 	ImVec2 getScreenPosMax() const {
 		return getScreenPosMin() + ImVec2(getXSize(), getYSize());
-	}
-
-	ImVec2 getCursorPos() const {
-		return m_drawData.m_CursorPos;
 	}
 
 	ImVec4 getPadding() const{
