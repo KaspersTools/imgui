@@ -34,23 +34,23 @@ private:
 		//		};
 
 public:
-		HBNewLine(float size, HBWidgetResizeType_ resizeType) : IWidget(
-		                                                            ImGui::GetID("HBNewLine"),//const std::string &id,
-		                                                            HBDrawFlags_NonDrawable,  //const HBDrawLocation drawLocationFlag,
-		                                                            false,                    //bool withBackground,
-		                                                            HBUIType_NewLine,         //HBUIType uiType,
-		                                                            "",                       //const std::string &label,
-		                                                            false,                    //bool isVisible,
-		                                                            {0, 0},                   //const ImVec2 &position,
-		                                                            size,                     //const SizeType &size,
-		                                                            {0, 0},                   //const ImVec2 &cursorPos,
-		                                                            {0, 0, 0, 0},             //const ImVec4 &padding,
-		                                                            {0, 0, 0, 0},             //const ImVec4 &margin,
-		                                                            resizeType,               //HBWidgetResizeType_ resizeTypeXAxis,
-		                                                            resizeType,               //HBWidgetResizeType_ resizeTypeYAxis,
-		                                                            HBLayoutType_None,        //HBLayoutType layoutType
-		                                                            HBItemFlags_None          //HBItemFlags flags
-		                                                        ) {
+		HBNewLine(float size, HBWidgetResizeOptions_ resizeType) : IWidget(
+		                                                               ImGui::GetID("HBNewLine"),//const std::string &id,
+		                                                               HBDrawFlags_NonDrawable,  //const HBDrawLocation drawLocationFlag,
+		                                                               false,                    //bool withBackground,
+		                                                               HBUIType_NewLine,         //HBUIType uiType,
+		                                                               "",                       //const std::string &label,
+		                                                               false,                    //bool isVisible,
+		                                                               {0, 0},                   //const ImVec2 &position,
+		                                                               size,                     //const SizeType &size,
+		                                                               {0, 0},                   //const ImVec2 &cursorPos,
+		                                                               {0, 0, 0, 0},             //const ImVec4 &padding,
+		                                                               {0, 0, 0, 0},             //const ImVec4 &margin,
+		                                                               resizeType,               //HBWidgetResizeType_ resizeTypeXAxis,
+		                                                               resizeType,               //HBWidgetResizeType_ resizeTypeYAxis,
+		                                                               HBLayoutType_None,        //HBLayoutType layoutType
+		                                                               HBItemFlags_None          //HBItemFlags flags
+		                                                           ) {
 		}
 
 		ImColor getBackgroundColor(const bool useHBUIColor = false) const override {

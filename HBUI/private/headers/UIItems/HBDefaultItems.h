@@ -5,6 +5,22 @@
 #ifndef IMGUI_HBDEFAULTITEMS_H
 #define IMGUI_HBDEFAULTITEMS_H
 
-#include "HBNewLine.h"
+//this file contains the default items that are used in the HBUI library,
+//this file is included in the HBWidgets.cpp file
+//Dont change the order of the items in this file, it will break the HBUI library
 
-#endif //IMGUI_HBDEFAULTITEMS_H
+// clang-format off
+
+#include <UIItems/HBUIItemBase.h>
+
+#include <UIItems/HBNewLine.h>
+
+#include <Panels/HBFlexPanel.h>
+#include <Panels/Menus/HBSideBar.h>
+
+#include <UIItems/HBButton.h>
+#include <Panels/Menus/HBSideBarButton.h>
+
+// clang-format on
+
+#endif//IMGUI_HBDEFAULTITEMS_H

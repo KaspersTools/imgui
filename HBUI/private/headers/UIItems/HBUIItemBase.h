@@ -93,8 +93,8 @@ struct WidgetDrawData {
 	ImVec4 m_Margin;
 
 	HBLayoutType_ m_LayoutType;
-	HBWidgetResizeType_ m_XResizeType;
-	HBWidgetResizeType_ m_YResizeType;
+	HBWidgetResizeOptions_ m_XResizeType;
+	HBWidgetResizeOptions_ m_YResizeType;
 
 	explicit WidgetDrawData() : cId(-1) {
 		m_DrawLocation   = HBDrawFlags_MainImguiWindowDrawlist;
@@ -107,8 +107,8 @@ struct WidgetDrawData {
 		m_Padding        = ImVec4(0, 0, 0, 0);
 		m_Margin         = ImVec4(0, 0, 0, 0);
 		m_LayoutType     = HBLayoutType_::HBLayoutType_Horizontal;
-		m_XResizeType    = HBWidgetResizeType_Fixed;
-		m_YResizeType    = HBWidgetResizeType_Fixed;
+		m_XResizeType    = HBWidgetResizeOptions_Fixed;
+		m_YResizeType    = HBWidgetResizeOptions_Fixed;
 	}
 
 	WidgetDrawData(
@@ -116,7 +116,7 @@ struct WidgetDrawData {
 	    const std::string &label, bool isVisible, const ImVec2 &position, const ImVec2 &cursorPos,
 	    const ImVec4 &padding,
 	    const ImVec4 &margin,
-	    HBLayoutType_ layoutType, HBWidgetResizeType_ resizeTypeXAxis, HBWidgetResizeType_ resizeTypeYAxis) : cId(id),
+	    HBLayoutType_ layoutType, HBWidgetResizeOptions_ resizeTypeXAxis, HBWidgetResizeOptions_ resizeTypeYAxis) : cId(id),
 	                                                                                                          m_DrawLocation(drawLocationFlag),
 	                                                                                                          m_WithBackground(withBackground),
 	                                                                                                          m_UiType(uiType),
@@ -165,12 +165,30 @@ class IWidgetBase {
 			child->m_drawData.m_Position = m_drawData.m_CursorPos;
 		}
 
+		ImVec2 childSize = ImVec2(child->getXSize(), child->getYSize());
+		if(HBUI::isFlagSet(&itemFlags, HBItemFlags_ResizeChildrenToBiggestChild)) {
+			if (childSize.x > m_BiggestSize.x) {
+				m_BiggestSize.x = childSize.x;
+				for (auto &c: m_Children) {
+					c->setSizeX(m_BiggestSize.x);
+				}
+			} else {
+				child->setSizeX(m_BiggestSize.x);
+			}
+			if (childSize.y > m_BiggestSize.y) {
+				m_BiggestSize.y = childSize.y;
+				for (auto &c: m_Children) {
+					c->setSizeY(m_BiggestSize.y);
+				}
+			} else {
+				child->setSizeY(m_BiggestSize.y);
+			}
+		}
+
 		child->m_drawData.m_Position.x += child->m_drawData.m_Margin.x;
 		child->m_drawData.m_Position.y += child->m_drawData.m_Margin.y;
 
 		bool isNewLine = child->m_drawData.m_UiType == HBUIType_NewLine;
-		{
-		}
 
 		getNextCursorPos(child);
 
@@ -219,6 +237,7 @@ class IWidgetBase {
 	//not owned
 	IWidgetBase *m_Parent = nullptr;// The parent of the widget
 	std::vector<IWidgetBase *> m_Children{};
+	ImVec2 m_BiggestSize = {};
 
 	private:
 	ImVec2 setFirstCursorPos() {
@@ -354,8 +373,8 @@ class IWidget : public IWidgetBase {
 	    const ImVec2 cursorPos,
 	    const ImVec4 padding,
 	    const ImVec4 margin,
-	    HBWidgetResizeType_ resizeTypeXAxis,
-	    HBWidgetResizeType_ resizeTypeYAxis,
+	        HBWidgetResizeOptions_ resizeTypeXAxis,
+	        HBWidgetResizeOptions_ resizeTypeYAxis,
 	    HBLayoutType_ layoutType,
 	    const HBItemFlags itemFlags) : IWidgetBase(WidgetDrawData(id,              //const ImGuiID       cId;
 	                                                              drawLocationFlag,//HBDrawLocation      m_DrawLocation;
@@ -368,8 +387,8 @@ class IWidget : public IWidgetBase {
 	                                                              padding,         //ImVec4              m_Padding;
 	                                                              margin,          //ImVec4              m_Margin;
 	                                                              layoutType,      //HBLayoutType        m_LayoutType;
-	                                                              resizeTypeXAxis, //HBWidgetResizeType_ m_XResizeType;
-	                                                              resizeTypeYAxis  //HBWidgetResizeType_ m_YResizeType;
+	                                                              resizeTypeXAxis, //HBWidgetResizeType_ m_XResizeType;//not used for now
+	                                                              resizeTypeYAxis  //HBWidgetResizeType_ m_YResizeType;//not used for now
 	                                                              ),
 	                                               itemFlags),
 	                                   size(size) {
@@ -418,8 +437,8 @@ class RectWidget : public IWidget<ImVec2> {
 	    const bool withBackground,
 	    const HBDrawLocation drawLocationFlag,
 	    const HBLayoutType_ &layoutType,
-	    const HBWidgetResizeType_ resizeTypeXAxis,
-	    const HBWidgetResizeType_ resizeTypeYAxis,
+	    const HBWidgetResizeOptions_ resizeTypeXAxis,
+	    const HBWidgetResizeOptions_ resizeTypeYAxis,
 	    const HBItemFlags itemFlags) : IWidget(id,
 	                                           drawLocationFlag,
 	                                           withBackground,

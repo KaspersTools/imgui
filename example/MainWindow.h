@@ -38,17 +38,22 @@ class MainWindow {
 	bool verticalMenuBar   = true;
 	bool withDockSpace     = true;
 
+	//	ImVec4 m_Padding = ImVec4(0, 30, 0, 0);
+	//
+		ImVec4 m_PaddingButtons = {10,10,10,10};
+		ImVec4 m_ButtonMargin   = {4,4,4,4};
+	//
+	//	ImVec4 m_PaddingTopBar = ImVec4(10, 10, 10, 10);
 
-	float horizontalMenuBarFixedHeight = 0;
-	float verticalMenuBarFixedWidth    = 0;
+	ImVec4 m_PaddingVerticalBar   = {0, 0, 0, 0};
+	ImVec4 m_PaddingHorizontalBar = {0, 0, 0, 0};
+	ImVec4 m_MarginVerticalBar    = {0, 0, 0, 0};
+	ImVec4 m_MarginHorizontalBar  = {0, 0, 0, 0};
+
+	ImVec4 m_ColorVerticalBar   = {0,0,0,0};
+	ImVec4 m_ColorHorizontalBar = {0,0,0,0};
 
 
-	ImVec4 m_Padding = ImVec4(0, 30, 0, 0);
-
-	ImVec4 m_PaddingButtons = {10,10,10,10};
-	ImVec4 m_ButtonMargin   = {4,4,4,4};
-
-	ImVec4 m_PaddingTopBar = ImVec4(10, 10, 10, 10);
 };
 
 

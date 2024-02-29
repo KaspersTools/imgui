@@ -11,28 +11,30 @@ public:
 		HBSideBar(
 		    const ImGuiID &id, const std::string &label,
 		    const HBSideBarFlags flags,
-		    const ImVec2 &position,
-		    const ImVec2 &size,
-		    const ImVec2 &cursorPos,
-		    const ImVec4 &padding,
-		    const ImVec4 & margin,
-		    const HBDrawLocation drawLocationFlag,
-		    const HBLayoutType_ layoutType,
-		    const HBWidgetResizeType_ widthResizeType,
-		    const HBWidgetResizeType_ heightResizeType,
-		    const HBItemFlags itemFlags = HBItemFlags_None) : RectWidget(id, label,
-		                                                             HBUIType_SideBar,
-		                                                             position,
-		                                                             size,
-		                                                             cursorPos,
-		                                                             padding,
-		                                                             margin,
-		                                                             true,
-		                                                             drawLocationFlag,
-		                                                             layoutType,
-		                                                             widthResizeType, heightResizeType,
-																																 itemFlags),
-		                                                  m_flags(flags) {
+		    const ImColor &backgroundColor                = ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg),
+		    const HBItemFlags itemFlags                   = HBItemFlags_DrawChildrenCentered,
+		    const ImVec2 &position                        = ImVec2(0, 0),
+		    const ImVec2 &size                            = ImVec2(0, 0),
+		    const ImVec2 &cursorPos                       = ImVec2(0, 0),
+		    const ImVec4 &padding                         = ImVec4(0, 0, 0, 0),
+		    const ImVec4 &margin                          = ImVec4(0, 0, 0, 0),
+		    const HBDrawLocation drawLocationFlag         = HBDrawFlags_CurrentWindowDrawList,
+		    const HBLayoutType_ layoutType                = HBLayoutType_Vertical,
+		    const HBWidgetResizeOptions_ widthResizeType  = HBWidgetResizeOptions_ScaleToChildren,
+		    const HBWidgetResizeOptions_ heightResizeType = HBWidgetResizeOptions_ScaleToChildren
+		    ) : RectWidget(id, label,
+		                   HBUIType_SideBar,
+		                   position,
+		                   size,
+		                   cursorPos,
+		                   padding,
+		                   margin,
+		                   true,
+		                   drawLocationFlag,
+		                   layoutType,
+		                   widthResizeType, heightResizeType,
+		                   itemFlags),
+		        m_flags(flags), m_backgroundColor(backgroundColor) {
 		}
 
 		~HBSideBar() {
@@ -44,12 +46,13 @@ public:
 
 		ImColor getBackgroundColor(const bool useHBUIColor = false) const override {
 			IM_ASSERT(!useHBUIColor && "Not implemented");
-
-			return ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg);
+			return m_backgroundColor;
+			//			return ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg);
 		}
 
 private:
-		HBSideBarFlags m_flags = 0;
+		HBSideBarFlags m_flags    = 0;
+		ImColor m_backgroundColor = ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg);
 	};
 }// namespace HBUI
 

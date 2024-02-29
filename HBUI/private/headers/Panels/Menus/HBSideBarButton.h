@@ -8,7 +8,6 @@
 namespace HBUI {
 	class HBSideBarButton : public HBButton {
 public:
-
 		HBSideBarButton(
 		    const ImGuiID &id, const std::string &label,
 		    const ImVec2 &localPositionOffset,
@@ -17,7 +16,7 @@ public:
 		    const ImVec4 &padding,
 		    const ImVec4 &margin,
 		    const HBDrawLocation drawLocationFlag,
-		    ImFont *font = nullptr,
+		    ImFont *font                = nullptr,
 		    const HBItemFlags itemFlags = HBItemFlags_DrawChildrenCentered) : HBButton(id, label,
 		                                                                               localPositionOffset,
 		                                                                               size,

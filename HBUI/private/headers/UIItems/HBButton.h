@@ -27,8 +27,8 @@ public:
 		                                              true,
 		                                              drawLocationFlag,
 		                                              HBLayoutType_::HBLayoutType_Horizontal,
-		                                              HBWidgetResizeType_ScaleToChildren,
-		                                              HBWidgetResizeType_ScaleToChildren,
+		                                              HBWidgetResizeOptions_ScaleToChildren,
+		                                              HBWidgetResizeOptions_ScaleToChildren,
 		                                              itemFlags),
 		                                   p_Font(font) {
 		}

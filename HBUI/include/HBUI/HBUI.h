@@ -65,10 +65,10 @@ class IWidgetBase;
 class HBWidgetManager;
 
 struct HBContext {
-	bool initialized        = false;
-	HBIO io                 = {};
-	HBStyle style           = {};
-	HBTime time             = {};
+	bool initialized = false;
+	HBIO io          = {};
+	HBStyle style    = {};
+	HBTime time      = {};
 
 	ImGuiWindow *mainWindow = nullptr;
 
@@ -95,7 +95,7 @@ struct HBContext {
 };
 
 namespace HBUI {
-	HBUI_API std::string wchar32ToUtf8 (const ImWchar &wchar);
+	HBUI_API std::string wchar32ToUtf8(const ImWchar &wchar);
 
 	HBUI_API HBContext *getCurrentContext();
 
@@ -108,7 +108,7 @@ namespace HBUI {
 
 	HBUI_API HBIO &getIO();
 
-	HBUI_API ImGuiWindow* getMainImGuiWindow();
+	HBUI_API ImGuiWindow *getMainImGuiWindow();
 
 	HBUI_API ImVec2 getWindowSize();
 
@@ -116,29 +116,23 @@ namespace HBUI {
 
 	HBUI_API ImVec2 getViewportSize();
 
-	/**
-	 * @brief Jump to the next line
-	 * @details Jumps to the next line of the current appending widget.
-	 * @example This is an example of how to use the newLine function.s
-	 * @code
-	 *  if (HBUI::beginSideBar(ImGui::GetID("SideBar"), HBSideBarFlags_Horizontal,
-	 * {510, 510}, {150, 150}, )) { HBUI::sideBarBarButton(ImGui::GetID("BTN1"),
-	 * {0, 0}, {32, 32}); HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0, 0},
-	 * {32, 32}); HBUI::newLine(); HBUI::sideBarBarButton(ImGui::GetID("BTN1"),
-	 * {0, 0}, {32, 32}); HBUI::endSideBar();
-	 *  }
-	 * @endcode
-	 * @param size       The height of the current line, can be 0
-	 * @param resizeType The resize type of the current line. If set to
-	 * HBWidgetResizeType_ScaleToChildren the height/width gets calculated based
-	 * on the biggest child of the current line. If set to
-	 * HBWidgetResizeType_Fixed the height/width is the size parameter.
-	 */
-	HBUI_API void newLine(float size = 0, HBWidgetResizeType_ resizeType =
-	                                          HBWidgetResizeType_ScaleToChildren);
+//	/**
+//	 * @brief Jump to the next line
+//	 * @details Jumps to the next line of the current appending widget.
+//	 * @example This is an example of how to use the newLine function.s
+//	 * @code
+//	 * @endcode
+//	 * @param size       The height of the current line, can be 0
+//	 * @param resizeType The resize type of the current line. If set to
+//	 * HBWidgetResizeType_ScaleToChildren the height/width gets calculated based
+//	 * on the biggest child of the current line. If set to
+//	 * HBWidgetResizeType_Fixed the height/width is the size parameter.
+//	 */
+	HBUI_API void newLine(float size = 0, HBWidgetResizeOptions_ resizeType =
+	                                          HBWidgetResizeOptions_ScaleToChildren);
 
 	//---------------------------------------------------------------------------------
-	// [SECTION] Panels/Bars
+	// [SECTION] Basic Panels
 	//---------------------------------------------------------------------------------
 	HBUI_API bool beginFlexPanel(const std::string &id,
 	                             const ImVec2 &position  = {0, 0},
@@ -146,17 +140,83 @@ namespace HBUI {
 	                             const ImVec2 &cursorPos = {0, 0});
 	HBUI_API void endFlexPanel();
 
-	HBUI_API bool beginSideBar(const ImGuiID &id, const HBSideBarFlags flags,
+	//---------------------------------------------------------------------------------
+	// [SECTION] Side And Menu Bars
+	//---------------------------------------------------------------------------------
+
+	//	* @deprecated
+	//	    * @example @code
+	//	        * if (HBUI::beginSideBar(ImGui::GetID("SideBar"), HBSideBarFlags_Horizontal, {510, 510}, {150, 150}, ))
+	//	            * {
+	//		* 	HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0, 0}, {32, 32});
+	//		* 	HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0, 0}, {32, 32});
+	//		* 	HBUI::sideBarBarButton(ImGui::GetID("BTN1"), {0, 0}, {32, 32});
+	//		* 	HBUI::endSideBar();
+	//		*  }
+	//	*  @endcode
+
+	/**
+	 * @brief Begin a new side bar
+	 * @param id
+	 * @param flags
+	 * @param backgroundColor
+	 * @param position
+	 * @param size
+	 * @param padding
+	 * @param margin
+	 * @return nothing for now
+	 */
+	    HBUI_API bool beginSideBar(const std::string &id,
+	                           const HBSideBarFlags flags,
+	                           const ImColor &backgroundColor = ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg),
+	                           const ImVec2 &position         = {0, 0},
+	                           const ImVec2 &size             = {0, 0},
+	                           const ImVec4 &padding          = {0, 0, 0, 0},
+	                           const ImVec4 &margin           = {0, 0, 0, 0});
+
+	/**
+	 * @brief Begin a new side bar
+	 * @param id
+	 * @param backgroundColor
+	 * @param flags
+	 * @param position
+	 * @param size
+	 * @param cursorPos
+	 * @param padding
+	 * @param margin
+	 * @param label
+	 * @param itemFlags
+	 * @param drawLocationFlag
+	 * @return nothing for now
+	 */
+	HBUI_API bool beginSideBar(const ImGuiID &id,
+	                           const ImColor &backgroundColor,
+	                           const HBSideBarFlags flags,
 	                           const ImVec2 &position,
 	                           ImVec2 size,
 	                           const ImVec2 &cursorPos,
 	                           const ImVec4 &padding,
 	                           const ImVec4 &margin,
 	                           const std::string &label,
-	                           const HBDrawLocation itemFlags);
+	                           const HBItemFlags itemFlags,
+	                           const HBDrawLocation drawLocationFlag);
 
 	IMGUI_API void endSideBar();
 
+	/**
+	 * @brief Begin a new side bar
+	 * @param id
+	 * @param flags
+	 * @param position
+	 * @param size
+	 * @param cursorPos
+	 * @param padding
+	 * @param margin
+	 * @param label
+	 * @param itemFlags
+	 * @param drawLocationFlag
+	 * @return nothing for now
+	 */
 	IMGUI_API bool sideBarBarButton(const ImGuiID id, const ImWchar label,
 	                                const ImVec2 &position  = {0, 0},
 	                                const ImVec2 &size      = {0, 0},
@@ -166,6 +226,20 @@ namespace HBUI {
 	                                const ImVec4 margin     = {0, 0, 0, 0},
 	                                ImFont *font            = nullptr);
 
+	/**
+	 * @brief Begin a new side bar
+	 * @param id
+	 * @param flags
+	 * @param position
+	 * @param size
+	 * @param cursorPos
+	 * @param padding
+	 * @param margin
+	 * @param label
+	 * @param itemFlags
+	 * @param drawLocationFlag
+	 * @return nothing for now
+	 */
 	IMGUI_API bool sideBarBarButton(const ImGuiID id, const std::string &label,
 	                                const ImVec2 &position  = {0, 0},
 	                                const ImVec2 &size      = {0, 0},
@@ -179,7 +253,6 @@ namespace HBUI {
 	// [SECTION] Sample/Debug Windows
 	//---------------------------------------------------------------------------------
 	HBUI_API void showDebugWindow(bool *p_open);
-
 	HBUI_API void addDebugWidget(const std::string &name, std::shared_ptr<IWidgetBase> widget);
 
 	//---------------------------------------------------------------------------------
@@ -191,23 +264,21 @@ namespace HBUI {
 	// [SECTION] Rendering
 	//---------------------------------------------------------------------------------
 	HBUI_API void startFrame();
-
 	HBUI_API void endFrame();
-
 	HBUI_API bool wantToClose();
-
 	HBUI_API void shutdown();
 
 	//---------------------------------------------------------------------------------
 	// [SECTION] Input
 	//---------------------------------------------------------------------------------
-	HBUI_API bool mouseOverRect(const ImVec2 &start, const ImVec2 &end);
 
+
+	//---------------------------------------------------------------------------------
+	// [SECTION] Flags
+	//---------------------------------------------------------------------------------
 	HBUI_API bool isFlagSet(int *flags, int flag);
-
 	HBUI_API void toggleFlag(int flag);
 
-	HBUI_API ImFont *getBigFont();
 
 	//---------------------------------------------------------------------------------
 	// [SECTION] Fonts
@@ -215,5 +286,6 @@ namespace HBUI {
 	HBUI_API float getWindowSizeDpiScaleFactor();
 	HBUI_API float getFontSizeIncreaseFactor();
 	HBUI_API ImVec2 getWindowScaleFactor();
+	HBUI_API ImFont *getBigFont();
 
 }// namespace HBUI
