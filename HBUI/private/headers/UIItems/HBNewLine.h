@@ -52,10 +52,6 @@ public:
 		                                                               HBItemFlags_None          //HBItemFlags flags
 		                                                           ) {
 		}
-
-		ImColor getBackgroundColor(const bool useHBUIColor = false) const override {
-			return {0, 0, 0, 0};
-		}
 	};
 }// namespace HBUI
 #endif//IMGUI_HBNEWLINE_H

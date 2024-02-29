@@ -61,28 +61,6 @@ public:
 			return size;
 		}
 
-		ImColor getBackgroundColor(const bool useHBUIColor = false) const override {
-			IM_ASSERT(!useHBUIColor && "Not implemented");
-			if (isActive()) {
-				return ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive);
-			}
-			if (isHovered()) {
-				return ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered);
-			}
-
-			return ImGui::GetStyleColorVec4(ImGuiCol_Button);
-		}
-
-		ImColor getTextColor(const bool useHBUIColor = false) const override {
-			IM_ASSERT(!useHBUIColor && "Not implemented");
-			return ImGui::GetStyleColorVec4(ImGuiCol_Text);
-		}
-
-		ImColor getBorderColor(const bool useHBUIColor = false) const override {
-			IM_ASSERT(!useHBUIColor && "Not implemented");
-			return ImGui::GetStyleColorVec4(ImGuiCol_Border);
-		}
-
 		void render() override {
 			ImDrawList *drawList = getDrawlist();
 			IM_ASSERT(drawList != nullptr && "Drawlist not found");

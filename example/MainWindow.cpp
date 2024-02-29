@@ -105,7 +105,6 @@ void MainWindow::render() {
 		}
 	}
 
-
 	ImGui::Begin("Side Bar(s) Settings");
 
 	ImGui::BeginChild("SideBarSettings", ImVec2(0, 0), true);

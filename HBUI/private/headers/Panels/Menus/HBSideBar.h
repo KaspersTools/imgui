@@ -34,7 +34,7 @@ public:
 		                   layoutType,
 		                   widthResizeType, heightResizeType,
 		                   itemFlags),
-		        m_flags(flags), m_backgroundColor(backgroundColor) {
+		        m_flags(flags){
 		}
 
 		~HBSideBar() {
@@ -44,15 +44,8 @@ public:
 			RectWidget::render();
 		}
 
-		ImColor getBackgroundColor(const bool useHBUIColor = false) const override {
-			IM_ASSERT(!useHBUIColor && "Not implemented");
-			return m_backgroundColor;
-			//			return ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg);
-		}
-
 private:
 		HBSideBarFlags m_flags    = 0;
-		ImColor m_backgroundColor = ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg);
 	};
 }// namespace HBUI
 
