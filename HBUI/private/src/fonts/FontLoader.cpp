@@ -114,7 +114,7 @@ namespace HBUI::Fonts {
 		baseConfig.OversampleV  = 1;
 		fillIconRange();
 
-		ImFont* added = io.Fonts->AddFontFromFileTTF("Assets/Fonts/test/JetBrainsMonoNerdFontPropo-Regular.ttf", baseFontSize,
+		ImFont* added = io.Fonts->AddFontFromFileTTF(defaultFontPath.c_str(), baseFontSize,
 		                                      &baseConfig, icon);
 		io.Fonts->Build();
 

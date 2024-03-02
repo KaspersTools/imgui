@@ -6,6 +6,7 @@
 #define IMGUI_FONTLOADER_H
 #include <set>
 #include <array>
+#include <vector>
 
 struct HBIcon {
 	const std::string name;
@@ -32,6 +33,7 @@ public:
 		}
 
 private:
+		const std::string defaultFontPath = "Assets/Fonts/JetBrainsMono/JetBrainsMonoNerdFontPropo-Regular.ttf";
 		ImFont *m_BigFont = nullptr;
 		ImFont *m_DefaultFont  = nullptr;
 

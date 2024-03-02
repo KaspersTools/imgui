@@ -8,44 +8,27 @@
 namespace HBUI {
 	class HBSideBar : public RectWidget {
 public:
-		HBSideBar(
-		    const ImGuiID &id, const std::string &label,
-		    const HBSideBarFlags flags,
-		    const ImColor &backgroundColor                = ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg),
-		    const HBItemFlags itemFlags                   = HBItemFlags_DrawChildrenCentered,
-		    const ImVec2 &position                        = ImVec2(0, 0),
-		    const ImVec2 &size                            = ImVec2(0, 0),
-		    const ImVec2 &cursorPos                       = ImVec2(0, 0),
-		    const ImVec4 &padding                         = ImVec4(0, 0, 0, 0),
-		    const ImVec4 &margin                          = ImVec4(0, 0, 0, 0),
-		    const HBDrawLocation drawLocationFlag         = HBDrawFlags_CurrentWindowDrawList,
-		    const HBLayoutType_ layoutType                = HBLayoutType_Vertical,
-		    const HBWidgetResizeOptions_ widthResizeType  = HBWidgetResizeOptions_ScaleToChildren,
-		    const HBWidgetResizeOptions_ heightResizeType = HBWidgetResizeOptions_ScaleToChildren
-		    ) : RectWidget(id, label,
-		                   HBUIType_SideBar,
-		                   position,
-		                   size,
-		                   cursorPos,
-		                   padding,
-		                   margin,
-		                   true,
-		                   drawLocationFlag,
-		                   layoutType,
-		                   widthResizeType, heightResizeType,
-		                   itemFlags),
-		        m_flags(flags){
+		HBSideBar()
+		    : RectWidget() {
+
+			if (m_flags & HBSideBarFlags_Horizontal) {
+				HBUI::setLayout(HBLayoutType_Horizontal);
+			} else {
+				HBUI::setLayout(HBLayoutType_Vertical);
+			}
 		}
 
 		~HBSideBar() {
+			HBUI::setLayout(HBLayoutType_Vertical);
 		}
 
 		void render() override {
 			RectWidget::render();
 		}
 
+
 private:
-		HBSideBarFlags m_flags    = 0;
+		HBLayoutType_ m_BackupLayoutType = HBLayoutType_Vertical;
 	};
 }// namespace HBUI
 

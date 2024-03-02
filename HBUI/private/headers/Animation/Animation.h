@@ -3,11 +3,10 @@
 #include <iostream>
 #include <cmath>
 #include <unordered_map>
-#include <HBUI/HBUI.h>
 
-#include <Utils/HBIUpdatable.h>
 #include <types/HBFloat.h>
 
+//todo: move this to enums and structs file
 struct GlobalAnimState {
   static inline hb_u_float playbackSpeed = 1.0f;
 };
@@ -37,10 +36,6 @@ enum HB_AnimDirection_ {
 
 template<typename T>
 struct HBAnimProps {
-//  HBAnimProps(HBAnimProps<T> const &other) {
-
-//  }
-
   T start;
   T end;
   T current = start;
@@ -111,7 +106,7 @@ namespace HBUI::Animation {
           m_currentProps(props) {
     }
 
-    void update() {
+		void update() {
       if (m_currentProps.state == HB_AnimState_Playing) {
         if (m_currentTime >= m_currentProps.duration) {
           onFinish();
@@ -296,7 +291,7 @@ namespace HBUI::Animation {
 
   };
 
-  class HBAnimManager : public HBIUpdateable{
+  class HBAnimManager {
   public:
     HBAnimManager() = default;
 
@@ -353,13 +348,13 @@ namespace HBUI::Animation {
       }
     }
 
-    void startFrame() override{
+    void startFrame() {
       for (auto &anim: animations) {
         anim.second->update();
       }
     }
 
-    void endFrame() override{
+    void endFrame() {
 
     }
 

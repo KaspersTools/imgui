@@ -28,82 +28,79 @@ void MainWindow::render() {
 	static bool drawMultiRowSideBar = false;
 	static bool drawIconSideBar     = true;
 	//sidebars
-	{
-
+//	{
 		//SIDE BAR FLAGS
-		ImGuiID id                  = ImGui::GetID("SideBar01");               //id
-		HBSideBarFlags sideBarFlags =                                          //Side bar specific flags
-		    HBSideBarFlags_Vertical |                                          //Vertical = direction
-		    HBSideBarFlags_FullSize;                                           //full size = take the full screen width/height from the satart pos
-		ImVec2 position       = {0, 0};                                        //start position
-		ImVec2 size           = {0, 0};                                        //size -> 0,0 means in combination with the flags it will resize to the children
-		ImVec2 cursorPos      = {0, 0};                                        //cursorStartPos
-		ImVec4 padding        = m_PaddingVerticalBar;                          //padding
-		ImVec4 margin         = m_MarginVerticalBar;                           //margin
-		std::string label     = "SideBar01";                                   //label
-		HBItemFlags itemFlags = HBItemFlags_ResizeChildrenToBiggestChild;      //itemFlags = shared item flags, that cn be used
-		                                                                       // on every widget
-		HBDrawLocation drawLocationFlags = HBDrawFlags_MainImguiWindowDrawlist;//drawLocationFlag = where to draw the side bar
-		if(m_DrawVerticalSideBar) {
-			//Vertical side bar
-			if (HBUI::beginSideBar(
-			        id,
-			        m_ColorVerticalBar,
-			        sideBarFlags,
-			        position,
-			        size,
-			        cursorPos,
-			        padding,
-			        margin,
-			        label,
-			        itemFlags,
-			        drawLocationFlags)) {
-
-				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-
-				HBUI::endSideBar();
-			}
-		}
-		if(m_DrawHorizontalSideBar) {
-			//horizontal side bar
-			ImGuiID horId = ImGui::GetID("SideBar02");//id
-			sideBarFlags  =                           //Side bar specific flags
-			    HBSideBarFlags_Horizontal |           //Horizontal = direction
-			    HBSideBarFlags_FullSize;              //full size = take the full screen width/height from the satart pos
-			position = {0, 0};                        //start position
-			label    = "SideBar02";                   //label
-			margin   = m_MarginHorizontalBar;         //margin
-			padding  = m_PaddingHorizontalBar;        //padding
-
-			if (HBUI::beginSideBar(
-			        horId,
-			        m_ColorHorizontalBar,
-			        sideBarFlags,
-			        position,
-			        size,
-			        cursorPos,
-			        padding,
-			        margin,
-			        label,
-			        itemFlags,
-			        drawLocationFlags)) {
-				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-
-				HBUI::endSideBar();
-			}
-		}
-	}
+//		ImGuiID id                  = ImGui::GetID("SideBar01");               //id
+//		HBSideBarFlags sideBarFlags =                                          //Side bar specific flags
+//		    HBSideBarFlags_Vertical |                                          //Vertical = direction
+//		    HBSizeFlags_FillAvailableSpace;                                           //full size = take the full screen width/height from the satart pos
+//		ImVec2 position       = {0, 0};                                        //start position
+//		ImVec2 size           = {0, 0};                                        //size -> 0,0 means in combination with the flags it will resize to the children
+//		ImVec2 cursorPos      = {0, 0};                                        //cursorStartPos
+//		ImVec4 padding        = m_PaddingVerticalBar;                          //padding
+//		ImVec4 margin         = m_MarginVerticalBar;                           //margin
+//		std::string label     = "SideBar01";                                   //label
+//		HBItemFlags itemFlags = HBItemFlags_ResizeChildrenToBiggestChild;      //itemFlags = shared item flags, that cn be used
+//		                                                                       // on every widget
+//		HBDrawLocation drawLocationFlags = HBDrawFlags_MainImguiWindowDrawlist;//drawLocationFlag = where to draw the side bar
+//		if(m_DrawVerticalSideBar) {
+//			//Vertical side bar
+//			if (HBUI::beginSideBar(
+//			        id,
+//			        m_ColorVerticalBar,
+//			        sideBarFlags,
+//			        position,
+//			        size,
+//			        cursorPos,
+//			        padding,
+//			        margin,
+//			        label,
+//			        itemFlags,
+//			        drawLocationFlags)) {
+//
+//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
+//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
+//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
+//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
+//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
+//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
+//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
+//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
+//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
+//
+//				HBUI::endSideBar();
+//			}
+//		}
+//		if(m_DrawHorizontalSideBar) {
+//			//horizontal side bar
+//			ImGuiID horId = ImGui::GetID("SideBar02");//id
+//			sideBarFlags  = HBSizeFlags_FillAvailableSpace;              //full size = take the full screen width/height from the satart pos
+//			position = {0, 0};                        //start position
+//			label    = "SideBar02";                   //label
+//			margin   = m_MarginHorizontalBar;         //margin
+//			padding  = m_PaddingHorizontalBar;        //padding
+//
+//			if (HBUI::beginSideBar(
+//			        horId,
+//			        m_ColorHorizontalBar,
+//			        sideBarFlags,
+//			        position,
+//			        size,
+//			        cursorPos,
+//			        padding,
+//			        margin,
+//			        label,
+//			        itemFlags,
+//			        drawLocationFlags)) {
+//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
+//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
+//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
+//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
+//
+//				HBUI::endSideBar();
+//			}
+//		}
+//	}
 
 	ImGui::Begin("Side Bar(s) Settings");
 
@@ -153,11 +150,10 @@ void MainWindow::render() {
 
 	ImGui::End();
 
-	if (showDemoWindow) {
-		ImGui::ShowDemoWindow(&showDemoWindow);
-	}
+	ImVec2 size = HBUI::getContentRegionAvailMainWindow();
+	ImVec2 pos	= HBUI::getCursorScreenPos();
 
-
+	HBUI::getMainImGuiWindow()->DrawList->AddRect(pos, {pos.x + size.x, pos.y + size.y}, IM_COL32(255, 0, 0, 255));
 #ifdef HBUI_WITH_DEBUG_WINDOW
 	//only call this function at the end of a frame.
 	HBUI::showDebugWindow(&showDebugWindow);

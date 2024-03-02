@@ -21,10 +21,10 @@
 
 #define IMGUI_USE_WCHAR32            // ImWchar [configurable type: override in imconfig.h with '#define IMGUI_USE_WCHAR32' to support
 
-
-#ifndef IM_VEC2_CLASS_EXTRA
-#define IM_VEC2_CLASS_EXTRA
-#endif
+//
+//#ifndef IM_VEC2_CLASS_EXTRA
+//#define IM_VEC2_CLASS_EXTRA
+//#endif
 
 #ifndef IM_VEC4_CLASS_EXTRA
 #define IM_VEC4_CLASS_EXTRA

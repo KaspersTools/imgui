@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <map>
 
-#include <UIItems/HBUIItemBase.h>
+#include "../../private/headers/UIItems/HBUIItemBase.h"
 #include <Animation/Animation.h>
 #include <Animation/Animations.h>
 
@@ -15,59 +15,58 @@ namespace HBUI {
   public:
     debugWidgetItem(
         const std::string &name,
-        std::shared_ptr<IWidgetBase> widget
+        std::shared_ptr<HBItemBase> widget
     ) : name(name), widget(widget) {
-
     }
 
     ~debugWidgetItem() {
 
     }
 
-    static void drawWidget(const IWidgetBase &widget) {
-      if (widget.getUIType() == HBUIType_NewLine) {
-        return;
-      }
-      if (widget.getLabel().empty()) {
-        return;
-      }
-      if (widget.getLabel() == "\0\0") {
-        return;
-      }
+    static void drawWidget(const HBItemBase &widget) {
+//      if (widget.getUIType() == HBUIType_NewLine) {
+//        return;
+//      }
+//      if (widget.getLabel().empty()) {
+//        return;
+//      }
+//      if (widget.getLabel() == "\0\0") {
+//        return;
+//      }
 
-      if (ImGui::TreeNode(widget.getLabel().c_str())) {
-        ImGui::Text("Label: %s", widget.getLabel().c_str());
-        ImGui::Text("ID: %i", widget.getId());
-        ImGui::Spacing();
-
-        if (ImGui::CollapsingHeader("Position Data")) {
-//          ImGui::Text("Local Position: (%f, %f)", widget.getLocalPosition().x, widget.getLocalPosition().y);
-//          ImGui::Text("Cursor Position: (%f, %f)", widgets.getDrawData().m_CursorPos.x,
-//                      widget.getDrawData().m_CursorPos.y);
-          ImGui::Separator();
-
-//          RectWidget *rectWidget = dynamic_cast<RectWidget *>(widget.get());
-//          if (rectWidget) {
-//            ImGui::Text("IMVEC2");
-//            ImVec2 size = rectWidget.getSize();
-//            ImGui::Text("Width: %f", size.x);
-//            ImGui::Text("Height: %f", size.y);
-//          }
-        }
-//        if (ImGui::CollapsingHeader("Draw data")) {
-//          ImGui::Text("UI Type: %d", static_cast<int>(widget.getUIType()));
-//          ImGui::Text("Is Visible: %s", widget.isVisible() ? "True" : "False");
-//          ImGui::Text("With Background: %s", widget.withBackground() ? "True" : "False");
-//          ImGui::Separator();
-//        }
-
+//      if (ImGui::TreeNode(widget.getLabel().c_str())) {
+//        ImGui::Text("Label: %s", widget.getLabel().c_str());
+//        ImGui::Text("ID: %i", widget.getId());
 //        ImGui::Spacing();
-//        ImGui::Text("Children: %d", widget.getChildren().size());
-//        for (IWidgetBase& child: widget.getChildren()) {
-//          drawWidget(child);
+//
+//        if (ImGui::CollapsingHeader("Position Data")) {
+////          ImGui::Text("Local Position: (%f, %f)", widget.getLocalPosition().x, widget.getLocalPosition().y);
+////          ImGui::Text("Cursor Position: (%f, %f)", widgets.getDrawData().m_CursorPos.x,
+////                      widget.getDrawData().m_CursorPos.y);
+//          ImGui::Separator();
+//
+////          RectWidget *rectWidget = dynamic_cast<RectWidget *>(widget.get());
+////          if (rectWidget) {
+////            ImGui::Text("IMVEC2");
+////            ImVec2 size = rectWidget.getSize();
+////            ImGui::Text("Width: %f", size.x);
+////            ImGui::Text("Height: %f", size.y);
+////          }
 //        }
-        ImGui::TreePop();
-      }
+////        if (ImGui::CollapsingHeader("Draw data")) {
+////          ImGui::Text("UI Type: %d", static_cast<int>(widget.getUIType()));
+////          ImGui::Text("Is Visible: %s", widget.isVisible() ? "True" : "False");
+////          ImGui::Text("With Background: %s", widget.withBackground() ? "True" : "False");
+////          ImGui::Separator();
+////        }
+//
+////        ImGui::Spacing();
+////        ImGui::Text("Children: %d", widget.getChildren().size());
+////        for (IWidgetBase& child: widget.getChildren()) {
+////          drawWidget(child);
+////        }
+//        ImGui::TreePop();
+      //}
     }
 
     void render() {
@@ -85,7 +84,7 @@ namespace HBUI {
 
   private:
     std::string name;
-		std::shared_ptr<IWidgetBase> widget;
+		std::shared_ptr<HBItemBase> widget;
   };
 
   struct debugData {
@@ -107,7 +106,7 @@ namespace HBUI {
       }
     }
 
-    void addItem(const std::string &name, std::shared_ptr<IWidgetBase> widget) {
+    void addItem(const std::string &name, std::shared_ptr<HBItemBase> widget) {
       debugWidgetItem newItem(name, widget);
       newItem.render();
       items.push_back(newItem);
@@ -378,46 +377,45 @@ namespace HBUI {
     if (ImGui::CollapsingHeader("Style")) {
       ImGui::Text("Style");
       ImGui::Spacing();
-      HBStyle &style = getStyle();
 
-      if (ImGui::BeginTabBar("StyleTabBar")) {
-        if (ImGui::BeginTabItem("HBUIStyle")) {
-//          ImGui::DragFloat2("mainMenuBar   ---VerticalFirstItemOffset----   | ",
-//                            (float *) &style.sideBarVerticalFirstItemOffset);
-//          ImGui::DragFloat2("mainMenuBar   ---HorizontalFirstItemOffset---  | ",
-//                            (float *) &style.mainMenuBarHorizontalFirstItemOffset);
-          ImGui::ColorEdit4("mainMenuBar   ---Color------------------------ | ", (float *) &style.sideBarColor);
-          ImGui::Checkbox("mainMenuBar   ---UseMenuBarColor-------------  | ",
-                          (bool *) &style.useHBUIStyleMenuBarColor);
-
-          ImGui::ColorEdit4("mainMenuBar   ---ItemColor-------------------- | ",
-                            (float *) &style.sideBarItemColor);
-//          ImGui::Checkbox("mainMenuBar   ---UseItemColor----------------- | ",
-//                          (bool *) &style.useHBUIStyleMainMenuItemColor);
-
-          ImGui::DragFloat2("mainMenuItem  ---Size------------------------- | ", (float *) &style.menuItemSide);
-//          ImGui::DragFloat2("mainMenuItems ---Padding---------------------- | ",
-//                            (float *) &style.menuItemPadding);
-          ImGui::DragFloat2("mainMenuItems ---Spacing---------------------- | ",
-                            (float *) &style.menuItemSpacing);
-
-          if (ImGui::Button("Reset Style")) {
-            style = HBStyle();
-          }
-
-          ImGui::SameLine();
-          if (ImGui::Button("Print Style")) {
-//            getStyle().logToTTY();
-          }
-
-          ImGui::EndTabItem();
-        }
-        if (ImGui::BeginTabItem("ImGuiStyle")) {
-          ImGui::ShowStyleEditor();
-          ImGui::EndTabItem();
-        }
-        ImGui::EndTabBar();
-      }
+//      if (ImGui::BeginTabBar("StyleTabBar")) {
+//        if (ImGui::BeginTabItem("HBUIStyle")) {
+////          ImGui::DragFloat2("mainMenuBar   ---VerticalFirstItemOffset----   | ",
+////                            (float *) &style.sideBarVerticalFirstItemOffset);
+////          ImGui::DragFloat2("mainMenuBar   ---HorizontalFirstItemOffset---  | ",
+////                            (float *) &style.mainMenuBarHorizontalFirstItemOffset);
+//          ImGui::ColorEdit4("mainMenuBar   ---Color------------------------ | ", (float *) &style.sideBarColor);
+//          ImGui::Checkbox("mainMenuBar   ---UseMenuBarColor-------------  | ",
+//                          (bool *) &style.useHBUIStyleMenuBarColor);
+//
+//          ImGui::ColorEdit4("mainMenuBar   ---ItemColor-------------------- | ",
+//                            (float *) &style.sideBarItemColor);
+////          ImGui::Checkbox("mainMenuBar   ---UseItemColor----------------- | ",
+////                          (bool *) &style.useHBUIStyleMainMenuItemColor);
+//
+//          ImGui::DragFloat2("mainMenuItem  ---Size------------------------- | ", (float *) &style.menuItemSide);
+////          ImGui::DragFloat2("mainMenuItems ---Padding---------------------- | ",
+////                            (float *) &style.menuItemPadding);
+//          ImGui::DragFloat2("mainMenuItems ---Spacing---------------------- | ",
+//                            (float *) &style.menuItemSpacing);
+//
+//          if (ImGui::Button("Reset Style")) {
+//            style = HBStyle();
+//          }
+//
+//          ImGui::SameLine();
+//          if (ImGui::Button("Print Style")) {
+////            getStyle().logToTTY();
+//          }
+//
+//          ImGui::EndTabItem();
+//        }
+//        if (ImGui::BeginTabItem("ImGuiStyle")) {
+//          ImGui::ShowStyleEditor();
+//          ImGui::EndTabItem();
+//        }
+//        ImGui::EndTabBar();
+//      }
     }
     if (ImGui::CollapsingHeader("Degubg Info")) {
       ImGui::SeparatorText("ABOUT THIS DEMO:");
@@ -430,7 +428,7 @@ namespace HBUI {
     ImGui::End();
   }
 
-  void addDebugWidget(const std::string &name, std::shared_ptr<IWidgetBase> widget) {
+  void addDebugWidget(const std::string &name, std::shared_ptr<HBItemBase> widget) {
     debugDataInstance->addItem(name, widget);
   }
 }// namespace HBUI

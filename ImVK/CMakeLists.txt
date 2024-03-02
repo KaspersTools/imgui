@@ -1,11 +1,10 @@
+project(ImVk VERSION 0.1.0 LANGUAGES CXX C OBJC OBJCXX)
+
 cmake_minimum_required(VERSION ${CMAKE_VERSION})
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
 endif ()
 
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS ON)
 include(../cmake/defaultsetup.cmake)
 
 # Make list of include directories
@@ -73,7 +72,7 @@ list(APPEND ${ImVk_PRIVATE_INCLUDE_DIRS} ${GLFW_DIR}/deps)
 set(ImVk_SOURCES
         backends/imgui_impl_glfw.cpp
         backends/imgui_impl_vulkan.cpp
-        private/src/ImVk.mm
+        private/src/ImVk.cpp
         private/src/Image.cpp
 )
 
@@ -106,6 +105,17 @@ target_include_directories(ImVk PUBLIC
 # Compile definitions
 ###############################################################################
 target_compile_definitions(ImVk PUBLIC -DImTextureID=ImU64)
+target_compile_options(ImVk PUBLIC "-x" "objective-c++")
+if (APPLE AND NOT IOS) # If mac
+    target_link_libraries(ImVk PUBLIC "-framework AppKit -framework IOKit")
+endif()
+if (APPLE)
+    target_link_libraries(ImVk PUBLIC "-framework Foundation")
+endif()
+target_compile_definitions(ImVk PUBLIC HELLOIMGUI_HAS_VULKAN)
+#set(HBUI_HAS_VULKAN ON CACHE BOOL "" FORCE)
+find_package(Vulkan REQUIRED)
+target_link_libraries(ImVk PUBLIC Vulkan::Vulkan)
 
 ###############################################################################
 # print infos

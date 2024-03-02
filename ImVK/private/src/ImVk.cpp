@@ -1,45 +1,36 @@
-#ifndef IMVK_IMPL_API
-#define IMVK_IMPL_API
-#endif
 
+#include "../include/ImVK/ImVk.h"
+
+#include <cassert>
+#include <chrono>
+#include <cstdio>
+#include <filesystem>
 #include <functional>
 #include <map>
-#include <stdio.h> // printf, fprintf
-#include <stdlib.h>// abort
+#include <optional>
 
-#define GLFW_INCLUDE_NONE  // GLFW including its own vulkan will break the build
-#define GLFW_INCLUDE_VULKAN// GLFW including its own vulkan will break the build
-#include <GLFW/glfw3.h>
-#include <vulkan/vulkan.h>
-#include <vulkan/vulkan_beta.h>
-
-#include <imconfig.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_vulkan.h>
 #include <imgui_internal.h>
 
+#define GLFW_INCLUDE_NONE  // GLFW including its own vulkan will break the build
+#define GLFW_INCLUDE_VULKAN// GLFW including its own vulkan will break the build
+#include <GLFW/glfw3.h>
+#include <vulkan/vulkan_beta.h>
+#include <vulkan/vulkan.h>
+
+
 #ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #include "../../misc/stb_image/stb_image.h"
-
 #endif
 
-#include "../../../HBUI/include/HBUI/HBUI.h"
-
+#include <cassert>
+#include <chrono>
 #include <mutex>
 #include <queue>
 #include <thread>
-#include <cassert>
-#include <chrono>
-
-#if __APPLE__
-#include <TargetConditionals.h>
-#endif
-
-#ifdef __APPLE__
-#import <AppKit/NSScreen.h>
-#endif
 
 namespace HBUI::Backend {
 	IMVK_IMPL_API void setBackendWindowFlags(const HBContext &ctx);
@@ -112,6 +103,7 @@ namespace HBUI::Backend {
 		VkResult err = vkEnumeratePhysicalDevices(g_ImVKData->g_Instance, &gpu_count, nullptr);
 		check_vk_result(err);
 		IM_ASSERT(gpu_count > 0);
+
 
 		ImVector<VkPhysicalDevice> gpus;
 		gpus.resize(gpu_count);
@@ -446,13 +438,17 @@ namespace HBUI::Backend {
 		glfwGetMonitorPos(primaryMonitor, &monitorX, &monitorY);
 
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-		g_ImVKData->window = glfwCreateWindow(context->io.width, context->io.height,
-		                                      context->io.title.c_str(),
-		                                      NULL,
-		                                      NULL);
+		//		context->io.width, context->io.height,
+		//		NULL,
+		int w              = 1920;
+		int h              = 1080;
+		g_ImVKData->window = glfwCreateWindow(w, h, "test", NULL, NULL);
+		//		                                      context->io.title.c_str(),
 		glfwSetWindowPos(g_ImVKData->window,
-		                 monitorX + (videoMode->width - context->io.width) / 2,
-		                 monitorY + (videoMode->height - context->io.height) / 2);
+		                 monitorX + (videoMode->width - w) / 2,
+		                 //		                 monitorX + (videoMode->width -  context->io.width) / 2,
+		                 monitorY + (videoMode->height - h) / 2);
+		//		                 monitorY + (videoMode->height - context->io.height) / 2);
 
 
 		glfwShowWindow(g_ImVKData->window);
@@ -679,7 +675,7 @@ namespace HBUI::Backend {
 		        size.y + frameSize.y == getMonitorHeight());
 	}
 
-	IMVK_IMPL_API void shutdownBackend() {
+	void shutdownBackend() {
 		// Cleanup
 		VkResult err = vkDeviceWaitIdle(g_ImVKData->g_Device);
 		check_vk_result(err);
@@ -706,41 +702,33 @@ namespace HBUI::Backend {
 		g_ImVKData = nullptr;
 	}
 
-	IMVK_IMPL_API void setBackendWindowFlags(const HBContext &ctx) {
-
-		ImGui::GetStyleVarInfo(ImGuiStyleVar_WindowRounding);
-		if (ctx.io.mainWindowFlags & HBMainWindowFlags_NoDecoration) {
-			glfwSetWindowAttrib(g_ImVKData->window, GLFW_DECORATED, GLFW_FALSE);
-		} else {
-			glfwSetWindowAttrib(g_ImVKData->window, GLFW_DECORATED, GLFW_TRUE);
-		}
-
-		if (ctx.io.mainWindowFlags & HBMainWindowFlags_NoResize) {
-			glfwSetWindowAttrib(g_ImVKData->window, GLFW_RESIZABLE, GLFW_FALSE);
-		} else {
-			glfwSetWindowAttrib(g_ImVKData->window, GLFW_RESIZABLE, GLFW_TRUE);
-		}
-
-		if (ctx.io.mainWindowFlags & HBMeinWindowFlags_NoTitleBar) {
-			glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_FALSE);
-		} else {
-			glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_TRUE);
-		}
-
-		if (ctx.io.mainWindowFlags & HBMainWindowFlags_NoMove) {
-			glfwSetWindowAttrib(g_ImVKData->window, GLFW_FLOATING, GLFW_TRUE);
-		} else {
-			glfwSetWindowAttrib(g_ImVKData->window, GLFW_FLOATING, GLFW_FALSE);
-		}
+	void setBackendWindowFlags(const HBContext &ctx) {
+		//		ImGui::GetStyleVarInfo(ImGuiStyleVar_WindowRounding);
+		//		if (ctx.io.mainWindowFlags & HBMainWindowFlags_NoDecoration) {
+		//			glfwSetWindowAttrib(g_ImVKData->window, GLFW_DECORATED, GLFW_FALSE);
+		//		} else {
+		//			glfwSetWindowAttrib(g_ImVKData->window, GLFW_DECORATED, GLFW_TRUE);
+		//		}
+		//
+		//		if (ctx.io.mainWindowFlags & HBMainWindowFlags_NoResize) {
+		//			glfwSetWindowAttrib(g_ImVKData->window, GLFW_RESIZABLE, GLFW_FALSE);
+		//		} else {
+		//			glfwSetWindowAttrib(g_ImVKData->window, GLFW_RESIZABLE, GLFW_TRUE);
+		//		}
+		//
+		//		if (ctx.io.mainWindowFlags & HBMeinWindowFlags_NoTitleBar) {
+		//			glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_FALSE);
+		//		} else {
+		//			glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_TRUE);
+		//		}
+		//
+		//		if (ctx.io.mainWindowFlags & HBMainWindowFlags_NoMove) {
+		//			glfwSetWindowAttrib(g_ImVKData->window, GLFW_FLOATING, GLFW_TRUE);
+		//		} else {
+		//			glfwSetWindowAttrib(g_ImVKData->window, GLFW_FLOATING, GLFW_FALSE);
+		//		}
 	}
-
-	//fixme: move to HBUI Core
-	ImVec2 getWindowScaleFactorBackend() {
-		float x_scale, y_scale;
-		glfwGetWindowContentScale((GLFWwindow *) g_ImVKData->window, &x_scale, &y_scale);
-		return ImVec2(x_scale, y_scale);
-	}
-	float getWindowSizeDpiScaleFactorBackend() {
+	float getWindowSizeDPIScaleFactor() {
 #ifdef __APPLE__
 		return 1.f;
 #else
@@ -749,8 +737,23 @@ namespace HBUI::Backend {
 #endif
 	}
 
-	float getFontSizeIncreaseFactorBackend() {
-		float fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
-		return fontSizeIncreaseFactor;
+	ImVec2 getWindowScaleFactor() {
+		float x_scale, y_scale;
+		glfwGetWindowContentScale((GLFWwindow *) g_ImVKData->window, &x_scale, &y_scale);
+		return ImVec2(x_scale, y_scale);
 	}
 }// namespace HBUI::Backend
+
+#if __APPLE__
+#import <AppKit/NSScreen.h>
+#import <Foundation/Foundation.h>
+#include <TargetConditionals.h>
+#endif
+
+/**
+ * @note This function has to be out of line, else objc++ will be crying about it
+ */
+float HBUI::Backend::getFontSizeIncreaseFactor() {
+	float fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
+	return fontSizeIncreaseFactor;
+}

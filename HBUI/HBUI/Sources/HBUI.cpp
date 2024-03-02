@@ -2,19 +2,31 @@
 // Created by Kasper de Bruin on 06/02/2024.
 //todo: cleanup with sections
 
-#include "../headers/Backend.h"
+// clang-format off
 
-#include <Animation/Animation.h>
-#include <Animation/Animations.h>
-#include <HBUI/HBUI.h>
-#include <UIItems/HBUIItemBase.h>
+#include <codecvt>
+#include <locale>
+
+#include "../../include/HBUI/HBUI.h"
+#include <ImVK/ImVk.h>
+
 #include <fonts/FontLoader.h>
+
+#include <Animation/Animations.h>
+#include <Animation/Animation.h>
+
+#include <UIItems/HBUIItemBase.h>
+#include <HBUI/HBUIEnums.h>
+
 
 
 #ifndef g_HBUICTX
 HBContext *g_HBUICTX = NULL;
 #endif
 
+#include <Backend.h>
+
+// clang-format on
 
 void renderWindowOuterBorders(ImGuiWindow *window) {
 
@@ -107,7 +119,7 @@ HBContext::~HBContext() {
 void HBContext::initialize() {
 	initialized = true;
 
-	widgetManager = new HBWidgetManager();
+	widgetManager = new HBUI::HBWidgetManager();
 	animManager   = new HBUI::Animation::HBAnimManager();
 }
 void HBContext::startFrame() {
@@ -190,10 +202,6 @@ namespace HBUI {
 	HBUI_API void clearContext() {//todo: implement
 	}
 
-	HBUI_API HBStyle &getStyle() {
-		return getCurrentContext()->style;
-	}
-
 	HBUI_API HBIO &getIO() {
 		return getCurrentContext()->io;
 	}
@@ -203,8 +211,6 @@ namespace HBUI {
 	//-------------------------------------
 	HBUI_API ImGuiWindow *getMainImGuiWindow() {
 		HBContext *ctx = getCurrentContext();
-		IM_ASSERT(ctx != nullptr && "HBUI::getMainImGuiWindow() but context is null");
-
 		return ctx->mainWindow;
 	}
 	HBUI_API ImGuiViewport *getCurrentViewport() {
@@ -248,33 +254,47 @@ namespace HBUI {
 	//-------------------------------------
 	// [SECTION] Cursor
 	//-------------------------------------
-	HBUI_API ImVec2 getCursorPos(){
-		HBContext* ctx = getCurrentContext();
-		IM_ASSERT(ctx!=nullptr && "Current Context is nullptr");
-		HBWidgetManager* widgetManager = ctx->widgetManager;
-		IM_ASSERT(widgetManager!=nullptr && "Widget Manager is nullptr in current context");
-		return widgetManager->getCursorPos(); //fixme: this should be the current window¬
+	HBUI_API ImVec2 getCursorPos() {
+		HBContext *ctx = getCurrentContext();
+		IM_ASSERT(ctx != nullptr && "Current Context is nullptr");
+		HBWidgetManager *widgetManager = ctx->widgetManager;
+		IM_ASSERT(widgetManager != nullptr && "Widget Manager is nullptr in current context");
+		return widgetManager->getCursorPos();//fixme: this should be the current window¬
 	}
 
-	HBUI_API ImVec2 getCursorScreenPos(){
-		HBContext* ctx = getCurrentContext();
-		IM_ASSERT(ctx!=nullptr && "Current Context is nullptr");
-		HBWidgetManager* widgetManager = ctx->widgetManager;
-		IM_ASSERT(widgetManager!=nullptr && "Widget Manager is nullptr in current context");
+	HBUI_API ImVec2 getCursorScreenPos() {
+		HBContext *ctx = getCurrentContext();
+		IM_ASSERT(ctx != nullptr && "Current Context is nullptr");
+		HBWidgetManager *widgetManager = ctx->widgetManager;
+		IM_ASSERT(widgetManager != nullptr && "Widget Manager is nullptr in current context");
 		return widgetManager->getCursorPos() + getMainWindowPos();//fixme: this should be the current window
 	}
 
 	//todo:	HBUI_API ImVec2 getCursorScreenPos(ImGuiViewport *viewport);
-	HBUI_API ImVec2 getContentRegionMaxMainWindow(){
-		IM_ASSERT(getMainImGuiWindow()!=nullptr && "Main window is nullptr");
+	HBUI_API ImVec2 getContentRegionMaxMainWindow() {
+		IM_ASSERT(getMainImGuiWindow() != nullptr && "Main window is nullptr");
 		return getMainImGuiWindow()->Size;
 	}
-	HBUI_API ImVec2 getContentRegionAvailMainWindow(){
-		IM_ASSERT(getMainImGuiWindow()!=nullptr && "Main window is nullptr");
+	HBUI_API ImVec2 getContentRegionAvailMainWindow() {
+		IM_ASSERT(getMainImGuiWindow() != nullptr && "Main window is nullptr");
 		return getMainImGuiWindow()->Size - getCursorPos();
 	}
 	//todo: HBUI_API ImVec2 getContentRegionAvail(ImGuiViewport *viewport);
+	HBUI_API HBLayoutType_ getCurrentLayout() {
+		HBContext *ctx = getCurrentContext();
+		IM_ASSERT(ctx != nullptr && "Current Context is nullptr");
+		HBWidgetManager *widgetManager = ctx->widgetManager;
+		IM_ASSERT(widgetManager != nullptr && "Widget Manager is nullptr in current context");
+		return widgetManager->getLayoutType();
+	}
 
+	HBUI_API void setLayout(HBLayoutType_ layoutType) {
+		HBContext *ctx = getCurrentContext();
+		IM_ASSERT(ctx != nullptr && "Current Context is nullptr");
+		HBWidgetManager *widgetManager = ctx->widgetManager;
+		IM_ASSERT(widgetManager != nullptr && "Widget Manager is nullptr in current context");
+		widgetManager->setLayoutType(layoutType);
+	}
 
 
 	HBUI_API void update(float deltatime) {
@@ -325,13 +345,6 @@ namespace HBUI {
 
 		{
 			ImGui::Begin("test");
-
-			//			ImGui::Button("\uf473");
-			//			ImGui::Button(ICON_FA_CAMPGROUND);
-
-			//			ImGui::SmallButton(ICON_FA_UBUNTU);
-			//		ImGui::SmallButton(ICON_FA_CAMPGROUND);
-
 			ImGui::Button("B");
 			const std::string iconGit = HBUI::wchar32ToUtf8(NF_ICON_github);
 			ImGui::Button(iconGit.c_str());
@@ -374,14 +387,22 @@ namespace HBUI {
 	// [SECTION] Fonts
 	//-------------------------------------
 	HBUI_API float getWindowSizeDpiScaleFactor() {
-		return Backend::getWindowSizeDpiScaleFactorBackend();
+		return Backend::getWindowSizeDPIScaleFactor();
 	}
 
 	HBUI_API float getFontSizeIncreaseFactor() {
-		return Backend::getFontSizeIncreaseFactorBackend();
+		return Backend::getFontSizeIncreaseFactor();
 	}
 
 	HBUI_API ImVec2 getWindowScaleFactor() {
-		return Backend::getWindowScaleFactorBackend();
+		return Backend::getWindowScaleFactor();
+	}
+
+	//-------------------------------------
+	//[SECTION] Helper functions
+	//-------------------------------------
+	HBUI_API std::string wchar32ToUtf8(const ImWchar &wchar) {
+		std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
+		return converter.to_bytes(wchar);
 	}
 }// namespace HBUI

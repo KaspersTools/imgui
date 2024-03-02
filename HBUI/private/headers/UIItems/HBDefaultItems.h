@@ -10,16 +10,17 @@
 //Dont change the order of the items in this file, it will break the HBUI library
 
 // clang-format off
-
-#include <UIItems/HBUIItemBase.h>
-
-#include <UIItems/HBNewLine.h>
-
-#include <Panels/HBFlexPanel.h>
-#include <Panels/Menus/HBSideBar.h>
-
-#include <UIItems/HBButton.h>
-#include <Panels/Menus/HBSideBarButton.h>
+	//
+	//#include <UIItems/HBUIItemBase.h>
+	//
+	//#include <UIItems/HBNewLine.h>
+	//
+	//#include <Panels/HBFlexPanel.h>
+	//#include <Panels/Menus/HBSideBar.h>
+	//
+	//#include <UIItems/HBButton.h>
+	//#include <Panels/Menus/HBSideBarButton.h>
+	//#include <Panels/HBDockPanel.h>
 
 // clang-format on
 

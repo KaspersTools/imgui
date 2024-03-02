@@ -4,8 +4,5 @@
 
 #ifndef IMGUI_HBPANELS_H
 #define IMGUI_HBPANELS_H
-//
-//#include "Menus/HBSideBar.h"
-//#include "Menus/HBSideBarButton.h"
 
 #endif //IMGUI_HBPANELS_H

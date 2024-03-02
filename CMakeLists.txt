@@ -1,7 +1,7 @@
 ################################################################################
 cmake_minimum_required(VERSION 3.27.8)
 project(imgui VERSION 1.0.0
-        LANGUAGES CXX C)
+        LANGUAGES CXX C OBJCXX OBJC)
 cmake_policy(SET CMP0077 NEW)
 
 
@@ -44,7 +44,16 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif ()
 
 
-#
+###############################################################################
+# CMake Globals
+###############################################################################
+enable_language(C)
+enable_language(CXX)
+enable_language(OBJCXX)
+enable_language(OBJC)
+
+set(CMAKE_CXX_STANDARD 23)
+
 #include(cmake/defaultsetup.cmake)
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
