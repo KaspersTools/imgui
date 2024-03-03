@@ -13,10 +13,11 @@ namespace HBUI {
 		                      HBDrawLocation_ drawLocation = HBDrawFlags_DrawOnParent,
 		                      const bool withBorder = false,
 		                      const bool isVisible  = true)
-		    : c_DrawLocation(drawLocation),
-		      m_WithBackground(withBackground),
+		    :m_WithBackground(withBackground),
 		      m_WithBorder(withBorder),
-		      m_IsVisible(isVisible) {
+		      m_IsVisible(isVisible),
+					c_DrawLocation(drawLocation)
+		{
 			setColorsBasedOnUIType(type);
 		}
 
@@ -33,10 +34,10 @@ namespace HBUI {
 		      m_TextColor(textColor),
 		      m_BorderColor(borderColor),
 		      m_HoverColor(hoverColor),
-		      c_DrawLocation(drawLocation),
 		      m_WithBackground(withBackground),
 		      m_WithBorder(withBorder),
-		      m_IsVisible(isVisible) {
+		      m_IsVisible(isVisible),
+		      c_DrawLocation(drawLocation){
 		}
 
 		ImColor m_BackgroundColor = ImColor(255, 0, 0, 255);
@@ -49,16 +50,18 @@ namespace HBUI {
 		bool m_IsVisible      = true;
 
 		const HBDrawLocation_ c_DrawLocation;
-
+		void setColorBasedOnBaseUIType(HBUIType_ type) {}
 private:
 		void setColorsBasedOnUIType(HBUIType_ type) {
 			switch (type) {
+				case HBUIType_None:
+					break;
 				case HBUIType_SideBar:
-					m_BackgroundColor = ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg);
+					break;
+				case HBUIType_DockPanel:
 					break;
 				case HBUIType_SideBarButton:
-					m_BackgroundColor = ImGui::GetStyleColorVec4(ImGuiCol_Button);
-					m_HoverColor      = ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered);
+				case HBUIType_Button:
 					break;
 			}
 		}

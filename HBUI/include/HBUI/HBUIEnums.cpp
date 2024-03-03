@@ -1,15 +1,28 @@
 //
 // Created by Kasper de Bruin on 01/03/2024.
 //
+#include "imgui.h"
+#include <string>
 
-#ifndef IMGUI_HBUIENUMS_H
-#define IMGUI_HBUIENUMS_H
+//forward declartions
+struct ImGuiWindow;
+//-----------------------------------------------------------------------------
+// [SECTION] Enums
+//-----------------------------------------------------------------------------
 
-//
-// Created by Kasper de Bruin on 22/02/2024.
-//
+//-----------------------------------------------------------------------------
+// [SECTION] Backend Window
+//-----------------------------------------------------------------------------
+//TODO: Move this to an shared between the backend and the UI source file
 
-#include <imgui.h>
+typedef int HBBackendWindowFlags;
+
+enum HBBackendWindowFlags_ {
+	HBBackendWindowFlags_None         = 0,
+	HBBackendWindowFlags_NoDecoration = 1 << 0,
+	HBBackendWindowFlags_NoTitleBar   = 1 << 1,
+	HBBackendWindowFlags_NoResize     = 1 << 2,
+};
 
 //-----------------------------------------------------------------------------
 // [SECTION] Widgets
@@ -18,7 +31,7 @@
 /**
  * @brief The flags of the draw location of the UI element, only use one at a time
  */
-enum HBDrawLocation_ {
+enum HBDrawLocation_ : int{
 	HBDrawFlags_DrawOnParent = 0,       //default
 	HBDrawFlags_MainImGuiWindowDrawList,//the base window that gets created by HBUI
 };
@@ -26,7 +39,7 @@ enum HBDrawLocation_ {
 /**
 	* @brief The direction of the UI element, only use one at a time
 	*/
-enum HBDirection_ {
+enum HBDirection_ : int {
 	HBDirection_Left = 0,
 	HBDirection_Right,
 	HBDirection_Up,
@@ -36,7 +49,7 @@ enum HBDirection_ {
 /**
  * @brief The type of the layout of the UI element, only use one at a time
  */
-enum HBLayoutType_ {
+enum HBLayoutType_ : int {
 	HBLayoutType_None       = 0,
 	HBLayoutType_Horizontal = 1,
 	HBLayoutType_Vertical   = 2
@@ -65,7 +78,7 @@ enum HBSizeFlags_ {
 /**
  * @brief The base type of the UI element, only use one at a timen
  */
-enum HBUIBaseType_ {
+enum HBUIBaseType_ : int {
 	HBUIBaseType_Item,
 	HBUIBaseType_Window,
 	HBUIBaseType_Panel,
@@ -75,7 +88,7 @@ enum HBUIBaseType_ {
 /**
  * @brief The type of the UI element, only use one at a time
  */
-enum HBUIType_ {
+enum HBUIType_ : int {
 	HBUIType_None = 0,
 	HBUIType_SideBar,
 	HBUIType_Button,
@@ -83,23 +96,13 @@ enum HBUIType_ {
 	HBUIType_DockPanel
 };
 
-typedef int MainWindowFlags;
-/**
- * @brief The flags of the main window, can be combined with bitwise OR (|)
- */
-enum HBMainWindowFlags_ {
-	HBMainWindowFlags_None         = 0,
-	HBMainWindowFlags_NoDecoration = 1 << 1,
-	HBMainWindowFlags_NoResize     = 1 << 2,
-	HBMainWindowFlags_NoMove       = 1 << 3,
-	HBMeinWindowFlags_NoTitleBar   = 1 << 4
-};
-
 
 //-----------------------------------------------------------------------------
 // [SECTION] Structs
 //-----------------------------------------------------------------------------
-
+struct HBPlatformWindowData {
+	ImColor clearColor = ImColor(0, 0, 0, 255);
+};
 /**
  * @brief The padding of a UI element
  */
@@ -157,6 +160,7 @@ struct HBPadding : public HBEdgeInset {
 			default:
 				return HBEdgeInset::Zero();
 		}
+		return HBEdgeInset::Zero();
 	}
 };
 
@@ -192,9 +196,10 @@ struct HBMargin : public HBEdgeInset {
 			default:
 				return HBEdgeInset::Zero();
 		}
+
+		return HBEdgeInset::Zero();
 	}
 };
-
 
 /**
  * @brief The time struct
@@ -244,7 +249,9 @@ struct HBTime {
 	}
 };
 
-
+/**
+ * @brief The IO struct
+ */
 struct HBIO {
 	std::string title = "ImVK";
 
@@ -253,34 +260,35 @@ struct HBIO {
 
 	float dpiWindowSizeFactor = 1.0f;
 	float fontRenderingScale  = 1.0f;
-
-	MainWindowFlags mainWindowFlags = HBMainWindowFlags_None;
 };
 
 template<typename T>
 struct HBAnimProps;
 
-namespace HBUI{
+namespace HBUI {
 	class HBWidgetManager;
 
-	namespace Fonts{
+	namespace Fonts {
 		class FontLoader;
 	}
 
 	namespace Animation {
 		class HBAnimManager;
 	}
-}
+}// namespace HBUI
+
 struct HBContext {
 	bool initialized = false;
 	HBIO io          = {};
 	HBTime time      = {};
 
+	HBPlatformWindowData windowData = {};
+
 	ImGuiWindow *mainWindow = nullptr;
 
 	// Draw Data
 	HBUI::Animation::HBAnimManager *animManager = nullptr;
-	HBUI::HBWidgetManager *widgetManager              = nullptr;
+	HBUI::HBWidgetManager *widgetManager        = nullptr;
 	HBUI::Fonts::FontLoader *fontLoader         = nullptr;
 
 	~HBContext();
@@ -299,6 +307,3 @@ struct HBContext {
 
 	ImVec2 addAnimation(const std::string &id, HBAnimProps<ImVec2> props);
 };
-
-
-#endif//IMGUI_HBUIENUMS_H

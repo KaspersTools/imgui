@@ -92,7 +92,7 @@ namespace HBUI::Fonts {
 
 		ImWchar *defaultTextRange = new ImWchar[DefaultTextGlyphs.size()];
 
-		for (int i = 0; i < DefaultTextGlyphs.size(); i++) {
+		for (unsigned int i = 0; i < DefaultTextGlyphs.size(); i++) {
 			defaultTextRange[i] = DefaultTextGlyphs[i];
 		}
 
@@ -126,8 +126,10 @@ namespace HBUI::Fonts {
 	}
 
 	ImWchar FontLoader::textToIconGlyph(const std::string &text) const {
+
 	}
 	bool FontLoader::hasIcon(const std::string &iconName, float fontSize) const {
+		return false;
 	}
 
 

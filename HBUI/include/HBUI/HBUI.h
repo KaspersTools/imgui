@@ -3,25 +3,27 @@
 //
 
 #pragma once
+#include "../../include/HBUI/HBUIEnums.cpp"
+
 #ifndef HBUI_API
 #define HBUI_API
 #endif
+
 #include <iostream>
 
 #include <imgui.h>
 #include <imgui_internal.h>
 
-#include "HBUIEnums.h"
 #include "Fonts/IconsNerdFont.h"
 
-struct HBContext;
 namespace HBUI {
 	HBUI_API std::string wchar32ToUtf8(const ImWchar &wchar);
 
 	HBUI_API HBContext *getCurrentContext();
 
-	HBUI_API HBContext *initialize(const std::string &title, int width,
-	                               int height, MainWindowFlags flags);
+	HBUI_API HBContext *initialize(const std::string &title,
+	                               int width, int height,
+	                               int HBBackendWindowFlags = 0);
 
 	HBUI_API void afterBackendInitialized();
 
@@ -31,15 +33,19 @@ namespace HBUI {
 	// [SECTION] Main Window
 	//---------------------------------------------------------------------------------
 	HBUI_API ImGuiWindow *getMainImGuiWindow();
+
 	//(imgui fullscreen) Window
 	HBUI_API ImVec2 getMainWindowSize();
 	HBUI_API ImVec2 getMainWindowPos();
 	HBUI_API float getMainWindowDpiScale();
 	HBUI_API ImVec2 getMainWindowDpiScaleFactor();
 
-	//(glfw) Window
+	//(backend) Window
+	//(backend) Window
 	HBUI_API ImVec2 getNativeWindowPos();
 	HBUI_API ImVec2 getNativeWindowSize();
+	HBUI_API ImColor& getNativeWindowClearColor();
+	HBUI_API void setNativeWindowClearColor(const ImColor &color);
 
 	//ImGui Viewports
 	HBUI_API ImGuiViewport *getCurrentViewport();
@@ -132,8 +138,6 @@ namespace HBUI {
 	// [SECTION] Flags
 	//---------------------------------------------------------------------------------
 	HBUI_API bool isFlagSet(int *flags, int flag);
-	HBUI_API void toggleFlag(int flag);
-
 
 	//---------------------------------------------------------------------------------
 	// [SECTION] Fonts

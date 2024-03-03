@@ -3,11 +3,8 @@
 #define FONT_NAME "JetBrainsMonoNerdFontPropo-Regular"
 #define FONT_FILE_NAME "JetBrainsMonoNerdFontPropo-Regular.ttf"
 #define FONT_FULL_PATH "Assets/sources/JetBrainsMonoNerdFontPropo-Regular.ttf"
-#define NF_ICON_CR "\u000D"	// U+d
 
-//here
 #pragma once
-
 #define FONT_NAME "JetBrainsMonoNerdFontPropo-Regular"
 #define FONT_FILE_NAME "JetBrainsMonoNerdFontPropo-Regular.ttf"
 #define FONT_FULL_PATH "Assets/sources/JetBrainsMonoNerdFontPropo-Regular.ttf"

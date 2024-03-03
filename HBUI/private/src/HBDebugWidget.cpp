@@ -5,25 +5,25 @@
 #include <HBUI/HBUI.h>
 #include <iomanip>
 #include <map>
+#include <utility>
 
 #include "../../private/headers/UIItems/HBUIItemBase.h"
 #include <Animation/Animation.h>
-#include <Animation/Animations.h>
 
 namespace HBUI {
   struct debugWidgetItem {
   public:
     debugWidgetItem(
-        const std::string &name,
+        const std::string& name,
         std::shared_ptr<HBItemBase> widget
-    ) : name(name), widget(widget) {
+    ) : name(std::move(name)), widget(std::move(widget)) {
     }
 
     ~debugWidgetItem() {
 
     }
 
-    static void drawWidget(const HBItemBase &widget) {
+    static void drawWidget([[maybe_unused]]const HBItemBase &widget) {
 //      if (widget.getUIType() == HBUIType_NewLine) {
 //        return;
 //      }
@@ -140,7 +140,6 @@ namespace HBUI {
     ImGui::Spacing();
 
     for (auto &anim: ctx.animManager->getAnimations()) {
-      ImGuiID     id    = anim.first;
       std::string title = "Animation " + anim.second->getId();
 
 
@@ -149,7 +148,7 @@ namespace HBUI {
       ImGui::SeparatorText(title.c_str());
       //id data
       {
-        ImGui::Text("imgui id: %f", anim.first);
+        ImGui::Text("imgui id: %i", anim.first);
       }
       auto currentData = std::dynamic_pointer_cast<HBUI::Animation::HBAnim<ImVec2>>(anim.second);
 
@@ -174,7 +173,7 @@ namespace HBUI {
             type += "Unknown";
             break;
         }
-        ImGui::Text(type.c_str());
+        ImGui::Text("%s", type.c_str());
 
         std::string       dir       = "direction: ";
         HB_AnimDirection_ direction = currentData->getDefaultDirection();
@@ -189,7 +188,7 @@ namespace HBUI {
             dir += "Unknown";
             break;
         }
-        ImGui::Text(dir.c_str());
+        ImGui::Text("%s", dir.c_str());
 
         auto        state = currentData->getDefaultState();
         std::string txt   = "state: ";
@@ -304,7 +303,7 @@ namespace HBUI {
 
         //current
         ImGui::SameLine();
-        ImGui::Text(txt.c_str());
+        ImGui::Text("%s", txt.c_str());
       }
       ImGui::Spacing();
 
@@ -338,7 +337,6 @@ namespace HBUI {
   }
 
   void showDebugWindow(bool *p_open) {
-    HBContext *ctx = HBUI::getCurrentContext();
     if (!ImGui::Begin("Debug HBUI Window", p_open)) {
       ImGui::End();
       return;
@@ -358,20 +356,15 @@ namespace HBUI {
       ImGui::TextColored(ImVec4(1.f, 0.5f, 0.5f, 1.0f),
                          "Best to set these before window creation but they are here for testing purposes only!:");
 
-      std::map<std::string, MainWindowFlags> flagsMap = {
-          {"ctx.mainWindowSettings.MainWindowFlags:   No Decoration                 ", HBMainWindowFlags_NoDecoration},
-          {"ctx.mainWindowSettings.MainWindowFlags:   No Resize                     ", HBMainWindowFlags_NoResize},
-          {"ctx.mainWindowSettings.MainWindowFlags:   No Move                       ", HBMainWindowFlags_NoMove},
-          {"ctx.mainWindowSettings.MainWindowFlags:   No TitleBar                   ", HBMeinWindowFlags_NoTitleBar},
-      };
+//      std::map<std::string, HBBackendWindowFlags> flagsMap = {
+//          {"ctx.mainWindowSettings.MainWindowFlags:   No Decoration                 ", HBMainWindowFlags_NoDecoration},
+//          {"ctx.mainWindowSettings.MainWindowFlags:   No Resize                     ", HBMainWindowFlags_NoResize},
+//          {"ctx.mainWindowSettings.MainWindowFlags:   No Move                       ", HBMainWindowFlags_NoMove},
+//          {"ctx.mainWindowSettings.MainWindowFlags:   No TitleBar                   ", HBMeinWindowFlags_NoTitleBar},
+//      };
 
-      for (auto &flag: flagsMap) {
-        bool flagSet = HBUI::isFlagSet(&ctx->io.mainWindowFlags, flag.second);
-
-        if (ImGui::Checkbox(flag.first.c_str(), &flagSet)) {
-          HBUI::toggleFlag(flag.second);
-        }
-      }
+//      for (auto &flag: flagsMap) {
+//      }
       ImGui::Spacing();
     }
     if (ImGui::CollapsingHeader("Style")) {

@@ -1,13 +1,11 @@
 //
 // Created by Kasper de Bruin on 06/02/2024.
 //todo: cleanup with sections
-
 // clang-format off
-
+//#define HBUI_Enums
 #include <codecvt>
 #include <locale>
-
-#include "../../include/HBUI/HBUI.h"
+#include <HBUI/HBUI.h>
 #include <ImVK/ImVk.h>
 
 #include <fonts/FontLoader.h>
@@ -16,15 +14,12 @@
 #include <Animation/Animation.h>
 
 #include <UIItems/HBUIItemBase.h>
-#include <HBUI/HBUIEnums.h>
-
 
 
 #ifndef g_HBUICTX
 HBContext *g_HBUICTX = NULL;
 #endif
 
-#include <Backend.h>
 
 // clang-format on
 
@@ -135,40 +130,37 @@ void HBContext::endFrame() {
 }
 bool HBContext::hasAnimation(const ImGuiID &id) {
 	IM_ASSERT(initialized && "HBContext::hasAnimation() called before HBContext::initialize()");
-
-
 	return animManager->hasAnimation(id);
 }
-bool HBContext::hasAnimation(const std::string &id) {
-	IM_ASSERT(initialized && "HBContext::hasAnimation() called before HBContext::initialize()");
-
-	return animManager->hasAnimation(ImGui::GetID(id.c_str()));
-}
-ImVec2 HBContext::addAnimation(const std::string &id, HBAnimProps<ImVec2> props) {
-	IM_ASSERT(initialized && "HBContext::addAnimation() called before HBContext::initialize()");
-
-	animManager->addAnimation(id, props);
-}
+//bool HBContext::hasAnimation(const std::string &id) {
+//	IM_ASSERT(initialized && "HBContext::hasAnimation() called before HBContext::initialize()");
+//
+//	return animManager->hasAnimation(ImGui::GetID(id.c_str()));
+//}
+//ImVec2 HBContext::addAnimation(const std::string &id, HBAnimProps<ImVec2> props) {
+//	IM_ASSERT(initialized && "HBContext::addAnimation() called before HBContext::initialize()");
+//
+//	animManager->addAnimation(id, props);
+//}
 
 //-------------------------------------
 // [SECTION] HBUI
 //-------------------------------------
 namespace HBUI {
-	HBUI_API HBContext *initialize(const std::string &title, int width, int height, MainWindowFlags flags) {
+	HBUI_API HBContext *initialize(const std::string &title, int width, int height, HBBackendWindowFlags backendWindowFlags) {
 		if (g_HBUICTX == NULL) {
 			g_HBUICTX = new HBContext();
 		}
 		g_HBUICTX->initialize();
 
 		auto io = HBIO{
-		    .title           = title,
-		    .width           = width,
-		    .height          = height,
-		    .mainWindowFlags = flags};
+		    .title  = title,
+		    .width  = width,
+		    .height = height};
 		g_HBUICTX->io = io;
 
 
-		if (!Backend::initPlatformBackend(g_HBUICTX)) {
+		if (!Backend::initPlatformBackend(backendWindowFlags)) {
 			std::cerr << "Failed to initialize platform backend" << std::endl;
 			return nullptr;
 		}
@@ -180,7 +172,6 @@ namespace HBUI {
 
 		ImGuiIO &imIo             = ImGui::GetIO();
 		imIo.FontAllowUserScaling = true;// activate zoom feature with ctrl + mousewheel
-
 
 		afterBackendInitialized();
 		return g_HBUICTX;
@@ -237,9 +228,19 @@ namespace HBUI {
 	HBUI_API ImVec2 getMainWindowPos() {
 		return getMainImGuiWindow()->Pos;
 	}
+
+	//native window
 	HBUI_API ImVec2 getNativeWindowPos() {
 		return Backend::getWindowPosition();
 	}
+
+	HBUI_API ImColor& getNativeWindowClearColor() {
+		return HBUI::getCurrentContext()->windowData.clearColor;
+	}
+	HBUI_API void setNativeWindowClearColor(const ImColor &color) {
+		HBUI::getCurrentContext()->windowData.clearColor = color;
+	}
+
 	HBUI_API ImVec2 getViewportPos(ImGuiViewport *viewport) {
 		IM_ASSERT(viewport != nullptr && "HBUI::getViewportPos() but viewport is null");
 		return viewport->Pos;
@@ -297,7 +298,7 @@ namespace HBUI {
 	}
 
 
-	HBUI_API void update(float deltatime) {
+	HBUI_API void update([[maybe_unused]] float deltatime) {
 	}
 
 	HBUI_API void startFrame() {
@@ -323,16 +324,18 @@ namespace HBUI {
 		const bool isMaximized = false;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, isMaximized ? ImVec2(6.0f, 6.0f) : ImVec2(0.0f, 0.0f));
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 3.0f);
-		ImGui::PushStyleColor(ImGuiCol_MenuBarBg, ImVec4{0.0f, 0.0f, 0.0f, 0.0f});
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::PushStyleColor(ImGuiCol_WindowBg, IM_COL32(0, 0, 0, 0));
 
 		ImGui::Begin("MainBorderlessWindow", nullptr, window_flags);
 
-		ImGui::PopStyleColor();// MenuBarBg
+		ImGui::PopStyleColor(1);// MenuBarBg
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleVar(2);
+
 		g_HBUICTX->mainWindow = ImGui::GetCurrentWindow();
 		{
+
 			ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(50, 50, 50, 255));
 			if (!isMaximized)
 				renderWindowOuterBorders(g_HBUICTX->mainWindow);
@@ -356,7 +359,7 @@ namespace HBUI {
 
 	HBUI_API void endFrame() {
 		g_HBUICTX->endFrame();
-		Backend::endRenderBackend();
+		Backend::endRenderBackend(g_HBUICTX->windowData);
 		HBTime::endFrame();
 	}
 
@@ -372,11 +375,6 @@ namespace HBUI {
 
 	HBUI_API ImFont *getBigFont() {
 		return g_HBUICTX->fontLoader->getBigFont();
-	}
-
-	HBUI_API void toggleFlag(int flag) {
-		g_HBUICTX->io.mainWindowFlags ^= flag;
-		Backend::setBackendWindowFlags(*g_HBUICTX);
 	}
 
 	HBUI_API bool isFlagSet(int *flags, int flag) {

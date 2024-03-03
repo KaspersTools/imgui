@@ -1,3 +1,4 @@
+#include "../../../HBUI/include/HBUI/HBUIEnums.cpp"
 
 #include "../include/ImVK/ImVk.h"
 
@@ -17,8 +18,8 @@
 #define GLFW_INCLUDE_NONE  // GLFW including its own vulkan will break the build
 #define GLFW_INCLUDE_VULKAN// GLFW including its own vulkan will break the build
 #include <GLFW/glfw3.h>
-#include <vulkan/vulkan_beta.h>
 #include <vulkan/vulkan.h>
+#include <vulkan/vulkan_beta.h>
 
 
 #ifndef STB_IMAGE_IMPLEMENTATION
@@ -26,16 +27,11 @@
 #include "../../misc/stb_image/stb_image.h"
 #endif
 
-#include <cassert>
-#include <chrono>
 #include <mutex>
 #include <queue>
 #include <thread>
 
 namespace HBUI::Backend {
-	IMVK_IMPL_API void setBackendWindowFlags(const HBContext &ctx);
-
-
 	struct ImVKDATA {
 		ImVKDATA() : g_Allocator(nullptr), g_Instance(VK_NULL_HANDLE), g_PhysicalDevice(VK_NULL_HANDLE),
 		             g_Device(VK_NULL_HANDLE), g_QueueFamily((uint32_t) -1), g_Queue(VK_NULL_HANDLE),
@@ -414,7 +410,7 @@ namespace HBUI::Backend {
 	}
 
 	//ImVK API
-	IMVK_IMPL_API bool initPlatformBackend(HBContext *context, void *errorCallback) {
+	IMVK_IMPL_API bool initPlatformBackend(HBBackendWindowFlags backendWindowFlags, void *errorCallback) {
 		g_ImVKData = new ImVKDATA();
 		if (errorCallback != nullptr) {
 			g_ImVKData->g_GlfwErrorCallback = (GLFWerrorfun) errorCallback;
@@ -441,19 +437,17 @@ namespace HBUI::Backend {
 		//		context->io.width, context->io.height,
 		//		NULL,
 		int w              = 1920;
-		int h              = 1080;
+		int h              = 1080;//fixme: make params for these items+ lbl
 		g_ImVKData->window = glfwCreateWindow(w, h, "test", NULL, NULL);
 		//		                                      context->io.title.c_str(),
 		glfwSetWindowPos(g_ImVKData->window,
 		                 monitorX + (videoMode->width - w) / 2,
-		                 //		                 monitorX + (videoMode->width -  context->io.width) / 2,
 		                 monitorY + (videoMode->height - h) / 2);
+		//		                 monitorX + (videoMode->width -  context->io.width) / 2,
 		//		                 monitorY + (videoMode->height - context->io.height) / 2);
-
-
 		glfwShowWindow(g_ImVKData->window);
 
-		setBackendWindowFlags(*context);
+		setBackendWindowFlags(backendWindowFlags);
 		return true;
 	}
 
@@ -498,7 +492,6 @@ namespace HBUI::Backend {
 		io.ConfigViewportsNoAutoMerge   = false;
 		io.FontAllowUserScaling         = true;
 		io.ConfigViewportsNoTaskBarIcon = true;
-
 		ImGui::StyleColorsDark();
 
 		// Setup Platform/Renderer backends
@@ -548,7 +541,6 @@ namespace HBUI::Backend {
 		return true;
 	}
 
-
 	IMVK_IMPL_API void startRenderBackend() {
 		// Poll and handle events (inputs, window resize, etc.)
 		// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
@@ -592,18 +584,19 @@ namespace HBUI::Backend {
 		ImGui::NewFrame();
 	}
 
-	IMVK_IMPL_API void endRenderBackend() {
+	IMVK_IMPL_API void endRenderBackend(const HBPlatformWindowData& window) {
 		ImGuiIO &io                  = ImGui::GetIO();
-		ImVec4 clear_color           = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 		ImGui_ImplVulkanH_Window *wd = g_ImVKData->g_wd;
 
 		ImGui::Render();
-		ImDrawData *main_draw_data      = ImGui::GetDrawData();
-		const bool main_is_minimized    = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
-		wd->ClearValue.color.float32[0] = clear_color.x * clear_color.w;
-		wd->ClearValue.color.float32[1] = clear_color.y * clear_color.w;
-		wd->ClearValue.color.float32[2] = clear_color.z * clear_color.w;
-		wd->ClearValue.color.float32[3] = clear_color.w;
+		ImDrawData *main_draw_data   = ImGui::GetDrawData();
+		const bool main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
+
+		wd->ClearValue.color.float32[0] = window.clearColor.Value.x * window.clearColor.Value.w;
+		wd->ClearValue.color.float32[1] = window.clearColor.Value.y * window.clearColor.Value.w;
+		wd->ClearValue.color.float32[2] = window.clearColor.Value.z * window.clearColor.Value.w;
+		wd->ClearValue.color.float32[3] = window.clearColor.Value.w ;
+
 		if (!main_is_minimized)
 			FrameRender(wd, main_draw_data);
 
@@ -637,6 +630,7 @@ namespace HBUI::Backend {
 	IMVK_IMPL_API ImVec2 getWindowPosition() {
 		int x, y;
 		glfwGetWindowPos(g_ImVKData->window, &x, &y);
+		return ImVec2(x,y);
 	}
 
 	IMVK_IMPL_API ImVec2 getWindowFrameSize() {
@@ -702,27 +696,36 @@ namespace HBUI::Backend {
 		g_ImVKData = nullptr;
 	}
 
-	void setBackendWindowFlags(const HBContext &ctx) {
-		//		ImGui::GetStyleVarInfo(ImGuiStyleVar_WindowRounding);
-		//		if (ctx.io.mainWindowFlags & HBMainWindowFlags_NoDecoration) {
-		//			glfwSetWindowAttrib(g_ImVKData->window, GLFW_DECORATED, GLFW_FALSE);
-		//		} else {
-		//			glfwSetWindowAttrib(g_ImVKData->window, GLFW_DECORATED, GLFW_TRUE);
-		//		}
-		//
-		//		if (ctx.io.mainWindowFlags & HBMainWindowFlags_NoResize) {
-		//			glfwSetWindowAttrib(g_ImVKData->window, GLFW_RESIZABLE, GLFW_FALSE);
-		//		} else {
-		//			glfwSetWindowAttrib(g_ImVKData->window, GLFW_RESIZABLE, GLFW_TRUE);
-		//		}
-		//
-		//		if (ctx.io.mainWindowFlags & HBMeinWindowFlags_NoTitleBar) {
-		//			glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_FALSE);
-		//		} else {
-		//			glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_TRUE);
-		//		}
-		//
-		//		if (ctx.io.mainWindowFlags & HBMainWindowFlags_NoMove) {
+	void setDecorated(const bool isDecorated){
+		glfwSetWindowAttrib(g_ImVKData->window, GLFW_DECORATED, isDecorated);
+	}
+	void setTitleBar(const bool hasTitleBar){
+		glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, hasTitleBar);
+	}
+	void setResize(const bool canResize){
+		glfwSetWindowAttrib(g_ImVKData->window, GLFW_RESIZABLE, canResize);
+	}
+	void setBackendWindowFlags(HBBackendWindowFlags backendWindowFlags) {
+		if (backendWindowFlags & HBBackendWindowFlags_NoDecoration) {
+			glfwSetWindowAttrib(g_ImVKData->window, GLFW_DECORATED, GLFW_FALSE);//CLOSE MINIMIZE BUTTONS ETX
+		} else {
+			glfwSetWindowAttrib(g_ImVKData->window, GLFW_DECORATED, GLFW_TRUE);
+		}
+
+		if (backendWindowFlags & HBBackendWindowFlags_NoTitleBar) {
+			glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_FALSE);//No title bar, will leave the decoration
+		} else {
+			glfwSetWindowAttrib(g_ImVKData->window, GLFW_TITLEBAR, GLFW_TRUE);
+		}
+
+		if (backendWindowFlags & HBBackendWindowFlags_NoResize) {
+			glfwSetWindowAttrib(g_ImVKData->window, GLFW_RESIZABLE, GLFW_FALSE);//No resizing the window
+		} else {
+			glfwSetWindowAttrib(g_ImVKData->window, GLFW_RESIZABLE, GLFW_TRUE);
+		}
+
+		//todo: implement this
+		//		if (backendWindowFlags & HBBackendWindowFlags_NoMove) {
 		//			glfwSetWindowAttrib(g_ImVKData->window, GLFW_FLOATING, GLFW_TRUE);
 		//		} else {
 		//			glfwSetWindowAttrib(g_ImVKData->window, GLFW_FLOATING, GLFW_FALSE);
@@ -744,16 +747,24 @@ namespace HBUI::Backend {
 	}
 }// namespace HBUI::Backend
 
+
+/**
+ ----------------------------------------------------------------------
+ |	This function has to be out of namespace, because its objective c	|
+ ---------------------------------------------------------------------
+ **/
 #if __APPLE__
 #import <AppKit/NSScreen.h>
 #import <Foundation/Foundation.h>
 #include <TargetConditionals.h>
-#endif
 
-/**
- * @note This function has to be out of line, else objc++ will be crying about it
- */
 float HBUI::Backend::getFontSizeIncreaseFactor() {
 	float fontSizeIncreaseFactor = (float) NSScreen.mainScreen.backingScaleFactor;
 	return fontSizeIncreaseFactor;
 }
+
+#else
+float HBUI::Backend::getFontSizeIncreaseFactor() {
+	return 1.f;
+}
+#endif

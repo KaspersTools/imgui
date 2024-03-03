@@ -72,7 +72,6 @@ private:
 
 	class HBItemBase {
 public:
-		HBItemBase() = default;
 		HBItemBase(const std::string &label,
 		           const HBUIType_ type,
 		           const WidgetLayoutProperties &layoutProperties,
@@ -114,17 +113,17 @@ public:
 		           const WidgetLayoutProperties &layoutProperties,
 		           const WidgetColorProperties &colorProperties,
 		           HBItemBase *parent)
-		    : c_ID(id), c_Type(type),
-		      m_Label(label),
+		    : c_ID(id), m_Label(label),
 		      m_ScreenPosition(screenPosition),
 		      m_Size(size),
+		      c_Type(type),
 		      m_ColorProperties(colorProperties),
 		      m_LayoutProperties(layoutProperties),
 		      cp_Parent(parent) {
 		}
 
 public:
-		const HBUIType_ getType() const {
+		HBUIType_ getType() const {
 			return c_Type;
 		}
 
@@ -154,11 +153,11 @@ protected:
 		virtual ImVec2 getContentRegionAvail(const bool includePadding = false) const;
 		virtual ImVec2 getContentRegionMax(const bool includePadding = true) const;
 
+
+		const ImGuiID c_ID     = -1;
 		std::string m_Label;
 		ImVec2 m_ScreenPosition;
 		ImVec2 m_Size;
-protected:
-		const ImGuiID c_ID     = -1;
 		const HBUIType_ c_Type = HBUIType_::HBUIType_None;
 
 		HBUI::WidgetColorProperties m_ColorProperties;

@@ -10,52 +10,9 @@
 #   HBUI
 cmake_minimum_required(VERSION ${CMAKE_VERSION})
 
-project(HBUI VERSION 0.1.0 LANGUAGES CXX)
-set(HBUI_VERSION 0.1.0)
+project(HBUI VERSION 0.1.0 LANGUAGES CXX C)
 
-cmake_policy(SET CMP0077 NEW)
-cmake_policy(SET CMP0079 NEW)
 
-if (NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-endif ()
-if (NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY)
-  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-endif ()
-if (NOT DEFINED CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-endif ()
-if (NOT DEFINED CMAKE_CXX_STANDARD)
-
-  #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif ()
-if (NOT DEFINED CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 23)
-endif ()
-if (NOT DEFINED CMAKE_CXX_EXTENSIONS)
-  set(CMAKE_CXX_EXTENSIONS OFF)
-endif ()
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-###############################################################################
-# Warnings
-###############################################################################
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-  add_compile_options(-Wall -Wextra -Wunused-parameter -Wformat -Wnarrowing -Wno-sign-conversion -Wno-error=declaration-after-statement) # $<$<COMPILE_LANGUAGE:CXX>:-pedantic>
-  if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(-Wnontrivial-memaccess)
-  endif ()
-  if (NOT APPLE)
-    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-copy>)
-  endif ()
-endif ()
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wshadow)
-endif ()
-
-#set project cmake project version and set define
-set(PROJECT_VERSION ${HBUI_VERSION})
 
 ###############################################################################
 # DATA
@@ -78,12 +35,12 @@ add_library(HBUI SHARED
     )
 
 list(APPEND HBUI_SOURCES
+    ${HBUI_DIR}/include/HBUI/HBUIEnums.cpp
     ${HBUI_DIR}/HBUI/Sources/HBUI.cpp
     ${HBUI_DIR}/HBUI/Sources/HBWidgets.cpp
 )
 set(HBUI_HEADERS
     ${HBUI_DIR}/include/HBUI/HBUI.h
-    ${HBUI_DIR}/include/HBUI/HBUIEnums.h
 )
 
 option(HBUI_WITH_DEBUG_WINDOW "HBUI_WITH_DEBUG_WINDOW" OFF)

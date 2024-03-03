@@ -1,60 +1,28 @@
 ################################################################################
 cmake_minimum_required(VERSION 3.27.8)
 project(imgui VERSION 1.0.0
-        LANGUAGES CXX C OBJCXX OBJC)
-cmake_policy(SET CMP0077 NEW)
+        LANGUAGES CXX C)
 
 
+set(CMAKE_CXX_STANDARD 23 CACHE STRING "The C++ standard whose features are requested.")
+set(CMAKE_CXX_STANDARD_REQUIRED ON CACHE BOOL "The C++ standard is required.")
+set(CMAKE_CXX_EXTENSIONS ON CACHE BOOL "When C++ is enabled, this flag is passed to the compiler.")
+
+
+#####SET OUTPUT DIRECTORIES AND SAVE FOR CACHE
 if (NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE PATH "Single Directory for all Executables.")
 endif ()
 if (NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY)
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE PATH "Single Directory for all Libraries")
 endif ()
 if (NOT DEFINED CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-endif ()
-if (NOT DEFINED CMAKE_CXX_STANDARD)
-
-    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif ()
-if(NOT DEFINED CMAKE_CXX_STANDARD)
-    set(CMAKE_CXX_STANDARD 23)
-endif ()
-if(NOT DEFINED CMAKE_CXX_EXTENSIONS)
-    set(CMAKE_CXX_EXTENSIONS OFF)
-endif ()
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-###############################################################################
-# Warnings
-###############################################################################
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    add_compile_options(-Wall -Wextra -Wunused-parameter -Wformat -Wnarrowing -Wno-sign-conversion -Wno-error=declaration-after-statement) # $<$<COMPILE_LANGUAGE:CXX>:-pedantic>
-    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-        add_compile_options(-Wnontrivial-memaccess)
-    endif ()
-    if (NOT APPLE)
-        add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-copy>)
-    endif ()
-endif ()
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(-Wshadow)
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE PATH "Single Directory for all static libraries.")
 endif ()
 
 
-###############################################################################
-# CMake Globals
-###############################################################################
-enable_language(C)
-enable_language(CXX)
-enable_language(OBJCXX)
-enable_language(OBJC)
 
-set(CMAKE_CXX_STANDARD 23)
 
-#include(cmake/defaultsetup.cmake)
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 file(GLOB sources *.cpp)

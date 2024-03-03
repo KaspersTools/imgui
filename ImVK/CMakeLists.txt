@@ -1,11 +1,5 @@
 project(ImVk VERSION 0.1.0 LANGUAGES CXX C OBJC OBJCXX)
-
 cmake_minimum_required(VERSION ${CMAKE_VERSION})
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
-endif ()
-
-include(../cmake/defaultsetup.cmake)
 
 # Make list of include directories
 list(APPEND ImVk_PUBLIC_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -24,7 +18,6 @@ if (NOT DEFINED IMVK_DOWNLOAD_GLFW)
 endif ()
 
 if (NOT TARGET glfw)
-    #-Wunused-parameter]
     #disable warnings for glfw
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-parameter")
     set(GLFW_DIR ../../glfw) # Set this to point to an up-to-date GLFW repo
