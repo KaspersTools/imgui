@@ -126,7 +126,8 @@ namespace HBUI::Fonts {
 	}
 
 	ImWchar FontLoader::textToIconGlyph(const std::string &text) const {
-
+		IM_ASSERT(false && "Not implemented");
+		return 0;
 	}
 	bool FontLoader::hasIcon(const std::string &iconName, float fontSize) const {
 		return false;

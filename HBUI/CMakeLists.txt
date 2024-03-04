@@ -32,7 +32,7 @@ option(HBUI_GLFW "Use VULKAN WITH GLFW" ON)
 ###############################################################################
 set(HBUI_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(HBUI SHARED
-    )
+)
 
 list(APPEND HBUI_SOURCES
     ${HBUI_DIR}/include/HBUI/HBUIEnums.cpp
@@ -50,23 +50,30 @@ endif ()
 
 
 list(APPEND HBUI_PRIVATE_HEADERS
-    ${HBUI_DIR}/private/headers/UIItems/HBUIItemBase.h
-    ${HBUI_DIR}/private/headers/Backend.h
+    ${HBUI_DIR}/private/headers/Windows/HBDockSpaceWindow.h
+
     ${HBUI_DIR}/private/headers/Animation/Animations.h
     ${HBUI_DIR}/private/headers/Animation/Animation.h
+
     ${HBUI_DIR}/private/headers/Utils/HBIUpdatable.h
     ${HBUI_DIR}/private/headers/Utils/HBMath.h
     ${HBUI_DIR}/private/headers/Utils/UIWindow.h
     ${HBUI_DIR}/private/headers/Utils/WindowManager.h
+
     ${HBUI_DIR}/private/headers/types/HBFloat.h
     ${HBUI_DIR}/private/headers/Primitives/Primitive.h
-    ${HBUI_DIR}/private/headers/fonts/FontLoader.h
 )
 
 list(APPEND HBUI_PRIVATE_SOURCES
     ${HBUI_DIR}/private/src/fonts/FontLoader.cpp
     ${HBUI_DIR}/private/src/UIItems/HBUIItemBase.cpp
     ${HBUI_DIR}/private/src/HBDebugWidget.cpp
+
+    ${HBUI_DIR}/private/headers/UIItems/Properties/HBWidgetColorProperties.cpp
+    ${HBUI_DIR}/private/headers/UIItems/Properties/HBWidgetLayoutProperties.cpp
+#    ${HBUI_DIR}/private/headers/UIItems/Builders/HBItemBuilder.cpp
+    ${HBUI_DIR}/private/headers/UIItems/Builders/HBWidgetColorPropertiesBuilder.cpp
+    ${HBUI_DIR}/private/headers/UIItems/Builders/HBWidgetLayoutPropertiesBuilder.cpp
 )
 
 set(GENERATED_SOURCES

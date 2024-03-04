@@ -71,17 +71,30 @@ namespace HBUI {
 	HBUI_API void setLayout(HBLayoutType_ layoutType);
 
 	//---------------------------------------------------------------------------------
-	// [SECTION] Widgets
-	//---------------------------------------------------------------------------------
-
-	//---------------------------------------------------------------------------------
 	// [SECTION] Helpers
 	//---------------------------------------------------------------------------------
 	HBUI_API HBUIBaseType_ typeToBaseType(HBUIType_ type);
 
 	//---------------------------------------------------------------------------------
-	// [SECTION] Basic Panels
+	// [SECTION] Widgets
 	//---------------------------------------------------------------------------------
+	HBUI_API void beginDockSpaceWindow(const std::string &id,
+	                                   const ImVec2 &position  = {0, 0},
+	                                   const ImVec2 &size      = {0, 0},
+	                                   const ImVec2 &cursorPos = {0, 0});
+	HBUI_API void endDockSpaceWindow();
+
+	HBUI_API bool beginFullScreenDockSpaceWindow(const std::string &id,
+	                                    const ImVec2 &position  = {0, 0},
+	                                    const ImVec2 &size      = {0, 0},
+	                                    const ImVec2 &cursorPos = {0, 0});
+
+	HBUI_API void endFullScreenDockSpaceWindow();
+
+	//---------------------------------------------------------------------------------
+	// [SECTION] Windows/Panels
+	//---------------------------------------------------------------------------------
+
 	HBUI_API bool beginFlexPanel(const std::string &id,
 	                             const ImVec2 &position  = {0, 0},
 	                             const ImVec2 &size      = {0, 0},

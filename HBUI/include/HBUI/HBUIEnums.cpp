@@ -16,12 +16,28 @@ struct ImGuiWindow;
 //TODO: Move this to an shared between the backend and the UI source file
 
 typedef int HBBackendWindowFlags;
-
 enum HBBackendWindowFlags_ {
 	HBBackendWindowFlags_None         = 0,
 	HBBackendWindowFlags_NoDecoration = 1 << 0,
 	HBBackendWindowFlags_NoTitleBar   = 1 << 1,
 	HBBackendWindowFlags_NoResize     = 1 << 2,
+};
+
+//-----------------------------------------------------------------------------
+//[SECTION] Properties
+//-----------------------------------------------------------------------------
+typedef int HBColorPropertiesFlags;
+/**
+ * @brief The flags of the color properties of the UI element, can be combined with bitwise OR (|)
+ * @see HBWidgetColorProperties
+ * @def HBColorPropertiesFlags_Default
+ */
+enum HBColorPropertiesFlags_ : int {
+	HBColorPropertiesFlags_None         = 0,
+	HBColorPropertiesFlags_NoBackground = 1 << 0,
+	HBColorPropertiesFlags_NoBorder     = 1 << 1,
+	HBColorPropertiesFlags_NoHover      = 1 << 2,
+	HBColorPropertiesFlags_Default      = HBColorPropertiesFlags_NoBorder | HBColorPropertiesFlags_NoHover//with background, no border, no// hover color
 };
 
 //-----------------------------------------------------------------------------
@@ -31,9 +47,10 @@ enum HBBackendWindowFlags_ {
 /**
  * @brief The flags of the draw location of the UI element, only use one at a time
  */
-enum HBDrawLocation_ : int{
-	HBDrawFlags_DrawOnParent = 0,       //default
-	HBDrawFlags_MainImGuiWindowDrawList,//the base window that gets created by HBUI
+enum HBDrawFlags_ : int {
+	HBDrawFlags_None     = 0,   //defualt
+	HBDrawFlags_OnParent = 1,   //append to parent drawlist
+	HBDrawFlags_MainImGuiWindow,//the base window that gets created by HBUI
 };
 
 /**
@@ -93,7 +110,7 @@ enum HBUIType_ : int {
 	HBUIType_SideBar,
 	HBUIType_Button,
 	HBUIType_SideBarButton,
-	HBUIType_DockPanel
+	HBUIType_DockSpaceWindow,
 };
 
 

@@ -4,6 +4,7 @@
 
 // clang-format off
 #include <HBUI/HBUI.h>
+
 // clang-format on
 
 static bool
@@ -17,11 +18,12 @@ namespace HBUI {
 	//-------------------------------------------------------------------------
 	HBUIBaseType_ typeToBaseType(HBUIType_ type){
 		switch (type) {
-			case HBUIType_::HBUIType_DockPanel:
+			case HBUIType_::HBUIType_DockSpaceWindow:
 			case HBUIType_::HBUIType_SideBar:
 				return HBUIBaseType_Window;
-
 		}
 	}
+
+
 
 }// namespace HBUI

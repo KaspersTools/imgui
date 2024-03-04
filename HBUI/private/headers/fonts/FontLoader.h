@@ -8,13 +8,6 @@
 #include <array>
 #include <vector>
 
-struct HBIcon {
-	const std::string name;
-	const ImWchar code;
-
-	HBIcon(const std::string &name, ImWchar) : name(name), code(code) {}
-};
-
 namespace HBUI::Fonts {
 	class FontLoader {
 public:

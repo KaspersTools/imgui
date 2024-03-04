@@ -2,24 +2,24 @@
 // Created by Kasper de Bruin on 21/02/2024.
 //
 
+// clang-format off
+
 #ifndef IMGUI_HBUIITEMBASE_H
 #define IMGUI_HBUIITEMBASE_H
 
+#include <HBUI/HBUI.h>
+#include <UIItems/Properties/HBWidgetColorProperties.h>
+#include <UIItems/Properties/HBWidgetLayoutProperties.h>
 
 #include <vector>
 
-// clang-format off
-
-#include <HBUI/HBUI.h>
-#include <Utils/HBIUpdatable.h>
-#include "Helpers/HBUIHelpers.h"
 // clang-format on
 
 namespace HBUI {
 	class HBItemBase;
 
 	//todo: maybe move this just to HBContext
-	class HBWidgetManager{
+	class HBWidgetManager {
 public:
 		HBWidgetManager(const ImVec2 &defaultCursorPosStart = {0, 0},
 		                HBLayoutType_ defaultLayoutType     = HBLayoutType_::HBLayoutType_Horizontal) {
@@ -28,10 +28,10 @@ public:
 			reset();
 		}
 
-		void startFrame()  {
+		void startFrame() {
 			reset();
 		}
-		void endFrame()  {
+		void endFrame() {
 			IM_ASSERT(sp_AppendingWidget == nullptr && "A widget was not ended properly");
 		}
 
@@ -72,99 +72,83 @@ private:
 
 	class HBItemBase {
 public:
+		HBItemBase() = default;
+		HBItemBase(const ImGuiID id, const HBUIType_ type)
+		    : m_ID(id),
+		      m_Type(type) {
+		}
+
+		HBItemBase(const ImGuiID id, const std::string &label, const HBUIType_ type)
+		    : m_ID(id),
+		      m_Type(type),
+		      m_Label(label) {
+		}
+
 		HBItemBase(const std::string &label,
-		           const HBUIType_ type,
-		           const WidgetLayoutProperties &layoutProperties,
-		           HBItemBase *parent = nullptr)
-		    : HBItemBase(ImGui::GetID(label.c_str()), type, label, {0, 0}, {0, 0}, layoutProperties, WidgetColorProperties(type, true), parent) {
+		           const HBUIType_ type)
+		    : m_ID(ImGui::GetID(label.c_str())),
+		      m_Type(type),
+		      m_Label(label) {
 		}
 
-		HBItemBase(const ImGuiID id,
-		           const HBUIType_ type,
-		           const WidgetLayoutProperties &layoutProperties,
-		           HBItemBase *parent = nullptr)
-		    : HBItemBase(id, type, "", {0, 0}, {0, 0}, layoutProperties, WidgetColorProperties(type, true), parent) {
-		}
+		HBItemBase(
+		    const ImGuiID Id,
+		    const std::string &Label,
+		    const HBUIType_ Type,
+		    const HBUI::Properties::WidgetColorProperties *ColorProperties,
+		    const HBUI::Properties::WidgetLayoutProperties *LayoutProperties,
+		    HBItemBase *Parent,
+		    const std::vector<HBItemBase *> Children);
 
-		HBItemBase(const ImGuiID id,
-		           const HBUIType_ type,
-		           const ImVec2 &screenPosition,
-		           const WidgetLayoutProperties &layoutProperties,
-		           const WidgetColorProperties &colorProperties,
-		           HBItemBase *parent = nullptr)
-		    : HBItemBase(id, type, "", screenPosition, {0, 0}, layoutProperties, colorProperties, parent) {
-		}
-
-		HBItemBase(const ImGuiID id,
-		           const HBUIType_ type,
-		           const ImVec2 &screenPosition,
-		           const ImVec2 &size,
-		           const WidgetLayoutProperties &layoutProperties,
-		           HBItemBase *parent = nullptr)
-		    : HBItemBase(id, type, "", screenPosition, size, layoutProperties, WidgetColorProperties(type, true), parent) {
-		}
-
-
-		HBItemBase(const ImGuiID id,
-		           const HBUIType_ type,
-		           const std::string &label,
-		           const ImVec2 &screenPosition,
-		           const ImVec2 &size,
-		           const WidgetLayoutProperties &layoutProperties,
-		           const WidgetColorProperties &colorProperties,
-		           HBItemBase *parent)
-		    : c_ID(id), m_Label(label),
-		      m_ScreenPosition(screenPosition),
-		      m_Size(size),
-		      c_Type(type),
-		      m_ColorProperties(colorProperties),
-		      m_LayoutProperties(layoutProperties),
-		      cp_Parent(parent) {
-		}
 
 public:
-		HBUIType_ getType() const {
-			return c_Type;
-		}
-
 		virtual void addChild(HBItemBase *child);
-		virtual void draw() = 0;
+		virtual void draw(){};
 
-protected:
+public:
 		ImDrawList *getDrawList() const {
-			switch (m_ColorProperties.c_DrawLocation) {
-				case HBDrawFlags_DrawOnParent:
+			switch (m_ColorProperties->getDrawLocation()) {
+				case HBDrawFlags_None:
+					IM_ASSERT(false && "Invalid draw location");
+					return nullptr;
+				case HBDrawFlags_OnParent:
 					IM_ASSERT(cp_Parent != nullptr && "Parent is nullptr");
 					return cp_Parent->getDrawList();
-				case HBDrawFlags_MainImGuiWindowDrawList:
-					ImGuiWindow *window = HBUI::getMainImGuiWindow();
-					IM_ASSERT(window != nullptr && "Main ImGui window is nullptr");
-					return window->DrawList;
+				case HBDrawFlags_MainImGuiWindow:
+					IM_ASSERT(getMainImGuiWindow() != nullptr && "Main ImGui window is nullptr");
+					IM_ASSERT(getMainImGuiWindow()->DrawList != nullptr && "Main ImGui window is nullptr");
+					return getMainImGuiWindow()->DrawList;
+				default:
+					IM_ASSERT(false && "Invalid draw location");
+					return nullptr;
 			}
 		}
 
-
-		virtual ImVec2 getNextChildPosition() const;
-
 		virtual ImVec2 getCursorPos() const;
-		virtual void setCursorPos(const ImVec2 &newPos);
-		virtual void getCursorScreenPos() const;
 
-		virtual ImVec2 getContentRegionAvail(const bool includePadding = false) const;
-		virtual ImVec2 getContentRegionMax(const bool includePadding = true) const;
+private:
+		ImGuiID m_ID     = -1;
+		HBUIType_ m_Type = HBUIType_None;
 
+public:
+		ImGuiID getId() const;
+		HBUIType_ getType() const;
+		const std::string &getLabel() const;
+		Properties::WidgetColorProperties *getColorProperties() const;
+		Properties::WidgetLayoutProperties *getLayoutProperties() const;
+		HBItemBase *getParent() const;
+		const std::vector<HBItemBase *> &getChildren() const;
 
-		const ImGuiID c_ID     = -1;
-		std::string m_Label;
-		ImVec2 m_ScreenPosition;
-		ImVec2 m_Size;
-		const HBUIType_ c_Type = HBUIType_::HBUIType_None;
+private:
+		std::string m_Label = "unnamed";
 
-		HBUI::WidgetColorProperties m_ColorProperties;
-		HBUI::WidgetLayoutProperties m_LayoutProperties;
+		HBUI::Properties::WidgetColorProperties *m_ColorProperties   = nullptr;
+		HBUI::Properties::WidgetLayoutProperties *m_LayoutProperties = nullptr;
 
-		const HBItemBase *cp_Parent;
-		std::vector<HBItemBase *> pv_Children;
+		HBItemBase *cp_Parent = nullptr;
+
+		std::vector<HBItemBase *> pv_Children = {};
 	};
+
 }// namespace HBUI
 #endif//IMGUI_HBUIITEMBASE_H

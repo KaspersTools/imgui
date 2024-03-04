@@ -3,9 +3,10 @@
 //
 #include <UIItems/HBUIItemBase.h>
 
+
 namespace HBUI {
 	//-------------------------------------------------------------------------
-	// [SECTION] HBWidgetManager
+	// [SECTION] HBWidgetanager
 	//-------------------------------------------------------------------------
 	void HBWidgetManager::appendWidget(HBUI::HBItemBase *widget) {
 		IM_ASSERT(widget->getType() != HBUIType_None && "This type of widget is not allowed to be appended without a parent");
@@ -21,6 +22,8 @@ namespace HBUI {
 			case HBUIBaseType_Menu:
 				IM_ASSERT(false && "This type of widget is not allowed to be appended without a parent");
 				break;
+			case HBUIBaseType_Panel:
+				break;
 		}
 	}
 	void HBWidgetManager::endAppendingWidget(const HBUIType_ type) {
@@ -31,25 +34,30 @@ namespace HBUI {
 	//-------------------------------------------------------------------------
 	// [SECTION] HBItemBase
 	//-------------------------------------------------------------------------
-	ImVec2 HBItemBase::getNextChildPosition() const {
-		return m_LayoutProperties.m_CursorPos;
-	}
-
 	ImVec2 HBItemBase::getCursorPos() const {
-		return m_LayoutProperties.m_CursorPos;
+		return m_LayoutProperties->getCursorPos();
+	}
+	ImGuiID HBItemBase::getId() const {
+		return m_ID;
+	}
+	HBUIType_ HBItemBase::getType() const {
+		return m_Type;
+	}
+	const std::string &HBItemBase::getLabel() const {
+		return m_Label;
+	}
+	Properties::WidgetColorProperties *HBItemBase::getColorProperties() const {
+		return m_ColorProperties;
+	}
+	Properties::WidgetLayoutProperties *HBItemBase::getLayoutProperties() const {
+		return m_LayoutProperties;
+	}
+	HBItemBase *HBItemBase::getParent() const {
+		return cp_Parent;
+	}
+	const std::vector<HBItemBase *> &HBItemBase::getChildren() const {
+		return pv_Children;
 	}
 
-	ImVec2 HBItemBase::getContentRegionAvail(const bool includePadding) const {
-		ImVec2 size             = m_LayoutProperties.m_Size;
-		ImVec2 currentCursorPos = getCursorPos();
-		ImVec2 result           = ImVec2(size.x - currentCursorPos.x, size.y - currentCursorPos.y);
 
-		return result;
-	}
-
-	ImVec2 HBItemBase::getContentRegionMax(const bool includePadding) const {
-		return m_LayoutProperties.m_CursorPos;
-	}
-
-	void HBItemBase::setCursorPos(const ImVec2 &newPos) {}
 }// namespace HBUI
