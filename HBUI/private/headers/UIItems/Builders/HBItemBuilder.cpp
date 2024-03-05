@@ -3,16 +3,29 @@
 //
 
 // clang-format off
+#include "HBItemBuilder.h"
 #include <UIItems/Builders/HBWidgetColorPropertiesBuilder.h>
 #include <UIItems/Builders/HBWidgetLayoutPropertiesBuilder.h>
-
-#include "HBItemBuilder.h"
 // clang-format on
-namespace HBUI::Builder{
-	HBItemBuilder &HBItemBuilder::setColorProperties(const HBUIType_ type, HBDrawFlags_ drawFlags, HBColorPropertiesFlags flags) {
 
-		setType(type);
-		p_CurrentWidget->m_ColorProperties = Builder::HBWidgetColorPropertiesBuilder().setFromImGuiStyle(type, drawFlags, flags).build();
+namespace HBUI::Builder{
+
+	HBItemBuilder &HBItemBuilder::setColorProperties(const HBDrawFlags_ drawFlags, const HBColorPropertiesFlags flags) {
+		IM_ASSERT(p_CurrentWidget->getType() != HBUIType_None && "Type is unknown, cannot set layout properties");
+		HBWidgetColorPropertiesBuilder colorPropertiesBuilder;
+		p_CurrentWidget->m_ColorProperties = colorPropertiesBuilder.fromImGuiStyle(p_CurrentWidget->getType(), drawFlags, flags).build();
+		return *this;
+	}
+	HBItemBuilder &HBItemBuilder::setLayoutProperties() {
+		IM_ASSERT(p_CurrentWidget->getType() != HBUIType_None && "Type is unknown, cannot set layout properties");
+		HBWidgetLayoutPropertiesBuilder layoutPropertiesBuilder;
+		p_CurrentWidget->m_LayoutProperties = layoutPropertiesBuilder.fromImGuiStyle(p_CurrentWidget->getType()).build();
+		return *this;
+	}
+	HBItemBuilder &HBItemBuilder::fromImGuiStyle(const HBDrawFlags_ drawFlags, const HBColorPropertiesFlags flags) {
+		IM_ASSERT(p_CurrentWidget->getType() != HBUIType_None && "Type is unknown, cannot set layout properties");
+		setColorProperties(drawFlags, flags);
+		setLayoutProperties();
 		return *this;
 	}
 }// namespace HBUI::Builder

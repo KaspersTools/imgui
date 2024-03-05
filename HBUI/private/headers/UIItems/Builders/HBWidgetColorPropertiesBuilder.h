@@ -14,10 +14,16 @@ namespace HBUI {
 		class HBWidgetColorPropertiesBuilder {
 
 	private:
-			HBUI::Properties::WidgetColorProperties *m_ColorProperties = new HBUI::Properties::WidgetColorProperties();
+			HBUI::Properties::WidgetColorProperties *m_ColorProperties = nullptr;
 
 	public:
-			HBWidgetColorPropertiesBuilder() = default;
+			HBWidgetColorPropertiesBuilder(){
+				m_ColorProperties = new HBUI::Properties::WidgetColorProperties();
+			}
+
+			~HBWidgetColorPropertiesBuilder() {
+				delete m_ColorProperties;
+			}
 
 			HBWidgetColorPropertiesBuilder &setBackgroundColor(const ImColor &color) {
 				m_ColorProperties->m_BackgroundColor = color;

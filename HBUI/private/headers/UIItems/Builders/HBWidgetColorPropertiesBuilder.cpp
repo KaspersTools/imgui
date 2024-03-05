@@ -4,20 +4,18 @@
 
 //clang-format off
 #include "HBWidgetColorPropertiesBuilder.h"
+#include <memory>
 
 //clang-format on
 namespace HBUI {
 	namespace Builder {
 		[[maybe_unused]] HBWidgetColorPropertiesBuilder &HBWidgetColorPropertiesBuilder::fromImGuiStyle(HBUIType_ type,
+		                                                                                                const HBDrawFlags_ drawLocation,
+		                                                                                                const HBColorPropertiesFlags flags,
 
-		                                                                                                   const HBDrawFlags_ drawLocation,
-		                                                                                                   const HBColorPropertiesFlags flags,
-
-		                                                                                                   const ImColor &backgroundColor,
-		                                                                                                   const ImColor &borderColor,
-		                                                                                                   const ImColor &hoverColor) {
-			IM_ASSERT(type != HBUIType_None && "HBUIType_None is not a valid type");
-
+		                                                                                                const ImColor &backgroundColor,
+		                                                                                                const ImColor &borderColor,
+		                                                                                                const ImColor &hoverColor) {
 			//set color based on imgui style
 			switch (type) {
 				case HBUIType_None:
@@ -72,9 +70,8 @@ namespace HBUI {
 		}
 
 		HBUI::Properties::WidgetColorProperties *HBWidgetColorPropertiesBuilder::build() {
-			HBUI::Properties::WidgetColorProperties *properties = m_ColorProperties;
-			m_ColorProperties                                   = new HBUI::Properties::WidgetColorProperties();
-
+			HBUI::Properties::WidgetColorProperties* properties = m_ColorProperties;
+			m_ColorProperties = nullptr;
 			return properties;
 		}
 	}// namespace Builder

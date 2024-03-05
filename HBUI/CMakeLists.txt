@@ -67,13 +67,15 @@ list(APPEND HBUI_PRIVATE_HEADERS
 list(APPEND HBUI_PRIVATE_SOURCES
     ${HBUI_DIR}/private/src/fonts/FontLoader.cpp
     ${HBUI_DIR}/private/src/UIItems/HBUIItemBase.cpp
-    ${HBUI_DIR}/private/src/HBDebugWidget.cpp
 
     ${HBUI_DIR}/private/headers/UIItems/Properties/HBWidgetColorProperties.cpp
     ${HBUI_DIR}/private/headers/UIItems/Properties/HBWidgetLayoutProperties.cpp
-#    ${HBUI_DIR}/private/headers/UIItems/Builders/HBItemBuilder.cpp
+
+    ${HBUI_DIR}/private/headers/UIItems/Builders/HBItemBuilder.cpp
     ${HBUI_DIR}/private/headers/UIItems/Builders/HBWidgetColorPropertiesBuilder.cpp
     ${HBUI_DIR}/private/headers/UIItems/Builders/HBWidgetLayoutPropertiesBuilder.cpp
+
+    ${HBUI_DIR}/private/src/HBDebugWidget.cpp
 )
 
 set(GENERATED_SOURCES

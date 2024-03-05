@@ -204,9 +204,11 @@ namespace HBUI {
 		HBContext *ctx = getCurrentContext();
 		return ctx->mainWindow;
 	}
+
 	HBUI_API ImGuiViewport *getCurrentViewport() {
 		return ImGui::GetCurrentContext()->CurrentViewport;
 	}
+
 	HBUI_API ImGuiViewport *getMainViewport() {
 		return ImGui::GetMainViewport();
 	}
@@ -214,6 +216,7 @@ namespace HBUI {
 	HBUI_API ImVec2 getMainWindowSize() {
 		return getMainImGuiWindow()->Size;
 	}
+
 	HBUI_API ImVec2 getNativeWindowSize() {
 		return Backend::getWindowSize();
 	}
@@ -234,7 +237,7 @@ namespace HBUI {
 		return Backend::getWindowPosition();
 	}
 
-	HBUI_API ImColor& getNativeWindowClearColor() {
+	HBUI_API ImColor &getNativeWindowClearColor() {
 		return HBUI::getCurrentContext()->windowData.clearColor;
 	}
 	HBUI_API void setNativeWindowClearColor(const ImColor &color) {
@@ -245,9 +248,11 @@ namespace HBUI {
 		IM_ASSERT(viewport != nullptr && "HBUI::getViewportPos() but viewport is null");
 		return viewport->Pos;
 	}
+
 	HBUI_API ImVec2 getMainViewportPos() {
 		return getViewportPos(ImGui::GetMainViewport());
 	}
+
 	HBUI_API ImVec2 getCurrentViewportPos() {
 		return getViewportPos(getCurrentViewport());
 	}
@@ -311,6 +316,7 @@ namespace HBUI {
 		                                ImGuiWindowFlags_NoResize |
 		                                ImGuiWindowFlags_NoMove |
 		                                ImGuiWindowFlags_NoBringToFrontOnFocus |
+		                                ImGuiWindowFlags_NoBackground |
 		                                ImGuiWindowFlags_NoNavFocus;
 
 		ImGuiViewport *viewport = ImGui::GetMainViewport();
@@ -341,6 +347,12 @@ namespace HBUI {
 				renderWindowOuterBorders(g_HBUICTX->mainWindow);
 			ImGui::PopStyleColor();// ImGuiCol_Border
 		}
+		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+		//		Imdockspace_flags & )
+		//		                                        host_window_flags |= ImGuiWindowFlags_NoBackground; | ImGuiDockNodeFlags_NoWindowMenuButton | ;
+		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
+
+		//		ImGui::DockSpaceOverViewport(/, ImGuiDockNodeFlags_PassthruCentralNode);
 		ImGui::End();
 
 		g_HBUICTX->startFrame();
@@ -352,7 +364,6 @@ namespace HBUI {
 			const std::string iconGit = HBUI::wchar32ToUtf8(NF_ICON_github);
 			ImGui::Button(iconGit.c_str());
 			ImGui::SmallButton(iconGit.c_str());
-			//ImGui::Text("Icon: ICON_FA_BATTLE_NET %s", ICON_FA_BATTLE_NET);
 			ImGui::End();
 		}
 	}

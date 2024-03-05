@@ -11,10 +11,16 @@ namespace HBUI {
 	namespace Builder {
 		class HBWidgetLayoutPropertiesBuilder {
 	private:
-			HBUI::Properties::WidgetLayoutProperties *m_LayoutProperties = new HBUI::Properties::WidgetLayoutProperties();
+			HBUI::Properties::WidgetLayoutProperties *m_LayoutProperties = nullptr;
 
 	public:
-			HBWidgetLayoutPropertiesBuilder() = default;
+			HBWidgetLayoutPropertiesBuilder() {
+				m_LayoutProperties = new HBUI::Properties::WidgetLayoutProperties();
+			}
+
+			~HBWidgetLayoutPropertiesBuilder() {
+				delete m_LayoutProperties;
+			}
 
 			HBWidgetLayoutPropertiesBuilder &fromImGuiStyle(const HBUIType_ type);
 

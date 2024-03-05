@@ -28,8 +28,7 @@ namespace HBUI {
 
 		HBUI::Properties::WidgetLayoutProperties *HBWidgetLayoutPropertiesBuilder::build() {
 			HBUI::Properties::WidgetLayoutProperties *properties = m_LayoutProperties;
-			m_LayoutProperties                                   = new HBUI::Properties::WidgetLayoutProperties();
-
+			m_LayoutProperties = nullptr;
 			return properties;
 		}
 	}// namespace Builder
