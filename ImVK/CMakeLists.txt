@@ -1,5 +1,38 @@
-project(ImVk VERSION 0.1.0 LANGUAGES CXX C OBJC OBJCXX)
+project(ImVk VERSION 0.1.0 LANGUAGES CXX C)
 cmake_minimum_required(VERSION ${CMAKE_VERSION})
+
+#################################################################################
+# Apple OBJC
+#################################################################################
+if (APPLE)
+    enable_language(OBJC)
+    enable_language(OBJCXX)
+endif ()
+
+add_library(ImVk STATIC)
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    target_compile_definitions(ImVk PUBLIC _GLFW_WIN32 VK_USE_PLATFORM_WIN32_KHR)
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    target_compile_definitions(ImVk PUBLIC _GLFW_X11 VK_USE_PLATFORM_XCB_KHR)
+else ()
+    message(FATAL_ERROR "Unsupported platform: ${CMAKE_SYSTEM_NAME}")
+endif ()
+
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(ImVk PRIVATE
+            -Wno-unused-parameter
+            -Wno-sign-compare
+            -Wno-missing-field-initializers
+    )
+    target_compile_options(ImVk INTERFACE
+            -Wno-unused-variable
+            -Wno-parentheses
+            -Wno-shift-negative-value
+            -Wno-implicit-fallthrough
+    )
+endif ()
 
 # Make list of include directories
 list(APPEND ImVk_PUBLIC_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -14,7 +47,7 @@ list(APPEND ImVk_PRIVATE_INCLUDE_DIRS
 ###############################################################################
 #glfw
 if (NOT DEFINED IMVK_DOWNLOAD_GLFW)
-    option(IMVK_DOWNLOAD_GLFW "Download GLFW" OFF)
+    option(IMVK_DOWNLOAD_GLFW "Download GLFW" ON)
 endif ()
 
 if (NOT TARGET glfw)
@@ -74,7 +107,6 @@ set(ImVK_Headers
         include/ImVk/Image.h
 )
 
-add_library(ImVk STATIC)
 target_sources(ImVk PUBLIC
         ${ImVk_SOURCES}
 )
@@ -98,15 +130,26 @@ target_include_directories(ImVk PUBLIC
 # Compile definitions
 ###############################################################################
 target_compile_definitions(ImVk PUBLIC -DImTextureID=ImU64)
-target_compile_options(ImVk PUBLIC "-x" "objective-c++")
-if (APPLE AND NOT IOS) # If mac
+
+
+###############################################################################
+# Apple
+###############################################################################
+if (APPLE AND NOT IOS)
+    target_compile_options(ImVk PUBLIC "-x" "objective-c++")
     target_link_libraries(ImVk PUBLIC "-framework AppKit -framework IOKit")
-endif()
+endif ()
+
 if (APPLE)
     target_link_libraries(ImVk PUBLIC "-framework Foundation")
-endif()
-target_compile_definitions(ImVk PUBLIC HELLOIMGUI_HAS_VULKAN)
+endif ()
+
+
+###############################################################################
+# Vulkan
+###############################################################################
 #set(HBUI_HAS_VULKAN ON CACHE BOOL "" FORCE)
+target_compile_definitions(ImVk PUBLIC HELLOIMGUI_HAS_VULKAN)
 find_package(Vulkan REQUIRED)
 target_link_libraries(ImVk PUBLIC Vulkan::Vulkan)
 

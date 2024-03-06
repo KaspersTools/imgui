@@ -17,11 +17,12 @@ namespace HBUI {
 	// [SECTION] Helpers
 	//-------------------------------------------------------------------------
 	HBUIBaseType_ typeToBaseType(HBUIType_ type){
-		switch (type) {
-			case HBUIType_::HBUIType_DockSpaceWindow:
-			case HBUIType_::HBUIType_SideBar:
-				return HBUIBaseType_Window;
-		}
+		return HBUIBaseType_Unknown;
+//		switch (type) {
+//			case HBUIType_::HBUIType_DockSpaceWindow:
+//			case HBUIType_::HBUIType_SideBar:
+//				return HBUIBaseType_Window;
+//		}
 	}
 
 

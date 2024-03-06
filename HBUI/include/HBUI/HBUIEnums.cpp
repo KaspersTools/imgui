@@ -96,6 +96,7 @@ enum HBSizeFlags_ {
  * @brief The base type of the UI element, only use one at a timen
  */
 enum HBUIBaseType_ : int {
+	HBUIBaseType_Unknown,
 	HBUIBaseType_Item,
 	HBUIBaseType_Window,
 	HBUIBaseType_Panel,

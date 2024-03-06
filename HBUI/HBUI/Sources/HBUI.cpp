@@ -160,7 +160,7 @@ namespace HBUI {
 		g_HBUICTX->io = io;
 
 
-		if (!Backend::initPlatformBackend(backendWindowFlags)) {
+		if (!Backend::initPlatformBackend(width, height, backendWindowFlags)) {
 			std::cerr << "Failed to initialize platform backend" << std::endl;
 			return nullptr;
 		}
@@ -310,7 +310,7 @@ namespace HBUI {
 		HBTime::startFrame();
 		Backend::startRenderBackend();
 
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking |
+		ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoDocking |
 		                                ImGuiWindowFlags_NoTitleBar |
 		                                ImGuiWindowFlags_NoCollapse |
 		                                ImGuiWindowFlags_NoResize |
@@ -320,8 +320,8 @@ namespace HBUI {
 		                                ImGuiWindowFlags_NoNavFocus;
 
 		ImGuiViewport *viewport = ImGui::GetMainViewport();
-		ImGui::SetNextWindowPos(viewport->Pos);
-		ImGui::SetNextWindowSize(viewport->Size);
+		ImGui::SetNextWindowPos(viewport->WorkPos);
+		ImGui::SetNextWindowSize(viewport->WorkSize);
 		ImGui::SetNextWindowViewport(viewport->ID);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -333,7 +333,7 @@ namespace HBUI {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleColor(ImGuiCol_WindowBg, IM_COL32(0, 0, 0, 0));
 
-		ImGui::Begin("MainBorderlessWindow", nullptr, window_flags);
+		ImGui::Begin("MainBorderlessWindow", nullptr, windowFlags);
 
 		ImGui::PopStyleColor(1);// MenuBarBg
 		ImGui::PopStyleVar(2);
@@ -343,29 +343,18 @@ namespace HBUI {
 		{
 
 			ImGui::PushStyleColor(ImGuiCol_Border, IM_COL32(50, 50, 50, 255));
+
 			if (!isMaximized)
 				renderWindowOuterBorders(g_HBUICTX->mainWindow);
+
 			ImGui::PopStyleColor();// ImGuiCol_Border
 		}
-		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-		//		Imdockspace_flags & )
-		//		                                        host_window_flags |= ImGuiWindowFlags_NoBackground; | ImGuiDockNodeFlags_NoWindowMenuButton | ;
-		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
 
-		//		ImGui::DockSpaceOverViewport(/, ImGuiDockNodeFlags_PassthruCentralNode);
+		ImGuiID dockspaceID = ImGui::GetID("MyDockSpace");
+		ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
 		ImGui::End();
 
 		g_HBUICTX->startFrame();
-
-
-		{
-			ImGui::Begin("test");
-			ImGui::Button("B");
-			const std::string iconGit = HBUI::wchar32ToUtf8(NF_ICON_github);
-			ImGui::Button(iconGit.c_str());
-			ImGui::SmallButton(iconGit.c_str());
-			ImGui::End();
-		}
 	}
 
 	HBUI_API void endFrame() {

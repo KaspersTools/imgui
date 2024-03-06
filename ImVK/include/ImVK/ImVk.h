@@ -7,11 +7,16 @@
 #define IMVK_IMPL_API
 #endif
 
+
+#ifdef _WIN32
+#define NOMINMAX
+#endif
+
 #include <imgui.h>
 
 namespace HBUI {
 	namespace Backend {
-		IMVK_IMPL_API bool initPlatformBackend(HBBackendWindowFlags backendWindowFlags, void *errorCallback = nullptr);
+		IMVK_IMPL_API bool initPlatformBackend(int width, int height, HBBackendWindowFlags backendWindowFlags, void *errorCallback = nullptr);
 		IMVK_IMPL_API bool initGraphicsBackend();
 		IMVK_IMPL_API void startRenderBackend();
 		IMVK_IMPL_API void endRenderBackend(const HBPlatformWindowData& window);

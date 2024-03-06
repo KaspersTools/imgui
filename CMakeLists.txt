@@ -21,8 +21,6 @@ if (NOT DEFINED CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
 endif ()
 
 
-
-
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 file(GLOB sources *.cpp)
@@ -40,7 +38,7 @@ target_include_directories(imgui PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 #################################################################################
 add_subdirectory(HBUI)
 message(STATUS "CMAKEPROJECT NAME: ${CMAKE_PROJECT_NAME}")
-#
+
 ################################################################################
 ## EXAMPLE
 ################################################################################

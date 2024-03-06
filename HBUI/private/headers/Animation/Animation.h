@@ -3,7 +3,8 @@
 #include <iostream>
 #include <cmath>
 #include <unordered_map>
-
+#include <memory>
+#include <functional>
 #include <types/HBFloat.h>
 
 //todo: move this to enums and structs file

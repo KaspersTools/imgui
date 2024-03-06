@@ -9,10 +9,23 @@
 # A list of defined targets:
 #   HBUI
 cmake_minimum_required(VERSION ${CMAKE_VERSION})
-
 project(HBUI VERSION 0.1.0 LANGUAGES CXX C)
 
+set(CMAKE_CXX_STANDARD 23 CACHE STRING "The C++ standard whose features are requested.")
+set(CMAKE_CXX_STANDARD_REQUIRED ON CACHE BOOL "The C++ standard is required.")
+set(CMAKE_CXX_EXTENSIONS ON CACHE BOOL "When C++ is enabled, this flag is passed to the compiler.")
 
+
+#####SET OUTPUT DIRECTORIES AND SAVE FOR CACHE
+if (NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE PATH "Single Directory for all Executables.")
+endif ()
+if (NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE PATH "Single Directory for all Libraries")
+endif ()
+if (NOT DEFINED CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE PATH "Single Directory for all static libraries.")
+endif ()
 
 ###############################################################################
 # DATA
@@ -25,7 +38,7 @@ define_property(GLOBAL PROPERTY HBUI_DATA
 ###############################################################################
 # options
 ###############################################################################
-option(HBUI_GLFW "Use VULKAN WITH GLFW" ON)
+option(HBUI_GLFW_VULKAN "Use VULKAN WITH GLFW" ON)
 
 ###############################################################################
 # HBUI
@@ -102,7 +115,7 @@ message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 
 target_compile_definitions(HBUI PUBLIC HBUI_VERSION="${PROJECT_VERSION}")#
 
-if (HBUI_GLFW)
+if (HBUI_GLFW_VULKAN)
   add_subdirectory(../ImVK ${CMAKE_BINARY_DIR}/ImVK)
   target_link_libraries(HBUI PRIVATE ImVk)
 endif ()
