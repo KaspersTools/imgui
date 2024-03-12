@@ -17,147 +17,179 @@
 #include "Fonts/IconsNerdFont.h"
 
 namespace HBUI {
-	HBUI_API std::string wchar32ToUtf8(const ImWchar &wchar);
+  HBUI_API std::string wchar32ToUtf8(const ImWchar &wchar);
 
-	HBUI_API HBContext *getCurrentContext();
+  HBUI_API HBContext *getCurrentContext();
 
-	HBUI_API HBContext *initialize(const std::string &title,
-	                               int width, int height,
-	                               int HBBackendWindowFlags = 0);
+  HBUI_API HBContext *initialize(const std::string &title,
+                                 int width, int height,
+                                 int HBBackendWindowFlags = 0);
 
-	HBUI_API void afterBackendInitialized();
+  HBUI_API void afterBackendInitialized();
 
-	HBUI_API HBIO &getIO();
+  //---------------------------------------------------------------------------------
+  // [SECTION] Context
+  //---------------------------------------------------------------------------------
 
-	//---------------------------------------------------------------------------------
-	// [SECTION] Main Window
-	//---------------------------------------------------------------------------------
-	HBUI_API ImGuiWindow *getMainImGuiWindow();
+  //---------------------------------------------------------------------------------
+  // [SECTION] IO
+  //---------------------------------------------------------------------------------
+  HBUI_API HBIO  &getIO();
+  HBUI_API ImVec2 getMousePos();
 
-	//(imgui fullscreen) Window
-	HBUI_API ImVec2 getMainWindowSize();
-	HBUI_API ImVec2 getMainWindowPos();
-	HBUI_API float getMainWindowDpiScale();
-	HBUI_API ImVec2 getMainWindowDpiScaleFactor();
+  //---------------------------------------------------------------------------------
+  // [SECTION] Main Window
+  //---------------------------------------------------------------------------------
 
-	//(backend) Window
-	//(backend) Window
-	HBUI_API ImVec2 getNativeWindowPos();
-	HBUI_API ImVec2 getNativeWindowSize();
-	HBUI_API ImColor& getNativeWindowClearColor();
-	HBUI_API void setNativeWindowClearColor(const ImColor &color);
+  //(imgui fullscreen) Window
+  HBUI_API ImVec2 getMainWindowSize();
+  HBUI_API ImVec2 getMainWindowPos();
+  HBUI_API float  getMainWindowDpiScale();
+  HBUI_API ImVec2 getMainWindowDpiScaleFactor();
 
-	//ImGui Viewports
-	HBUI_API ImGuiViewport *getCurrentViewport();
-	HBUI_API ImGuiViewport *getMainViewport();
+  //(backend) Window
+  //(backend) Window
+  HBUI_API ImVec2   getNativeWindowPos();
+  HBUI_API ImVec2   getNativeWindowSize();
+  HBUI_API ImColor &getNativeWindowClearColor();
+  HBUI_API void     setNativeWindowClearColor(const ImColor &color);
 
-	HBUI_API ImVec2 getViewportPos(ImGuiViewport *viewport);
-	HBUI_API ImVec2 getMainViewportPos();
-	HBUI_API ImVec2 getMainViewportSize();
-	HBUI_API ImVec2 getCurrentViewportPos();
+  //ImGui Viewports
+  HBUI_API ImGuiViewport *getCurrentViewport();
+  HBUI_API ImGuiViewport *getMainViewport();
 
-	//---------------------------------------------------------------------------------
-	// [SECTION] Cursor
-	//---------------------------------------------------------------------------------
-	HBUI_API ImVec2 getCursorPos();
-	HBUI_API ImVec2 getCursorScreenPos();
-	//todo:	HBUI_API ImVec2 getCursorScreenPos(ImGuiViewport *viewport);
+  HBUI_API ImVec2 getViewportPos(ImGuiViewport *viewport);
+  HBUI_API ImVec2 getMainViewportPos();
+  HBUI_API ImVec2 getMainViewportSize();
+  HBUI_API ImVec2 getCurrentViewportPos();
 
-	HBUI_API ImVec2 getContentRegionMaxMainWindow();
-	HBUI_API ImVec2 getContentRegionAvailMainWindow();
-	//todo: HBUI_API ImVec2 getContentRegionAvail(ImGuiViewport *viewport);
+  //---------------------------------------------------------------------------------
+  // [SECTION] Cursor
+  //---------------------------------------------------------------------------------
+  HBUI_API ImVec2 getMainWindowCursorPos();
+  HBUI_API ImVec2 getMainWindowCursorScreenPos();
+  //todo:	HBUI_API ImVec2 getMainWindowCursorScreenPos(ImGuiViewport *viewport);
 
-	HBUI_API HBLayoutType_ getCurrentLayout();
-	HBUI_API void setLayout(HBLayoutType_ layoutType);
+  HBUI_API ImVec2 getContentRegionMaxMainWindow();
+  HBUI_API ImVec2 getContentRegionAvailMainWindow();
+  //todo: HBUI_API ImVec2 getContentRegionAvail(ImGuiViewport *viewport);
 
-	//---------------------------------------------------------------------------------
-	// [SECTION] Helpers
-	//---------------------------------------------------------------------------------
-	HBUI_API HBUIBaseType_ typeToBaseType(HBUIType_ type);
+  HBUI_API HBLayoutType_ getCurrentLayout();
+  HBUI_API void          setLayout(HBLayoutType_ layoutType);
 
-	//---------------------------------------------------------------------------------
-	// [SECTION] Widgets
-	//---------------------------------------------------------------------------------
-	HBUI_API void beginDockSpaceWindow(const std::string &id,
-	                                   const ImVec2 &position  = {0, 0},
-	                                   const ImVec2 &size      = {0, 0},
-	                                   const ImVec2 &cursorPos = {0, 0});
-	HBUI_API void endDockSpaceWindow();
+  //---------------------------------------------------------------------------------
+  // [SECTION] Helpers
+  //---------------------------------------------------------------------------------
+  HBUI_API HBUIBaseType_ typeToBaseType(HBUIType_ type);
+  HBUI_API bool          aabb(const ImVec2 &min1, const ImVec2 &max1, const ImVec2 &min2, const ImVec2 &max2);
 
-	HBUI_API bool beginFullScreenDockSpaceWindow(const std::string &id,
-	                                    const ImVec2 &position  = {0, 0},
-	                                    const ImVec2 &size      = {0, 0},
-	                                    const ImVec2 &cursorPos = {0, 0});
+  //---------------------------------------------------------------------------------
+  // [SECTION] Helpers/Positioning
+  //---------------------------------------------------------------------------------
+  HBUI_API ImVec2 getCenteredPosition(const ImVec2 &size, const ImVec2 &parentSize);
 
-	HBUI_API void endFullScreenDockSpaceWindow();
+  //---------------------------------------------------------------------------------
+  // [SECTION] Debugger
+  //---------------------------------------------------------------------------------
+  HBUI_API void showWidgetDebugWindow(bool *p_open);
+  HBUI_API void addWidgetToDebugList(HBIWidget *widget, ImGuiID parentID = -1);
 
-	//---------------------------------------------------------------------------------
-	// [SECTION] Windows/Panels
-	//---------------------------------------------------------------------------------
+  //---------------------------------------------------------------------------------
+  // [SECTION] Widgets
+  //---------------------------------------------------------------------------------
+  HBUI_API bool beginFullScreenWindow(
+      std::string        label,
+      HBUIWindowFlags    windowFlags = HBUIWindowFlags_None,
+      HBStyleFlags       styleFlags  = HBStyleFlags_None,
+      Windows::HBWindow *window      = nullptr);
+  HBUI_API bool beginWindow(std::string        label,
+                            ImGuiID            id               = -1,
+                            HBUIWindowFlags    flags            = HBUIWindowFlags_None,
+                            ImGuiWindowFlags   imguiWindowFlags = ImGuiWindowFlags_None,
+                            const ImVec2      &size             = {0, 0},
+                            const ImVec2      &localPos         = {0, 0},
+                            HBDirection_       direction        = HBDirection_TopToBottom,
+                            const ImVec2      &startCursorPos   = {0, 0},
+                            HBStyleFlags       styleFlags       = HBStyleFlags_None,
+                            Windows::HBWindow *window           = nullptr);
 
-	HBUI_API bool beginFlexPanel(const std::string &id,
-	                             const ImVec2 &position  = {0, 0},
-	                             const ImVec2 &size      = {0, 0},
-	                             const ImVec2 &cursorPos = {0, 0});
-	HBUI_API void endFlexPanel();
-
-	//---------------------------------------------------------------------------------
-	// [SECTION] Side And Menu Bars
-	//---------------------------------------------------------------------------------
-	HBUI_API bool beginSideBar(const std::string &id);
-	IMGUI_API void endSideBar();
-
-	IMGUI_API bool sideBarBarButton(const ImGuiID id, const ImWchar label,
-	                                const ImVec2 &position  = {0, 0},
-	                                const ImVec2 &size      = {0, 0},
-	                                const float fontSize    = ImGui::GetFontSize(),
-	                                const ImVec2 &cursorPos = {0, 0},
-	                                const ImVec4 padding    = {0, 0, 0, 0},
-	                                const ImVec4 margin     = {0, 0, 0, 0},
-	                                ImFont *font            = nullptr);
-	IMGUI_API bool sideBarBarButton(const ImGuiID id, const std::string &label,
-	                                const ImVec2 &position  = {0, 0},
-	                                const ImVec2 &size      = {0, 0},
-	                                const float fontSize    = ImGui::GetFontSize(),
-	                                const ImVec2 &cursorPos = {0, 0},
-	                                const ImVec4 padding    = {0, 0, 0, 0},
-	                                const ImVec4 margin     = {0, 0, 0, 0},
-	                                ImFont *font            = nullptr);
-
-	//---------------------------------------------------------------------------------
-	// [SECTION] Sample/Debug Windows
-	//---------------------------------------------------------------------------------
-	HBUI_API void showDebugWindow(bool *p_open);
-
-	//---------------------------------------------------------------------------------
-	// [SECTION] Updating
-	//---------------------------------------------------------------------------------
-	HBUI_API void update(float deltatime);
-
-	//---------------------------------------------------------------------------------
-	// [SECTION] Rendering
-	//---------------------------------------------------------------------------------
-	HBUI_API void startFrame();
-	HBUI_API void endFrame();
-	HBUI_API bool wantToClose();
-	HBUI_API void shutdown();
-
-	//---------------------------------------------------------------------------------
-	// [SECTION] Input
-	//---------------------------------------------------------------------------------
+  HBUI_API bool beginWindow(std::string        label,
+                            const ImVec2      &position         = ImVec2(0, 0),
+                            HBUIWindowFlags    windowFlags      = HBUIWindowFlags_None,
+                            HBStyleFlags       styleFlags       = HBStyleFlags_None,
+                            ImGuiWindowFlags   imguiWindowFlags = ImGuiWindowFlags_None,
+                            HBDirection_       cursorDirection  = HBDirection_TopToBottom,
+                            const ImVec2      &size             = ImVec2(0, 0),
+                            const ImVec2      &cursorPos        = ImVec2(0, 0),
+                            ImGuiID            id               = -1,
+                            Windows::HBWindow *window           = nullptr);
 
 
-	//---------------------------------------------------------------------------------
-	// [SECTION] Flags
-	//---------------------------------------------------------------------------------
-	HBUI_API bool isFlagSet(int *flags, int flag);
+  HBUI_API bool beginFullScreenDockSpaceWindow(const std::string &id,
+                                               const ImVec2      &position  = {0, 0},
+                                               const ImVec2      &cursorPos = {0, 0});
+  HBUI_API void endFullScreenDockSpaceWindow();
 
-	//---------------------------------------------------------------------------------
-	// [SECTION] Fonts
-	//---------------------------------------------------------------------------------
-	HBUI_API float getWindowSizeDpiScaleFactor();
-	HBUI_API float getFontSizeIncreaseFactor();
-	HBUI_API ImVec2 getWindowScaleFactor();
-	HBUI_API ImFont *getBigFont();
+  //---------------------------------------------------------------------------------
+  // [SECTION] Windows/Panels
+  //---------------------------------------------------------------------------------
+  HBUI_API bool beginFlexPanel(const std::string &id,
+                               const ImVec2      &position  = {0, 0},
+                               const ImVec2      &size      = {0, 0},
+                               const ImVec2      &cursorPos = {0, 0});
+  HBUI_API void endFlexPanel();
+
+  //---------------------------------------------------------------------------------
+  // [SECTION] Side And Menu Bars
+  //---------------------------------------------------------------------------------
+  HBUI_API void beginTaskBar(const std::string &label, const ImVec2 &size = ImVec2(0, 0));
+  HBUI_API void endTaskBar();
+
+  //---------------------------------------------------------------------------------
+  // [SECTION] Buttons
+  //---------------------------------------------------------------------------------
+  HBUI_API bool textButton(std::string label, const ImVec2 &size = {0, 0});
+
+
+  //---------------------------------------------------------------------------------
+  // [SECTION] Sample/Debug Windows
+  //---------------------------------------------------------------------------------
+  HBUI_API void showDebugWindow(bool *p_open);
+
+  //---------------------------------------------------------------------------------
+  // [SECTION] Updating
+  //---------------------------------------------------------------------------------
+  HBUI_API void update(float deltatime);
+
+  //---------------------------------------------------------------------------------
+  // [SECTION] Rendering
+  //---------------------------------------------------------------------------------
+  HBUI_API void startFrame();
+  HBUI_API void endFrame();
+  HBUI_API bool wantToClose();
+  HBUI_API void shutdown();
+
+  //---------------------------------------------------------------------------------
+  // [SECTION] Input
+  //---------------------------------------------------------------------------------
+
+
+  //---------------------------------------------------------------------------------
+  // [SECTION] Styles
+  //---------------------------------------------------------------------------------
+  HBUI_API HBStyle &getStyle();
+
+  //---------------------------------------------------------------------------------
+  // [SECTION] Flags
+  //---------------------------------------------------------------------------------
+  HBUI_API bool isFlagSet(int *flags, int flag);
+
+  //---------------------------------------------------------------------------------
+  // [SECTION] Fonts
+  //---------------------------------------------------------------------------------
+  HBUI_API float   getWindowSizeDpiScaleFactor();
+  HBUI_API float   getFontSizeIncreaseFactor();
+  HBUI_API ImVec2  getWindowScaleFactor();
+  HBUI_API ImFont *getBigFont();
 
 }// namespace HBUI

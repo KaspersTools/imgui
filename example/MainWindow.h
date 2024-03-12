@@ -31,25 +31,29 @@ class MainWindow {
 	void shutdown();
 
 	private:
-	bool showDebugWindow   = true;
+	bool showHBUIDebugWidgets = true;
+
 	bool showDemoWindow    = true;
 //	bool withMenuBar       = true;
 //	bool withDockSpace     = true;
-
-	bool m_DrawVerticalSideBar = true;
-	bool m_DrawHorizontalSideBar = true;
-
-	ImVec4 m_PaddingButtons = {10,10,10,10};
-	ImVec4 m_ButtonMargin   = {4,4,4,4};
-
-	ImVec4 m_PaddingVerticalBar   = {0, 0, 0, 0};
-	ImVec4 m_PaddingHorizontalBar = {0, 0, 0, 0};
-	ImVec4 m_MarginVerticalBar    = {0, 0, 0, 0};
-	ImVec4 m_MarginHorizontalBar  = {0, 0, 0, 0};
-
+//
+//	bool m_DrawVerticalSideBar = true;
+//	bool m_DrawHorizontalSideBar = true;
+//
+//	ImVec4 m_PaddingButtons = {10,10,10,10};
+//	ImVec4 m_ButtonMargin   = {4,4,4,4};
+//
+//	ImVec4 m_PaddingVerticalBar   = {0, 0, 0, 0};
+//	ImVec4 m_PaddingHorizontalBar = {0, 0, 0, 0};
+//	ImVec4 m_MarginVerticalBar    = {0, 0, 0, 0};
+//	ImVec4 m_MarginHorizontalBar  = {0, 0, 0, 0};
+//
+  float m_VerticalBarWidth   = 20;
 	ImVec4 m_ColorVerticalBar   = {0,0,0,0};
+  float m_HorizontalBarHeight = 20;
 	ImVec4 m_ColorHorizontalBar = {0,0,0,0};
 
+  ImVec2 m_ButtonSize = {0,0};
 
 };
 

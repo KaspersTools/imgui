@@ -24,7 +24,19 @@
 #endif
 
 #ifndef IM_VEC4_CLASS_EXTRA
-#define IM_VEC4_CLASS_EXTRA
+#define IM_VEC4_CLASS_EXTRA                                      \
+  bool operator>(const ImVec4 &rhs) const {        \
+    return x > rhs.x && y > rhs.y && z > rhs.z && w > rhs.w;     \
+  }                                                              \
+  bool operator<(const ImVec4 &rhs) const {        \
+    return x < rhs.x && y < rhs.y && z < rhs.z && w < rhs.w;     \
+  }                                                              \
+  bool operator>=(const ImVec4 &rhs) const {       \
+    return x >= rhs.x && y >= rhs.y && z >= rhs.z && w >= rhs.w; \
+  }                                                              \
+  bool operator<=(const ImVec4 &rhs) const {       \
+    return x <= rhs.x && y <= rhs.y && z <= rhs.z && w <= rhs.w; \
+  }
 #endif
 #define IMGUI_USE_WCHAR32
 ////#ifndef IMGUI_INCLUDE_IMGUI_USER_INL
@@ -153,16 +165,15 @@
 #endif
 
 #ifndef IM_VEC2_CLASS_EXTRA
-#define IM_VEC2_CLASS_EXTRA \
-ImVec2 HalfSize() const { return ImVec2(x / 2, y / 2); } \
-ImVec2 DoubleSize() const { return ImVec2(x * 2, y * 2); }
+#define IM_VEC2_CLASS_EXTRA                                \
+  ImVec2 HalfSize() const { return ImVec2(x / 2, y / 2); } \
+  ImVec2 DoubleSize() const { return ImVec2(x * 2, y * 2); }
 #endif
 
 #ifndef IM_VEC4_CLASS_EXTRA
 #define IM_VEC4_CLASS_EXTRA
 #endif
-#define IMGUI_DISABLE_WIN32_DEFAULT_CLIPBOARD_FUNCTIONS   // [Win32] Don't implement default clipboard handler. Won't use and link with OpenClipboard/GetClipboardData/CloseClipboard etc. (user32.lib/.a, kernel32.lib/.a)
-#define IMGUI_ENABLE_WIN32_DEFAULT_IME_FUNCTIONS          // [Win32] [Default with Visual Studio] Implement default IME handler (require imm32.lib/.a, auto-link for Visual Studio, -limm32 on command-line for MinGW)
-#define IMGUI_DISABLE_WIN32_DEFAULT_IME_FUNCTIONS         // [Win32] [Default with non-Visual Studio compilers] Don't implement default IME handler (won't require imm32.lib/.a)
-#define IMGUI_DISABLE_WIN32_FUNCTIONS                     // [Win32] Won't use and link with any Win32 function (clipboard, IME).
-
+#define IMGUI_DISABLE_WIN32_DEFAULT_CLIPBOARD_FUNCTIONS// [Win32] Don't implement default clipboard handler. Won't use and link with OpenClipboard/GetClipboardData/CloseClipboard etc. (user32.lib/.a, kernel32.lib/.a)
+#define IMGUI_ENABLE_WIN32_DEFAULT_IME_FUNCTIONS       // [Win32] [Default with Visual Studio] Implement default IME handler (require imm32.lib/.a, auto-link for Visual Studio, -limm32 on command-line for MinGW)
+#define IMGUI_DISABLE_WIN32_DEFAULT_IME_FUNCTIONS      // [Win32] [Default with non-Visual Studio compilers] Don't implement default IME handler (won't require imm32.lib/.a)
+#define IMGUI_DISABLE_WIN32_FUNCTIONS                  // [Win32] Won't use and link with any Win32 function (clipboard, IME).

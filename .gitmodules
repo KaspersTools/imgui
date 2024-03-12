@@ -1,0 +1,3 @@
+[submodule "HBUI/vendor/magic_enum"]
+	path = HBUI/vendor/magic_enum
+	url = git@github.com:Neargye/magic_enum.git

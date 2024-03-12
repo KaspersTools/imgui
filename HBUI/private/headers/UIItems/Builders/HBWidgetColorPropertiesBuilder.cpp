@@ -4,75 +4,79 @@
 
 //clang-format off
 #include "HBWidgetColorPropertiesBuilder.h"
+
+#include <HBUI/HBUI.h>
 #include <memory>
 
 //clang-format on
-namespace HBUI {
-	namespace Builder {
-		[[maybe_unused]] HBWidgetColorPropertiesBuilder &HBWidgetColorPropertiesBuilder::fromImGuiStyle(HBUIType_ type,
-		                                                                                                const HBDrawFlags_ drawLocation,
-		                                                                                                const HBColorPropertiesFlags flags,
 
-		                                                                                                const ImColor &backgroundColor,
-		                                                                                                const ImColor &borderColor,
-		                                                                                                const ImColor &hoverColor) {
-			//set color based on imgui style
-			switch (type) {
-				case HBUIType_None:
-					IM_ASSERT(false && "HBUIType_None is not a valid type");
-					break;
-				case HBUIType_SideBar:
-					//this->setBackgroundColor(ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg));
-					//this->setDrawLocation(HBDrawFlags_OnParent);
-					break;
-				case HBUIType_SideBarButton:
-				case HBUIType_Button:
-					//this->setDrawLocation(HBDrawFlags_OnParent);
-					//this->setBackgroundColor(ImGui::GetStyleColorVec4(ImGuiCol_Button));
-					//this->setHoverColor(ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
-					break;
-				case HBUIType_DockSpaceWindow:
-					//this->setDrawLocation(HBDrawFlags_OnParent);
-					//this->setBackgroundColor(ImGui::GetStyleColorVec4(ImGuiCol_DockingEmptyBg));
-					break;
-				default:
-					IM_ASSERT(false && "HBUIType not implemented");
-					break;
-			}
+namespace HBUI::Builder {
+  HBWidgetColorPropertiesBuilder &HBWidgetColorPropertiesBuilder::setBackgroundFromImGuiStyle(HBUIType_ type) {
+    IM_ASSERT(type != HBUIType_None && "HBUIType_None is not a valid type");
+    bool setColorToImGui = false;
+    if (m_ColorProperties->m_BackgroundColor.Value <= ImVec4(0, 0, 0, 0)) {
+      setColorToImGui = true;
+    }
 
-			//check flags
-			const bool noBackground = ((flags & HBColorPropertiesFlags_NoBackground) != 0);
-			const bool noBorder     = ((flags & HBColorPropertiesFlags_NoBorder) != 0);
-			const bool noHover      = ((flags & HBColorPropertiesFlags_NoHover) != 0);
+    if (m_ColorProperties->m_BackgroundColor.Value == ImVec4(-1, -1, -1, -1)) {
+      setColorToImGui = true;
+    }
 
-			if (noBackground) {
-				this->setWithBackground(false);
-			}
-			if (backgroundColor.Value != ImVec4(-1, -1, -1, -1)) {
-				this->setBackgroundColor(backgroundColor);
-			}
+    this->setUseImGui(setColorToImGui);
 
-			if (noBorder) {
-				this->setWithBorder(false);
-			}
-			if (borderColor.Value != ImVec4(-1, -1, -1, -1)) {
-				this->setBorderColor(ImGui::GetStyleColorVec4(ImGuiCol_Border));
-			}
+    switch (type) {
+      case HBUIType_TaskBar: {
+        this->setBackgroundImGuiSource(ImGuiCol_MenuBarBg);
+        break;
+      }
+      case HBUIType_SideBarButton:
+      case HBUIType_Button: {
+        this->setBackgroundImGuiSource(ImGuiCol_Button);
+        break;
+      }
+      case HBUIType_Window:
+        this->setBackgroundImGuiSource(ImGuiCol_WindowBg);
+        break;
+      case HBUIType_None://will never reach this because of the assert
+        break;
+    }
+    return *this;
+  }
 
-			if (noHover) {
-				this->setHoverColor(ImColor(-1, -1, -1, -1));
-			}
-			if (hoverColor.Value != ImVec4(-1, -1, -1, -1)) {
-				this->setHoverColor(hoverColor);
-			}
+  HBWidgetColorPropertiesBuilder &HBWidgetColorPropertiesBuilder::fromImGuiStyle(HBUIType_      type,
+                                                                                 const ImColor &backgroundColor,
+                                                                                 const ImColor &textColor,
+                                                                                 const ImColor &borderColor,
+                                                                                 const ImColor &hoverColor) {
+    IM_ASSERT(type != HBUIType_None && "HBUIType_None is not a valid type");
 
-			return *this;
-		}
+    this->setTextColor(textColor);
+    this->setBackgroundColor(backgroundColor);
+    this->setBorderColor(borderColor);
+    this->setHoverColor(hoverColor);
 
-		HBUI::Properties::WidgetColorProperties *HBWidgetColorPropertiesBuilder::build() {
-			HBUI::Properties::WidgetColorProperties* properties = m_ColorProperties;
-			m_ColorProperties = nullptr;
-			return properties;
-		}
-	}// namespace Builder
-}// namespace HBUI
+    //set color based on imgui style
+    setBackgroundFromImGuiStyle(type);
+
+    if (textColor.Value > ImVec4(-1, -1, -1, -1)) {
+      this->setTextColor(ImGui::GetStyleColorVec4(ImGuiCol_Text));
+    }
+
+    if (hoverColor.Value <= ImVec4(0, 0, 0, 0)) {
+      this->setHoverColor(ImGui::GetStyleColorVec4(ImGuiCol_ButtonHovered));
+    }
+    if (borderColor.Value == ImVec4(-1, -1, -1, -1)) {
+      this->setBorderColor(ImGui::GetStyleColorVec4(ImGuiCol_Border));
+    }
+
+
+    return *this;
+  }
+
+  HBUI::Properties::WidgetColorProperties *HBWidgetColorPropertiesBuilder::build() {
+    HBUI::Properties::WidgetColorProperties *properties = m_ColorProperties;
+
+    m_ColorProperties = nullptr;
+    return properties;
+  }
+}// namespace HBUI::Builder

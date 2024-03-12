@@ -13,7 +13,6 @@
 #include <imgui_internal.h>
 #include <map>
 #include <optional>
-#include <windows.h>
 
 #define GLFW_INCLUDE_NONE  // GLFW including its own vulkan will break the build
 #define GLFW_INCLUDE_VULKAN// GLFW including its own vulkan will break the build
@@ -566,10 +565,10 @@ namespace HBUI::Backend {
 		ImDrawData *main_draw_data   = ImGui::GetDrawData();
 		const bool main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
 
-		wd->ClearValue.color.float32[0] = window.clearColor.Value.x * window.clearColor.Value.w;
-		wd->ClearValue.color.float32[1] = window.clearColor.Value.y * window.clearColor.Value.w;
-		wd->ClearValue.color.float32[2] = window.clearColor.Value.z * window.clearColor.Value.w;
-		wd->ClearValue.color.float32[3] = window.clearColor.Value.w;
+		wd->ClearValue.color.float32[0] = window.ClearColor.Value.x * window.ClearColor.Value.w;
+		wd->ClearValue.color.float32[1] = window.ClearColor.Value.y * window.ClearColor.Value.w;
+		wd->ClearValue.color.float32[2] = window.ClearColor.Value.z * window.ClearColor.Value.w;
+		wd->ClearValue.color.float32[3] = window.ClearColor.Value.w;
 
 		if (!main_is_minimized)
 			FrameRender(wd, main_draw_data);
@@ -719,6 +718,10 @@ namespace HBUI::Backend {
 		glfwGetWindowContentScale((GLFWwindow *) g_ImVKData->window, &xScale, &y_scale);
 		return ImVec2(xScale, y_scale);
 	}
+
+  const char* getLabel(){
+    return glfwGetWindowTitle(g_ImVKData->window);
+  }
 }// namespace HBUI::Backend
 
 
@@ -742,3 +745,6 @@ float HBUI::Backend::getFontSizeIncreaseFactor() {
 	return 1.f;
 }
 #endif
+
+
+

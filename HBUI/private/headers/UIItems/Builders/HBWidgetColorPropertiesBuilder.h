@@ -7,60 +7,61 @@
 
 #include "UIItems/Properties/HBWidgetColorProperties.h"
 
-namespace HBUI {
 
-	namespace Builder {
+namespace HBUI::Builder {
 
-		class HBWidgetColorPropertiesBuilder {
+  class HBWidgetColorPropertiesBuilder {
 
-	private:
-			HBUI::Properties::WidgetColorProperties *m_ColorProperties = nullptr;
+  private:
+    HBUI::Properties::WidgetColorProperties *m_ColorProperties = nullptr;
 
-	public:
-			HBWidgetColorPropertiesBuilder(){
-				m_ColorProperties = new HBUI::Properties::WidgetColorProperties();
-			}
+  public:
+    HBWidgetColorPropertiesBuilder() {
+      m_ColorProperties = new HBUI::Properties::WidgetColorProperties();
+    }
 
-			~HBWidgetColorPropertiesBuilder() {
-				delete m_ColorProperties;
-			}
+    ~HBWidgetColorPropertiesBuilder() {
+      delete m_ColorProperties;
+    }
 
-			HBWidgetColorPropertiesBuilder &setBackgroundColor(const ImColor &color) {
-				m_ColorProperties->m_BackgroundColor = color;
-				return *this;
-			}
+    HBWidgetColorPropertiesBuilder &setBackgroundColor(const ImColor &color) {
+      m_ColorProperties->m_BackgroundColor = color;
+      return *this;
+    }
 
-			HBWidgetColorPropertiesBuilder &setTextColor(const ImColor &color) {
-				m_ColorProperties->m_TextColor = color;
-				return *this;
-			}
+    HBWidgetColorPropertiesBuilder &setTextColor(const ImColor &color) {
+      m_ColorProperties->m_TextColor = color;
+      return *this;
+    }
 
-			HBWidgetColorPropertiesBuilder &setBorderColor(const ImColor &color) {
-				m_ColorProperties->m_BorderColor = color;
-				return *this;
-			}
+    HBWidgetColorPropertiesBuilder &setBorderColor(const ImColor &color) {
+      m_ColorProperties->m_BorderColor = color;
+      return *this;
+    }
 
-			HBWidgetColorPropertiesBuilder &setHoverColor(const ImColor &color) {
-				m_ColorProperties->m_HoverColor = color;
-				return *this;
-			}
+    HBWidgetColorPropertiesBuilder &setHoverColor(const ImColor &color) {
+      m_ColorProperties->m_HoverColor = color;
+      return *this;
+    }
 
-			HBWidgetColorPropertiesBuilder &setWithBackground(const bool withBackground) {
-				m_ColorProperties->m_WithBackground = withBackground;
-				return *this;
-			}
+    HBWidgetColorPropertiesBuilder &setUseImGui(bool useImGui) {
+      m_ColorProperties->m_UseImGui = useImGui;
+      return *this;
+    }
 
-			HBWidgetColorPropertiesBuilder &setWithBorder(const bool withBorder) {
-				m_ColorProperties->m_WithBorder = withBorder;
-				return *this;
-			};
+    HBWidgetColorPropertiesBuilder&setBackgroundImGuiTarget(ImGuiCol_ column) {
+      m_ColorProperties->m_BackgroundColorTarget = column;
+      return *this;
+    }
 
-			HBWidgetColorPropertiesBuilder &setDrawLocation(const HBDrawFlags_ drawLocation) {
-				m_ColorProperties->m_DrawLocation = drawLocation;
-				return *this;
-			}
+    HBWidgetColorPropertiesBuilder &setBackgroundImGuiSource(ImGuiCol_ column) {
+      m_ColorProperties->m_BackgroundColumnSource = column;
+      return *this;
+    }
 
-			/**
+    HBWidgetColorPropertiesBuilder &setBackgroundFromImGuiStyle(HBUIType_ type);
+
+    /**
 			 * @brief sets the color properties based on the imgui style
 			 * @param type 	the type of the widget
 			 * @param drawLocation	the draw location of the widget (default is HBDrawLocation_None), set this to some other value to overwrite
@@ -76,16 +77,15 @@ namespace HBUI {
 			 * will be used.
 			 * @return HBWidgetColorPropertiesBuilder& 	the builder
 			 */
-			HBWidgetColorPropertiesBuilder &fromImGuiStyle(HBUIType_ type,
-			                                                  const HBDrawFlags_ drawLocation    = HBDrawFlags_None,
-			                                                  const HBColorPropertiesFlags flags = HBColorPropertiesFlags_Default,
-			                                                  const ImColor &backgroundColor     = ImColor(-1, -1, -1, -1),
-			                                                  const ImColor &borderColor         = ImColor(-1, -1, -1, -1),
-			                                                  const ImColor &hoverColor          = ImColor(-1, -1, -1, -1));
+    HBWidgetColorPropertiesBuilder &fromImGuiStyle(HBUIType_      type,
+                                                   const ImColor &backgroundColor = ImColor(-1, -1, -1, -1),
+                                                   const ImColor &textColor       = ImColor(-1, -1, -1, -1),
+                                                   const ImColor &borderColor     = ImColor(-1, -1, -1, -1),
+                                                   const ImColor &hoverColor      = ImColor(-1, -1, -1, -1));
 
-			HBUI::Properties::WidgetColorProperties *build();
-		};
-	}// namespace Builder
-}// namespace HBUI
+    HBUI::Properties::WidgetColorProperties *build();
+  };
+}// namespace HBUI::Builder
+
 
 #endif//IMGUI_HBWIDGETCOLORPROPERTIESBUILDER_H

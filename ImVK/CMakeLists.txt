@@ -15,10 +15,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     target_compile_definitions(ImVk PUBLIC _GLFW_WIN32 VK_USE_PLATFORM_WIN32_KHR)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     target_compile_definitions(ImVk PUBLIC _GLFW_X11 VK_USE_PLATFORM_XCB_KHR)
-else ()
-    message(FATAL_ERROR "Unsupported platform: ${CMAKE_SYSTEM_NAME}")
-endif ()
-
+endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(ImVk PRIVATE

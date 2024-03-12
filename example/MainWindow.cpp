@@ -6,166 +6,136 @@
 #include <HBUI/HBUI.h>
 
 void MainWindow::init() {
-	HBUI::initialize("Hello, World!", 1280, 720, HBBackendWindowFlags_NoTitleBar);
+  HBUI::initialize("Hello, World!", 1280, 720);
 
-	m_ColorVerticalBar = m_ColorHorizontalBar = ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg);
+  m_ColorVerticalBar = m_ColorHorizontalBar = ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg);
 
-	run();
+  run();
 }
 
 bool MainWindow::run() {
-	while (!HBUI::wantToClose()) {
-		render();
-	}
-	return true;
+  while (!HBUI::wantToClose()) {
+    render();
+  }
+  return true;
 }
 
 
 void MainWindow::render() {
-	HBUI::startFrame();
+  HBUI::startFrame();
 
-	//	static bool drawMultiRowSideBar = false;
-	//	static bool drawIconSideBar     = true;
-	//sidebars
-	//	{
-	//SIDE BAR FLAGS
-	//		ImGuiID id                  = ImGui::GetID("SideBar01");               //id
-	//		HBSideBarFlags sideBarFlags =                                          //Side bar specific flags
-	//		    HBSideBarFlags_Vertical |                                          //Vertical = direction
-	//		    HBSizeFlags_FillAvailableSpace;                                           //full size = take the full screen width/height from the satart pos
-	//		ImVec2 position       = {0, 0};                                        //start position
-	//		ImVec2 size           = {0, 0};                                        //size -> 0,0 means in combination with the flags it will resize to the children
-	//		ImVec2 cursorPos      = {0, 0};                                        //cursorStartPos
-	//		ImVec4 padding        = m_PaddingVerticalBar;                          //padding
-	//		ImVec4 margin         = m_MarginVerticalBar;                           //margin
-	//		std::string label     = "SideBar01";                                   //label
-	//		HBItemFlags itemFlags = HBItemFlags_ResizeChildrenToBiggestChild;      //itemFlags = shared item flags, that cn be used
-	//		                                                                       // on every widget
-	//		HBDrawLocation drawLocationFlags = HBDrawFlags_MainImguiWindowDrawlist;//drawLocationFlag = where to draw the side bar
-	//		if(m_DrawVerticalSideBar) {
-	//			//Vertical side bar
-	//			if (HBUI::beginSideBar(
-	//			        id,
-	//			        m_ColorVerticalBar,
-	//			        sideBarFlags,
-	//			        position,
-	//			        size,
-	//			        cursorPos,
-	//			        padding,
-	//			        margin,
-	//			        label,
-	//			        itemFlags,
-	//			        drawLocationFlags)) {
-	//
-	//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-	//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-	//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-	//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-	//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-	//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-	//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-	//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-	//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-	//
-	//				HBUI::endSideBar();
-	//			}
-	//		}
-	//		if(m_DrawHorizontalSideBar) {
-	//			//horizontal side bar
-	//			ImGuiID horId = ImGui::GetID("SideBar02");//id
-	//			sideBarFlags  = HBSizeFlags_FillAvailableSpace;              //full size = take the full screen width/height from the satart pos
-	//			position = {0, 0};                        //start position
-	//			label    = "SideBar02";                   //label
-	//			margin   = m_MarginHorizontalBar;         //margin
-	//			padding  = m_PaddingHorizontalBar;        //padding
-	//
-	//			if (HBUI::beginSideBar(
-	//			        horId,
-	//			        m_ColorHorizontalBar,
-	//			        sideBarFlags,
-	//			        position,
-	//			        size,
-	//			        cursorPos,
-	//			        padding,
-	//			        margin,
-	//			        label,
-	//			        itemFlags,
-	//			        drawLocationFlags)) {
-	//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-	//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-	//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-	//				HBUI::sideBarBarButton(ImGui::GetID("BTN1"), NF_ICON_github, {0, 0}, {0, 0}, 42, {0, 0}, m_PaddingButtons, m_ButtonMargin);
-	//
-	//				HBUI::endSideBar();
-	//			}
-	//		}
-	//	}
+  std::map<std::string, ImGuiMenuColumns> m_MenuColumns = {};
 
-	ImGui::Begin("Side Bar(s) Settings");
-	if (ImGui::CollapsingHeader("Native window")) {
-		ImGui::SeparatorText("Style");
-		ImGui::ColorEdit3("Native Window Clear Color 1", &HBUI::getNativeWindowClearColor().Value.x);
-	}
+  HBUI::beginTaskBar("HorizontalTaskBar", {0, 0});
+  HBUI::textButton("Button1");
+  HBUI::textButton("Button2");
+  HBUI::endTaskBar();
+  ImGui::Begin("ImGuiData", nullptr, ImGuiWindowFlags_MenuBar);
+  {
+    m_MenuColumns["MenuColumns_0"] = ImGui::GetCurrentWindow()->DC.MenuColumns;
+    ImGui::BeginMenuBar();
+    {
+      m_MenuColumns["MenuColumns_1"] = ImGui::GetCurrentWindow()->DC.MenuColumns;
+      if (ImGui::BeginMenu("File")) {
+        if (ImGui::MenuItem("Open", "Ctrl+O")) {
 
-	if (ImGui::CollapsingHeader("Side Bar(s)")) {
-		ImGui::BeginChild("SideBarSettings", ImVec2(0, 0), true);
-		ImGui::SeparatorText("Side Bar(s) ");
-		ImGui::Checkbox("Draw Vertical Side Bar", &m_DrawVerticalSideBar);
-		ImGui::Checkbox("Draw Horizontal Side Bar", &m_DrawHorizontalSideBar);
+        }
+        if (ImGui::MenuItem("Save", "Ctrl+S")) {
 
-		ImGui::SeparatorText("Colors and drawing ");
-		ImGui::Text("Side bar Vertical");
-		//	ImGui::ColorPicker4("Color Vertical", (float *) &m_ColorVerticalBar);
+        }
+        if (ImGui::MenuItem("Close", "Ctrl+W")) {
+        }
+        ImGui::EndMenu();
+      }
+      if (ImGui::BeginMenu("Edit")) {
+        m_MenuColumns["MenuColumns_2"] = ImGui::GetCurrentWindow()->DC.MenuColumns;
+        if (ImGui::MenuItem("Undo", "Ctrl+Z")) {
+          }
+        if (ImGui::MenuItem("Redo", "Ctrl+Y", false, false)) {
+          // Do stuff
+        }
+        ImGui::EndMenu();
+      }
+      if (ImGui::BeginMenu("View")) {
+        if (ImGui::MenuItem("Show Demo Window", "", &showDemoWindow)) {
+          // Do stuff
+        }
+        if (ImGui::MenuItem("Show HBUI Debug Widgets", "", &showHBUIDebugWidgets)) {
+          // Do stuff
+        }
+        ImGui::EndMenu();
+      }
+      if (ImGui::BeginMenu("Help")) {
+        if (ImGui::MenuItem("About", "")) {
+          // Do stuff
+        }
+        ImGui::EndMenu();
+      }
+    }
+    ImGui::EndMenuBar();
+  }
 
-		ImGui::Separator();
-		ImGui::Text("Side bar Vertical");
-		//	ImGui::ColorPicker4("Color Horizontal", (float *) &m_ColorHorizontalBar);
+  for (auto &menuColumn : m_MenuColumns) {
+    ImGui::SeparatorText( menuColumn.first.c_str());
 
-		ImGui::SeparatorText("padding ");
-		ImGui::Text("Side bar Vertical");
-		ImGui::DragFloat("Left Padding Vertical", &m_PaddingVerticalBar.x, 1.0f, 0.0f, 100.0f);
-		ImGui::DragFloat("Top Padding Vertical", &m_PaddingVerticalBar.y, 1.0f, 0.0f, 100.0f);
-		ImGui::DragFloat("Right Padding Vertical", &m_PaddingVerticalBar.z, 1.0f, 0.0f, 100.0f);
-		ImGui::DragFloat("Bottom Padding Vertical", &m_PaddingVerticalBar.w, 1.0f, 0.0f, 100.0f);
-		ImGui::Separator();
-		ImGui::Text("Side bar Horizontal");
-		ImGui::DragFloat("Left Padding Horizontal", &m_PaddingHorizontalBar.x, 1.0f, 0.0f, 100.0f);
-		ImGui::DragFloat("Top Padding Horizontal", &m_PaddingHorizontalBar.y, 1.0f, 0.0f, 100.0f);
-		ImGui::DragFloat("Right Padding Horizontal", &m_PaddingHorizontalBar.z, 1.0f, 0.0f, 100.0f);
-		ImGui::DragFloat("Bottom Padding Horizontal", &m_PaddingHorizontalBar.w, 1.0f, 0.0f, 100.0f);
+    ImGui::Text("NextTotalWidth %u", menuColumn.second.NextTotalWidth);
+    ImGui::Text("Spacing %u", menuColumn.second.Spacing);
+    ImGui::Text("OffsetIcon %u", menuColumn.second.OffsetIcon);         // Always zero for now
+    ImGui::Text("OffsetLabel %u", menuColumn.second.OffsetLabel);        // Offsets are locked in Update()
+    ImGui::Text("OffsetShortcut %u", menuColumn.second.OffsetShortcut);
+    ImGui::Text("OffsetMark %u", menuColumn.second.OffsetMark);
 
-		ImGui::EndChild();
+    for (int i = 0; i < 4; i++)
+      ImGui::Text("Widths %i = %u", i, menuColumn.second.Widths[i]);
+  }
+  ImGui::End();
 
-		ImGui::BeginChild("Buttons", ImVec2(0, 0), true);
-		ImGui::SeparatorText("Margin");
-		ImGui::Text("Side bar Vertical");
-		ImGui::DragFloat("Left Button Margin", &m_ButtonMargin.x, 1.0f, 0.0f, 100.0f);
-		ImGui::DragFloat("Top Button Margin", &m_ButtonMargin.y, 1.0f, 0.0f, 100.0f);
-		ImGui::DragFloat("Right Button Margin", &m_ButtonMargin.z, 1.0f, 0.0f, 100.0f);
-		ImGui::DragFloat("Bottom Button Margin", &m_ButtonMargin.w, 1.0f, 0.0f, 100.0f);
+  ImGui::Begin("HBUI Settings");
+  {
+    if (ImGui::CollapsingHeader("Native window")) {
+      ImGui::ColorEdit3("Native Window Clear Color 1", &HBUI::getNativeWindowClearColor().Value.x);
+    }
 
-		ImGui::SeparatorText("Padding");
-		ImGui::Text("Side bar Vertical");
-		ImGui::DragFloat("Left Button Padding", &m_PaddingButtons.x, 1.0f, 0.0f, 100.0f);
-		ImGui::DragFloat("Top Button Padding", &m_PaddingButtons.y, 1.0f, 0.0f, 100.0f);
-		ImGui::DragFloat("Right Button Padding", &m_PaddingButtons.z, 1.0f, 0.0f, 100.0f);
-		ImGui::DragFloat("Bottom Button Padding", &m_PaddingButtons.w, 1.0f, 0.0f, 100.0f);
-		ImGui::EndChild();
-	}
-	ImGui::End();
+    if (ImGui::CollapsingHeader("HBUI Widgets")) {
+      if (ImGui::CollapsingHeader("TaskBars")) {
+        if (ImGui::TreeNode("Horizontal TaskBar")) {
+          ImGui::SliderFloat("Horizontal Bar Height", &m_HorizontalBarHeight, 0, 100);
+          ImGui::ColorEdit3("Color Horizontal Bar", &m_ColorHorizontalBar.x);
+          ImGui::TreePop();
+        }
+        if (ImGui::TreeNode("Vertical TaskBar")) {
+          ImGui::SliderFloat("Vertical Bar Width", &m_VerticalBarWidth, 0, 100);
+          ImGui::ColorEdit3("Color Vertical Bar", &m_ColorVerticalBar.x);
+          ImGui::TreePop();
+        }
+      }
+    }
 
-	ImVec2 size = HBUI::getContentRegionAvailMainWindow();
-	ImVec2 pos  = HBUI::getCursorScreenPos();
+    if (ImGui::CollapsingHeader("ImGui Widgets")) {
+      if (ImGui::TreeNode("Style")) {
+        ImGui::ShowStyleEditor();
+        ImGui::TreePop();
+      }
+    }
 
-	HBUI::getMainImGuiWindow()->DrawList->AddRect(pos, {pos.x + size.x, pos.y + size.y}, IM_COL32(255, 0, 0, 255));
-#ifdef HBUI_WITH_DEBUG_WINDOW
-	//only call this function at the end of a frame.
-	HBUI::showDebugWindow(&showDebugWindow);
-#endif
-	ImGui::ShowDemoWindow(&showDemoWindow);
-	HBUI::endFrame();
+
+    if (ImGui::CollapsingHeader("Test Widgets")) {
+      ImGui::Text("textt");
+      ImGui::Button("button");
+      ImGui::SliderFloat2("button size", &m_ButtonSize.x, 0, 100);
+      ImGui::Button("button2", m_ButtonSize);
+      ImGui::Button("Button With Elipsis", m_ButtonSize);
+    }
+
+    ImGui::End();
+  }
+
+  ImGui::ShowDemoWindow(&showDemoWindow);
+  HBUI::showWidgetDebugWindow(&showHBUIDebugWidgets);
+
+  HBUI::endFrame();
 }
 
 void MainWindow::shutdown() {
-	HBUI::shutdown();
+  HBUI::shutdown();
 }

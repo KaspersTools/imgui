@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.27.8)
 project(imgui VERSION 1.0.0
         LANGUAGES CXX C)
 
-
 set(CMAKE_CXX_STANDARD 23 CACHE STRING "The C++ standard whose features are requested.")
 set(CMAKE_CXX_STANDARD_REQUIRED ON CACHE BOOL "The C++ standard is required.")
 set(CMAKE_CXX_EXTENSIONS ON CACHE BOOL "When C++ is enabled, this flag is passed to the compiler.")

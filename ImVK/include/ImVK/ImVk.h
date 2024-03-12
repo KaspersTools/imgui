@@ -30,10 +30,10 @@ namespace HBUI {
 		IMVK_IMPL_API ImVec2 getWindowFrameSize();
 		IMVK_IMPL_API float getMonitorHeight();
 		IMVK_IMPL_API float getMonitorWidth();
-		IMVK_IMPL_API void shutdownBackend();
 		IMVK_IMPL_API void setBackendWindowFlags(HBBackendWindowFlags flags);
 		IMVK_IMPL_API float getWindowSizeDPIScaleFactor();
 		IMVK_IMPL_API float getFontSizeIncreaseFactor();
 		IMVK_IMPL_API ImVec2 getWindowScaleFactor();
+    IMVK_IMPL_API const char* getLabel();
 		}// namespace Backend
 }// namespace HBUI
