@@ -31,6 +31,13 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GN
     )
 endif ()
 
+#check if linux and set cmake -B build -D GLFW_USE_WAYLAND=1
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    if (GLFW_USE_WAYLAND)
+        target_compile_definitions(ImVk PUBLIC _GLFW_WAYLAND VK_USE_PLATFORM_WAYLAND_KHR)
+    endif ()
+endif ()
+
 # Make list of include directories
 list(APPEND ImVk_PUBLIC_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include)
 list(APPEND ImVk_PRIVATE_INCLUDE_DIRS

@@ -24,9 +24,9 @@ namespace HBUI {
 		IMVK_IMPL_API bool isMaximizedBackend();
 		IMVK_IMPL_API void setWindowShouldCloseBackend();
 		IMVK_IMPL_API bool getWindowShouldCloseBackend();
-		IMVK_IMPL_API ImVec2 getWindowSize();
+		IMVK_IMPL_API const ImVec2 getWindowSize();
 		IMVK_IMPL_API ImVec2 getWindowPosition();
-		IMVK_IMPL_API ImVec2 getMonitorSize();
+		IMVK_IMPL_API const ImVec2 getMonitorSize();
 		IMVK_IMPL_API ImVec2 getWindowFrameSize();
 		IMVK_IMPL_API float getMonitorHeight();
 		IMVK_IMPL_API float getMonitorWidth();

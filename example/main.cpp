@@ -2,8 +2,7 @@
 
 // Main code
 int main(int, char **) {
-	MainWindow *window = new MainWindow();
+	auto *window = new MainWindow();
 	window->run();
-
 	delete window;
 }

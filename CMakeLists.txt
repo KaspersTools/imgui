@@ -1,5 +1,5 @@
 ################################################################################
-cmake_minimum_required(VERSION 3.27.8)
+cmake_minimum_required(VERSION 3.15.0)
 project(imgui VERSION 1.0.0
         LANGUAGES CXX C)
 
@@ -18,7 +18,6 @@ endif ()
 if (NOT DEFINED CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE PATH "Single Directory for all static libraries.")
 endif ()
-
 
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -47,4 +46,6 @@ if(HBUI_BUILD_EXAMPLE)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/example/ ${CMAKE_BINARY_DIR}/example)
     target_link_libraries(ImVk-example PRIVATE HBUI)
 endif()
+
+MESSAGE(STATUS "CMAKE_CXX_FLAGS: " ${CMAKE_CXX_FLAGS})
 

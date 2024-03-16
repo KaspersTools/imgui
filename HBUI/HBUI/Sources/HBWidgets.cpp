@@ -66,13 +66,14 @@ namespace HBUI {
     getCurrentContext()->endCurrentWidget();
   }
 
-  bool textButton(std::string label, const ImVec2 &size) {
-    bool clicked = true;
-
-    auto *button = new HBUI::Buttons::HBButton(std::move(label), HBButtonType_Text, ImVec2(0, 0), size);
+  HBButtonState_ textButton(std::string label, const ImVec2 &size, const ImVec2 &localPos, HBMouseButtons_ interactButton) {
+    auto *button  = new HBUI::Buttons::HBButton(std::move(label), HBButtonType_Text, interactButton,
+                                                localPos, size);
 
     setCurrentAppendingWidget(button);
     getCurrentContext()->endCurrentWidget();
+
+    return HBButtonState_None;
   }
 
   bool beginFullScreenWindow(std::string              label,

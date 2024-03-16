@@ -74,7 +74,7 @@ static void check_vk_result(VkResult err) {
 		abort();
 }
 
-#define APP_USE_VULKAN_DEBUG_REPORT
+//#define APP_USE_VULKAN_DEBUG_REPORT
 #ifdef APP_USE_VULKAN_DEBUG_REPORT
 static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objectType, uint64_t object, size_t location, int32_t messageCode, const char *pLayerPrefix, const char *pMessage, void *pUserData) {
 	(void) flags;
@@ -594,13 +594,13 @@ namespace HBUI::Backend {
 		return glfwWindowShouldClose(g_ImVKData->window);
 	}
 
-	IMVK_IMPL_API ImVec2 getWindowSize() {
+	IMVK_IMPL_API const ImVec2 getWindowSize() {
 		int width, height;
 		glfwGetWindowSize(g_ImVKData->window, &width, &height);
 		return ImVec2(width, height);
 	}
 
-	IMVK_IMPL_API ImVec2 getWindowPosition() {
+	IMVK_IMPL_API ImVec2 getWindowPosition(){
 		int x, y;
 		glfwGetWindowPos(g_ImVKData->window, &x, &y);
 		return ImVec2(x, y);
@@ -612,7 +612,7 @@ namespace HBUI::Backend {
 		return {(float) width, (float) height};
 	}
 
-	IMVK_IMPL_API ImVec2 getMonitorSize() {
+	IMVK_IMPL_API const ImVec2 getMonitorSize() {
 		GLFWmonitor *monitor = glfwGetPrimaryMonitor();
 		if (monitor == nullptr) {
 			return {0, 0};

@@ -20,7 +20,6 @@ namespace HBUI {
   HBUI_API std::string wchar32ToUtf8(const ImWchar &wchar);
 
   HBUI_API HBContext *getCurrentContext();
-
   HBUI_API HBContext *initialize(const std::string &title,
                                  int width, int height,
                                  int HBBackendWindowFlags = 0);
@@ -36,32 +35,33 @@ namespace HBUI {
   //---------------------------------------------------------------------------------
   HBUI_API HBIO  &getIO();
   HBUI_API ImVec2 getMousePos();
+  HBUI_API bool   isMouseButtonDown(HBMouseButtons_ button);
 
   //---------------------------------------------------------------------------------
   // [SECTION] Main Window
   //---------------------------------------------------------------------------------
 
   //(imgui fullscreen) Window
-  HBUI_API ImVec2 getMainWindowSize();
-  HBUI_API ImVec2 getMainWindowPos();
-  HBUI_API float  getMainWindowDpiScale();
-  HBUI_API ImVec2 getMainWindowDpiScaleFactor();
+  HBUI_API const ImVec2 &getMainWindowSize();
+  HBUI_API const ImVec2 &getMainWindowPos();
+  HBUI_API const ImVec2 &getMainWindowDpiScaleFactor();
+  HBUI_API float         getMainWindowDpiScale();
 
   //(backend) Window
   //(backend) Window
-  HBUI_API ImVec2   getNativeWindowPos();
-  HBUI_API ImVec2   getNativeWindowSize();
-  HBUI_API ImColor &getNativeWindowClearColor();
-  HBUI_API void     setNativeWindowClearColor(const ImColor &color);
+  HBUI_API const ImVec2 &getNativeWindowPos();
+  HBUI_API const ImVec2 &getNativeWindowSize();
+  HBUI_API ImColor      &getNativeWindowClearColor();
+  HBUI_API void          setNativeWindowClearColor(const ImColor &color);
 
   //ImGui Viewports
   HBUI_API ImGuiViewport *getCurrentViewport();
   HBUI_API ImGuiViewport *getMainViewport();
 
-  HBUI_API ImVec2 getViewportPos(ImGuiViewport *viewport);
-  HBUI_API ImVec2 getMainViewportPos();
-  HBUI_API ImVec2 getMainViewportSize();
-  HBUI_API ImVec2 getCurrentViewportPos();
+  HBUI_API ImVec2        getViewportPos(ImGuiViewport *viewport);
+  HBUI_API ImVec2        getMainViewportPos();
+  HBUI_API const ImVec2 &getMainViewportSize();
+  HBUI_API ImVec2        getCurrentViewportPos();
 
   //---------------------------------------------------------------------------------
   // [SECTION] Cursor
@@ -82,6 +82,7 @@ namespace HBUI {
   //---------------------------------------------------------------------------------
   HBUI_API HBUIBaseType_ typeToBaseType(HBUIType_ type);
   HBUI_API bool          aabb(const ImVec2 &min1, const ImVec2 &max1, const ImVec2 &min2, const ImVec2 &max2);
+  HBUI_API bool          containsPoint(const ImVec2 &min, const ImVec2 &max, const ImVec2 &point);
 
   //---------------------------------------------------------------------------------
   // [SECTION] Helpers/Positioning
@@ -148,9 +149,13 @@ namespace HBUI {
   //---------------------------------------------------------------------------------
   // [SECTION] Buttons
   //---------------------------------------------------------------------------------
-  HBUI_API bool textButton(std::string label, const ImVec2 &size = {0, 0});
+  HBUI_API HBButtonState_ textButton(std::string     label,
+                                     const ImVec2   &size           = {0, 0},
+                                     const ImVec2   &localPos       = {0, 0},
+                                     HBMouseButtons_ interactButton = HBMouseButtons_Left);
 
-
+  HBUI_API void           setButtonState(ImGuiID id, HBButtonState_ state);
+  HBUI_API HBButtonState_ getButtonState(ImGuiID id);
   //---------------------------------------------------------------------------------
   // [SECTION] Sample/Debug Windows
   //---------------------------------------------------------------------------------

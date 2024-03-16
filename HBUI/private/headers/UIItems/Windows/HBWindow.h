@@ -152,7 +152,7 @@ namespace HBUI::Windows {
       ImGuiViewport *viewport = ImGui::GetMainViewport();
       ImGui::SetNextWindowViewport(viewport->ID);
 
-        ImGui::SetNextWindowPos(getScreenPos());
+      ImGui::SetNextWindowPos(getScreenPos());
       ImVec2 tempSize = calculateSize();
       ImGui::SetNextWindowSize(tempSize);
 
@@ -209,7 +209,7 @@ namespace HBUI::Windows {
     }
 
   public:
-    ImVec2 getScreenPos() override;
+    [[nodiscard]] ImVec2 getScreenPos() const override;
 
 
   public:

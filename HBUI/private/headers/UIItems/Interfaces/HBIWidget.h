@@ -67,7 +67,7 @@ namespace HBUI {
       return m_Pos;
     }
 
-    [[nodiscard]] const ImVec2& getCursorPos() const {
+    [[nodiscard]] const ImVec2 &getCursorPos() const {
       return getCursorPos(m_Direction);
     }
 
@@ -102,10 +102,10 @@ namespace HBUI {
     }
 
     [[nodiscard]] const ImVec2 &getInputSize() const {
-      return c_InputSize;
+      return m_InputSize;
     }
 
-    [[nodiscard]] HBIWidget *getParent() {
+    [[nodiscard]] HBIWidget *getParent() const {
       return p_ParentWidget;
     }
 
@@ -114,7 +114,7 @@ namespace HBUI {
     }
 
     [[nodiscard]] const bool &hasSetPos() const {
-      return c_HasSetPos;
+      return m_HasSetPos;
     }
 
     [[nodiscard]] bool hasBegun() const {
@@ -125,11 +125,11 @@ namespace HBUI {
       return m_IsEnded;
     }
 
-    virtual ImVec2 calculateSize();
+    [[nodiscard]] virtual ImVec2 calculateSize() const;
 #pragma clang diagnostic push
 #pragma ide diagnostic   ignored "NullDereference"
 #pragma ide diagnostic   ignored "misc-no-recursion"
-    virtual ImVec2 getScreenPos();
+    [[nodiscard]] virtual ImVec2 getScreenPos() const;
 #pragma clang diagnostic pop
 
   protected:
@@ -180,14 +180,15 @@ namespace HBUI {
     const HBUIType_   c_Type = HBUIType_None;//Type of the widget
     const ImGuiID     c_ID;                  //ID of the widget
     const bool        c_CanBeOwnParent;      //If the widget can be its own parent
-    const ImVec2      c_InputSize;           //Size of the widget
     const std::string c_Label;               //Label of the widget
-    const bool        c_HasSetPos;           //If the widget has a set position
-    const bool        c_HasSetSize;          //If the widget has a set size
+
+    bool   m_HasSetSize;              //If the widget has a set size
+    bool   m_HasSetPos;               //If the widget has a set position
+    ImVec2 m_Pos       = ImVec2(0, 0);//Local Position of the widget
+    ImVec2 m_InputSize = ImVec2(0, 0);//Size of the widget
 
     HBDirection_ m_Direction;//Direction in which the children are placed, also the grow direction
 
-    ImVec2 m_Pos                  = ImVec2(0, 0);//Local Position of the widget
     ImVec2 m_StartCursorPos       = ImVec2(0, 0);//Local Position of the cursor
     ImVec2 m_CursorPos            = ImVec2(0, 0);//Local Position of the cursor
     ImVec2 m_BottomToTopCursorPos = ImVec2(0, 0);//Local Position of the cursor

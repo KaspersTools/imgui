@@ -278,6 +278,12 @@ struct HBTime {
   }
 };
 
+enum HBMouseButtons_ : int {
+  HBMouseButtons_Left = 0,
+  HBMouseButtons_Right,
+  HBMouseButtons_Middle,
+  HBMouseButtons_COUNT
+};
 /**
  * @brief The IO struct
  */
@@ -290,7 +296,8 @@ struct HBIO {
   float dpiWindowSizeFactor = 1.0f;
   float fontRenderingScale  = 1.0f;
 
-  ImVec2 mousePos = ImVec2(-1, -1);
+  ImVec2 mousePos                        = ImVec2(-1, -1);
+  bool   mouseDown[HBMouseButtons_COUNT] = {false, false, false};
 };
 
 template<typename T>
@@ -299,6 +306,7 @@ struct HBAnimProps;
 namespace HBUI {
   class HBWidgetManager;
   namespace Debuggers {
+
     struct widgetDebugData {
       HBUIType_    c_Type = HBUIType_None;
       ImGuiID      c_ID;
@@ -368,7 +376,7 @@ struct HBContext {
 public:
   bool initialized      = false;
   bool startFrameCalled = false;
-  bool endFrameCalled   = true; //initialized as true so that the first frame can start
+  bool endFrameCalled   = true;//initialized as true so that the first frame can start
 
   HBIO   io   = {};
   HBTime time = {};
@@ -385,27 +393,23 @@ public:
   HBUI::Fonts::FontLoader        *fontLoader    = nullptr;
 
   //States
-  std::vector<ImGuiID> activeButtons = {};
+  std::map<ImGuiID, HBButtonState_> buttonStates;
 
   // clang-format off
   std::string mainWindowTitle;
   HBStyleFlags mainWindowStyleFlags =
         HBStyleFlags_StretchHorizontal
       | HBStyleFlags_StretchVertical
-//      | HBStyleFlags_NoBackground
       | HBStyleFlags_NoBorder
-//      | HBStyleFlags_CanHover
       ;
   HBUIWindowFlags mainWindowFlags =
       HBUIWindowFlags_MainWindow
       | HBUIWindowFlags_HasTaskBar
       | HBUIWindowFlags_HasDock
       | HBUIWindowFlags_NoOuterBorders
-//      | HBUIWindowFlags_HasMenuBar
       ;
 
   ImGuiWindowFlags imGuiMainWindowFlags =
-//      ImGuiWindowFlags_NoBackground
         ImGuiWindowFlags_NoDocking
       | ImGuiWindowFlags_NoTitleBar
       | ImGuiWindowFlags_NoCollapse
@@ -418,7 +422,7 @@ public:
   // clang-format on
 
 private:
-  HBUI::Windows::HBWindow *mainWindow          = nullptr;//used as fallback window is the same size as the native window worksize
+  HBUI::Windows::HBWindow *mainWindow = nullptr;//used as fallback window is the same size as the native window worksize
 
 public:
   //Debugger
@@ -430,13 +434,12 @@ public:
   void afterBackendInitialized();
 
   void startFrame();
+  void endFrame();
 
-  void endFrame() const;
+  HBButtonState_ getButtonState(ImGuiID id);
 
-  bool isActiveButton(const ImGuiID id) const;
-
-  [[nodiscard]] HBUI::Windows::HBWindow& getMainWindow() const;
-  [[maybe_unused]] void setMainWindowAsCurrent();
+  [[nodiscard]] HBUI::Windows::HBWindow &getMainWindow() const;
+  [[maybe_unused]] void                  setMainWindowAsCurrent();
 
   [[maybe_unused]] void startWidget(HBUI::HBIWidget *widget);
   [[maybe_unused]] void endCurrentWidget();

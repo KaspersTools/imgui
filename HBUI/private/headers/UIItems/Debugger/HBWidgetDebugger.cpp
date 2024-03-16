@@ -87,7 +87,7 @@ namespace HBUI::Debuggers {
     data.c_Type                 = widget->c_Type;
     data.c_ID                   = widget->c_ID;
     data.c_CanBeOwnParent       = widget->c_CanBeOwnParent;
-    data.c_InputSize            = widget->c_InputSize;
+    data.c_InputSize            = widget->m_InputSize;
     data.c_Label                = widget->c_Label;
     data.m_Pos                  = widget->m_Pos;
     data.m_StartCursorPos       = widget->m_StartCursorPos;

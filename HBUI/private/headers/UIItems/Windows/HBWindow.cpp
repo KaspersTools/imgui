@@ -20,18 +20,12 @@ namespace HBUI {
         drawBase();
       }
     }
-
-    ImVec2 HBWindow::getScreenPos() {
-      if(windowFlagSet(HBUIWindowFlags_MainWindow)) {
-        m_ScreenPos = HBUI::getNativeWindowPos();
+    ImVec2 HBWindow::getScreenPos() const {
+      if(m_Flags &HBUIWindowFlags_MainWindow){
+        return ImGui::GetMainViewport()->Pos;
       }else{
-        if(getPos() == ImVec2(0, 0)) {
-          return m_ScreenPos;
-        }
-
-        m_ScreenPos =  getParent()->getScreenPos() + getPos();
+        return HBIWidget::getScreenPos();
       }
-      return m_ScreenPos;
     }
   }// namespace Windows
 }// namespace HBUI

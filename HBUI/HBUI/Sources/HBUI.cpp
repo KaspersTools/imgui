@@ -48,7 +48,7 @@ void HBContext::afterBackendInitialized() {
       ImGuiID(99999),
       mainWindowFlags,
       imGuiMainWindowFlags,
-      ImVec2(0, 0),
+      {0, 0},
       ImVec2(0, 0),
       HBDirection_TopToBottom,
       ImVec2(0, 0),
@@ -65,23 +65,31 @@ void HBContext::startFrame() {
   IM_ASSERT(initialized && "HBContext::startFrame() called before HBContext::initialize()");
 
   //todo: do this in the backend
-  io.mousePos = ImGui::GetMousePos();
+  io.mousePos     = ImGui::GetIO().MousePos;
+  io.mouseDown[0] = ImGui::GetIO().MouseDown[0];
+  io.mouseDown[1] = ImGui::GetIO().MouseDown[1];
+  io.mouseDown[2] = ImGui::GetIO().MouseDown[2];
+
+  auto   viewport          = ImGui::GetMainViewport();
+  ImVec2 size              = viewport->Size;
+  mainWindow->m_InputSize  = size;
+  mainWindow->m_HasSetSize = true;
 
   mainWindow->begin();
   animManager->startFrame();
 }
 
-void HBContext::endFrame() const {
+void HBContext::endFrame() {
   IM_ASSERT(initialized && "HBContext::endFrame() called before HBContext::initialize()");
   animManager->endFrame();
   mainWindow->end();
+  buttonStates.clear();
 }
 
-bool HBContext::isActiveButton(const ImGuiID id) const {
-  if (std::find(activeButtons.begin(), activeButtons.end(), id) != activeButtons.end()) {
-    return true;
-  }
-  return false;
+HBButtonState_ HBContext::getButtonState(ImGuiID id) {
+  IM_ASSERT(initialized && "HBContext::getCurrentState() called before HBContext::initialize()");
+  HBButtonState_ state = buttonStates[id];
+  return state;
 }
 
 HBUI::Windows::HBWindow &HBContext::getMainWindow() const {
@@ -92,6 +100,7 @@ HBUI::Windows::HBWindow &HBContext::getMainWindow() const {
 [[maybe_unused]] void HBContext::setMainWindowAsCurrent() {
   currentAppingWindow = mainWindow;
 }
+
 [[maybe_unused]] void HBContext::startWidget(HBUI::HBIWidget *widget) {
   IM_ASSERT(widget != nullptr && "Widget is nullptr");
   IM_ASSERT(!widget->hasBegun() && "Widget has already been begun");
@@ -101,6 +110,7 @@ HBUI::Windows::HBWindow &HBContext::getMainWindow() const {
   widget->begin();
 }
 
+//[[maybe_unused]] void
 [[maybe_unused]] void HBContext::endCurrentWidget() {
   IM_ASSERT(currentAppingWindow != nullptr && "Current appending window is nullptr");
   IM_ASSERT(currentAppingWindow != mainWindow && "Cannot end main window");
@@ -186,24 +196,42 @@ namespace HBUI {
     return g_HBUICTX->io.mousePos;
   }
 
+  bool isMouseButtonDown(HBMouseButtons_ button) {
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    IM_ASSERT((button >= 0 && button < HBMouseButtons_COUNT) && "Invalid mouse button");
+    return g_HBUICTX->io.mouseDown[button];
+  }
+
+  HBButtonState_ getButtonState(ImGuiID id) {
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    IM_ASSERT(g_HBUICTX->buttonStates.find(id) != g_HBUICTX->buttonStates.end() && "Button state not found");
+
+    return g_HBUICTX->getButtonState(id);
+  }
+
+  void setButtonState(ImGuiID id, HBButtonState_ state) {
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    g_HBUICTX->buttonStates[id] = state;
+  }
+
   //-------------------------------------
   // [SECTION] Main Window
   //-------------------------------------
-  HBUI_API ImGuiViewport *getCurrentViewport() {
+  ImGuiViewport *getCurrentViewport() {
     return ImGui::GetCurrentContext()->CurrentViewport;
   }
-  HBUI_API ImGuiViewport *getMainViewport() {
+  ImGuiViewport *getMainViewport() {
     return ImGui::GetMainViewport();
   }
 
-  HBUI_API ImVec2 getNativeWindowSize() {
+  const ImVec2 &getNativeWindowSize() {
     return Backend::getWindowSize();
   }
-  HBUI_API ImVec2 getViewportSize(ImGuiViewport *viewport) {
+  ImVec2 getViewportSize(ImGuiViewport *viewport) {
     IM_ASSERT(viewport != nullptr && "HBUI::getViewportSize() but viewport is null");
     return viewport->Size;
   }
-  HBUI_API ImVec2 getMainViewportSize() {
+  const ImVec2 &getMainViewportSize() {
     return getViewportSize(ImGui::GetMainViewport());
   }
 
@@ -211,12 +239,12 @@ namespace HBUI {
    * @brief Get the main window position
    * @return ImVec2 position of the main window in local coordinates
    */
-  ImVec2 getMainWindowPos() {
+  const ImVec2 &getMainWindowPos() {
     return HBUI::getCurrentContext()->getMainWindow().getPos();
   }
 
   //native window
-  ImVec2 getNativeWindowPos() {
+  const ImVec2 &getNativeWindowPos() {
     return Backend::getWindowPosition();
   }
 
@@ -388,6 +416,10 @@ namespace HBUI {
 
   bool aabb(const ImVec2 &min1, const ImVec2 &max1, const ImVec2 &min2, const ImVec2 &max2) {
     return (min1.x < max2.x && max1.x > min2.x) && (min1.y < max2.y && max1.y > min2.y);
+  }
+
+  bool containsPoint(const ImVec2 &min, const ImVec2 &max, const ImVec2 &point) {
+    return (point.x > min.x && point.x < max.x) && (point.y > min.y && point.y < max.y);
   }
 
   /**

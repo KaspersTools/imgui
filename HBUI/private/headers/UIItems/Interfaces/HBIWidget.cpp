@@ -52,9 +52,9 @@ HBUI::HBIWidget::HBIWidget(
       c_Type(type),
       c_CanBeOwnParent(canBeOwnParent),
       c_Label(std::move(label)),
-      c_InputSize(size),
-      c_HasSetPos(localPos != ImVec2(0, 0)),
-      c_HasSetSize(size != ImVec2(0, 0)),
+      m_InputSize(size),
+      m_HasSetPos(localPos != ImVec2(0, 0)),
+      m_HasSetSize(size != ImVec2(0, 0)),
       m_Pos(localPos),
       m_StyleFlags(styleFlags),
       m_Direction(direction),
@@ -100,7 +100,7 @@ ImVec2 HBUI::HBIWidget::appendChild(HBUI::HBIWidget *child) {
       break;
     }
     case HBDirection_RightToLeft: {
-      m_RightToLeftCursorPos -= ImVec2(childSize.x, 0) - ImVec2(4, 0) ;
+      m_RightToLeftCursorPos -= ImVec2(childSize.x, 0) - ImVec2(4, 0);
       m_CursorPos = m_RightToLeftCursorPos;
 
 
@@ -130,7 +130,12 @@ ImVec2 HBUI::HBIWidget::appendChild(HBUI::HBIWidget *child) {
   ImGui::SetCursorPos(m_CursorPos);
   return getCursorPos();
 }
-ImVec2 HBUI::HBIWidget::calculateSize() {
+
+ImVec2 HBUI::HBIWidget::calculateSize() const { // NOLINT(*-no-recursion)
+  if(m_HasSetSize){
+    return m_InputSize;
+  }
+
   float totalWidth  = 0;
   float totalHeight = 0;
 
@@ -174,9 +179,15 @@ ImVec2 HBUI::HBIWidget::calculateSize() {
 
   return {totalWidth, totalHeight};
 }
-ImVec2 HBUI::HBIWidget::getScreenPos() {
-  IM_ASSERT(p_ParentWidget != nullptr && "Parent widget is nullptr");
-  return p_ParentWidget->getScreenPos() + getPos();
+
+ImVec2 HBUI::HBIWidget::getScreenPos() const {
+
+  if (p_ParentWidget == nullptr) {
+    return getPos();
+  }
+  //fixme: this is not correct, this is now called recursively
+  ImVec2 screenPos = p_ParentWidget->getScreenPos() + getPos();
+  return screenPos;
 }
 
 bool HBUI::HBIWidget::begin() {

@@ -25,6 +25,8 @@ namespace HBUI {
 
     private:
       std::map<ImGuiID, widgetDebugData> m_Widgets;
+      ImVec2 mousePos;
+//      std::map<ImGuiID, buttonDebugData> m_Buttons;
     };
 
   }// namespace Debuggers
