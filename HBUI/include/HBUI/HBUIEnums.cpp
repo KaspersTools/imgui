@@ -4,6 +4,7 @@
 #include "imgui.h"
 #include <map>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 //forward declartions
@@ -11,6 +12,7 @@ struct ImGuiWindow;
 //-----------------------------------------------------------------------------
 // [SECTION] Enums
 //-----------------------------------------------------------------------------
+
 //-----------------------------------------------------------------------------
 // [SECTION] Backend Window
 //-----------------------------------------------------------------------------
@@ -125,13 +127,36 @@ enum HBUIType_ : int {
   HBUIType_Window,
 };
 
+//-----------------------------------------------------------------------------
+// [SECTION] Fonts
+//-----------------------------------------------------------------------------
+typedef int HBLoadFontFlags;
+enum HBLoadFontFlags_ : int {
+  HBLoadFontFlags_None = 0,
+  HBLoadFontFlags_LoadDefaultFonts,
+  HBLoadFontFlags_LoadDefaultIcons,
+  HBLoadFontFlags_LoadDefaultTextGlyphs,
+  HBLoadFontFlags_ActivateFont
+};
 
+typedef int HBActivateFontFlags;
+enum HBActivateFontFlags_ : int {
+  HBActivateFontFlags_None = 0,
+  HBActivateFontFlags_LoadIfNotFound,
+};
 //-----------------------------------------------------------------------------
 // [SECTION] Structs
 //-----------------------------------------------------------------------------
 struct HBPlatformWindowData {
   ImColor ClearColor = ImColor(0, 0, 0, 255);
 };
+
+
+//-----------------------------------------------------------------------------
+// [SECTION] Fonts
+//-----------------------------------------------------------------------------
+
+
 /**
  * @brief The padding of a UI element
  */
@@ -284,6 +309,7 @@ enum HBMouseButtons_ : int {
   HBMouseButtons_Middle,
   HBMouseButtons_COUNT
 };
+
 /**
  * @brief The IO struct
  */
@@ -327,10 +353,6 @@ namespace HBUI {
       HBStyleFlags m_StyleFlags;
 
       ImGuiID m_ParentID = -1;
-
-      std::map<ImGuiID, widgetDebugData> m_Children;
-
-      void addChild(ImGuiID parent, const widgetDebugData &child);
     };
     class HBWidgetDebugger;
   }// namespace Debuggers
@@ -338,6 +360,7 @@ namespace HBUI {
 
   namespace Fonts {
     class FontLoader;
+    struct HBIcon;
   }
 
   namespace Animation {
@@ -356,15 +379,24 @@ namespace HBUI {
 //-----------------------------------------------------------------------------
 // [SECTION] Style
 //-----------------------------------------------------------------------------
-enum HBCol_ {
-  HBCol_Count
-};
+//enum HBCol_ {
+//  HBCol_Count
+//};
 struct HBStyle {
-  //sizes====
-  //--buttons--
-  ImVec2 IconButtonSize = ImVec2(42, 42);
+//  ImVec2 FramePadding = getFramePadding();
 
-  ImVec4 Colors[HBCol_Count];
+  ImVec2 IconSize        = ImVec2(16, 16);
+  ImVec2 TaskBarIconSize = ImVec2(55, 55);
+  ImVec2 getFramePadding() {
+    //    if (_framePadding != ImVec2(0, 0)) {
+    //      return _framePadding;
+    //    }
+    ImGuiStyle *style = &ImGui::GetStyle();
+    return {style->FramePadding.x, style->FramePadding.y};
+  }
+private:
+//  ImVec2 _framePadding = ImVec2(0, 0);
+
 };
 
 //-----------------------------------------------------------------------------
@@ -375,13 +407,14 @@ struct HBContext {
 
 public:
   bool initialized      = false;
+  bool firstFrameCalled = false;
   bool startFrameCalled = false;
   bool endFrameCalled   = true;//initialized as true so that the first frame can start
 
   HBIO   io   = {};
   HBTime time = {};
 
-  HBStyle *style = {};
+  HBStyle *style = nullptr;
 
   HBPlatformWindowData windowData = {};
 

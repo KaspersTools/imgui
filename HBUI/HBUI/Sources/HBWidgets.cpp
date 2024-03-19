@@ -41,12 +41,12 @@ namespace HBUI {
 
     ctx->widgetDebugger->draw(p_open);
   }
-  void addWidgetToDebugList(HBIWidget *widget, ImGuiID parentID) {
+  void addOrUpdateWidgetDebugData(HBIWidget *widget) {
     auto *ctx = HBUI::getCurrentContext();
     IM_ASSERT(ctx != nullptr && "Context is nullptr");
     IM_ASSERT(ctx->widgetDebugger != nullptr && "Widget debugger is nullptr");
 
-    ctx->widgetDebugger->addWidget(widget, parentID);
+    ctx->widgetDebugger->addWidget(widget);
   }
 
   //-------------------------------------------------------------------------
@@ -60,6 +60,7 @@ namespace HBUI {
                                               nullptr,
                                               ImVec2(0, 0),
                                               size);
+    ;
     setCurrentAppendingWidget(taskBar);
   }
   void endTaskBar() {
@@ -70,6 +71,15 @@ namespace HBUI {
     auto *button  = new HBUI::Buttons::HBButton(std::move(label), HBButtonType_Text, interactButton,
                                                 localPos, size);
 
+    setCurrentAppendingWidget(button);
+    getCurrentContext()->endCurrentWidget();
+
+    return HBButtonState_None;
+  }
+
+  HBButtonState_ iconButton(Fonts::HBIcon* icon, const ImVec2 &size, const ImVec2 &localPos, HBMouseButtons_ interactButton) {
+    auto *button  = new HBUI::Buttons::HBButton(icon, interactButton,
+                                                localPos, size);
     setCurrentAppendingWidget(button);
     getCurrentContext()->endCurrentWidget();
 
@@ -147,9 +157,7 @@ namespace HBUI {
     auto *colorBuilder = new Builder::HBWidgetColorPropertiesBuilder();
     colorBuilder->fromImGuiStyle(HBUIType_Window);
     colorBuilder->setBackgroundColor(ImVec4(255, 0, 0, 255));
-
     auto *colorProperties = colorBuilder->build();
-
     window = new HBUI::Windows::HBWindow(std::move(label),
                                          id == -1 ? ImGui::GetID(label.c_str()) : id,
                                          windowFlags,

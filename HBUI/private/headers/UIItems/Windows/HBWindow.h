@@ -122,17 +122,17 @@ namespace HBUI::Windows {
                     startCursorPos) {
 
 
-      if(m_Flags & HBUIWindowFlags_MainWindow){
-        HBUI::getCurrentContext()->mainWindow = this;
-        HBUI::getCurrentContext()->mainWindowFlags = m_Flags;
+      if (m_Flags & HBUIWindowFlags_MainWindow) {
+        HBUI::getCurrentContext()->mainWindow           = this;
+        HBUI::getCurrentContext()->mainWindowFlags      = m_Flags;
         HBUI::getCurrentContext()->imGuiMainWindowFlags = imguiWindowFlags;
-        HBUI::getCurrentContext()->mainWindowTitle = getLabel();
+        HBUI::getCurrentContext()->mainWindowTitle      = getLabel();
       }
 
-      if(localPos.x != 0 && localPos.y != 0) {
+      if (localPos.x != 0 && localPos.y != 0) {
         m_ImguiWindowFlags |= ImGuiWindowFlags_NoMove;
       }
-      if(size.x != 0 && size.y != 0) {
+      if (size.x != 0 && size.y != 0) {
         m_ImguiWindowFlags |= ImGuiWindowFlags_NoResize;
       }
     }
@@ -148,13 +148,20 @@ namespace HBUI::Windows {
       setDrawList(ImGui::GetWindowDrawList());
     }
 
-    void drawNoMoveMainViewportWindow() {
+    void drawNoMoveMainViewportWindow( ImVec2 &size,  ImVec2 &screenPos) {
       ImGuiViewport *viewport = ImGui::GetMainViewport();
       ImGui::SetNextWindowViewport(viewport->ID);
 
-      ImGui::SetNextWindowPos(getScreenPos());
-      ImVec2 tempSize = calculateSize();
-      ImGui::SetNextWindowSize(tempSize);
+      if(size == ImVec2(0,0)){
+        size = ImVec2(viewport->Size.x, viewport->Size.y);
+      }
+
+      if(screenPos == ImVec2(0,0)){
+        screenPos = ImVec2(viewport->Pos.x, viewport->Pos.y);
+      }
+
+      ImGui::SetNextWindowPos(screenPos);
+      ImGui::SetNextWindowSize(size);
 
       ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
       ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
@@ -164,6 +171,7 @@ namespace HBUI::Windows {
       ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
       ImGui::Begin(getLabel().c_str(), nullptr, m_ImguiWindowFlags);
+
       setDrawList(ImGui::GetWindowDrawList());
       ImGui::PopStyleVar(2);
       ImGui::PopStyleVar(2);
@@ -178,33 +186,33 @@ namespace HBUI::Windows {
       }
     }
 
-    void drawBase() {
-      if (m_Flags & HBUIWindowFlags_MainWindow) {
-        drawNoMoveMainViewportWindow();
-      } else {
-        drawDefaultWindow();
-      }
-      setDrawList(ImGui::GetWindowDrawList());
-    }
-
   public:
     void afterTaskBarEnd(Bars::HBTaskBar *taskBar);
 
   protected:
     bool beforeBegin() override {
       if (m_Flags & HBUIWindowFlags_HasTaskBar) {
-        drawBase();
+        ImVec2 size = ImGui::GetMainViewport()->Size;
+        ImVec2 screenPos = ImGui::GetMainViewport()->Pos;
+        drawNoMoveMainViewportWindow(size,screenPos );
+      } else {
+        drawDefaultWindow();
       }
+      setDrawList(ImGui::GetWindowDrawList());
+
       return true;
     }
+
     bool beforeDraw() override {
       return true;
     }
-    void draw() override {
+
+    void draw(const ImVec2 &size, const ImVec2 &pos) override {
       m_ScreenPos = ImGui::GetCurrentWindow()->Pos;
-      ImGui::End();
     }
+
     bool afterEnd() override {
+      ImGui::End();
       return true;
     }
 
@@ -218,6 +226,7 @@ namespace HBUI::Windows {
     }
 
   private:
+    ImGuiWindow          *m_Window = nullptr;
     const HBUIWindowFlags c_DefaultFlags;
     HBUIWindowFlags       m_Flags          = 0;
     HBUIWindowFlags       m_FlagsNextFrame = 0;

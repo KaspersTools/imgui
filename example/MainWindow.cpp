@@ -5,10 +5,52 @@
 
 #include <HBUI/HBUI.h>
 
+
+std::string GEN_RANDOM_TEXT(const int len) {
+  static const char alphanum[] =
+      "0123456789"
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      "abcdefghijklmnopqrstuvwxyz";
+  std::string tmp_s;
+  tmp_s.reserve(len);
+
+  for (int i = 0; i < len; ++i) {
+    tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
+  }
+
+  return tmp_s;
+}
+
+void MainWindow::addTextButton() {
+  textButtonLabels.push_back(GEN_RANDOM_TEXT(textButtonTextLength));
+}
+
+void MainWindow::addIconButton() {
+  iconButtons.push_back(GEN_RANDOM_TEXT(1));
+}
+
+void MainWindow::removeTextButton() {
+  if (!textButtonLabels.empty()) {
+    textButtonLabels.pop_back();
+  }
+}
+
+void MainWindow::removeIconButton() {
+  if (!iconButtons.empty()) {
+    iconButtons.pop_back();
+  }
+}
+
 void MainWindow::init() {
   HBUI::initialize("Hello, World!", 1280, 720);
 
-  m_ColorVerticalBar = m_ColorHorizontalBar = ImGui::GetStyleColorVec4(ImGuiCol_MenuBarBg);
+  for (int i = 0; i < textButtonCount; i++) {
+    textButtonLabels.push_back(GEN_RANDOM_TEXT(textButtonTextLength));
+  }
+
+  for (int i = 0; i < iconButtonCount; i++) {
+    iconButtons.push_back(GEN_RANDOM_TEXT(1));
+  }
 
   run();
 }
@@ -20,118 +62,108 @@ bool MainWindow::run() {
   return true;
 }
 
-
 void MainWindow::render() {
   HBUI::startFrame();
 
-  std::map<std::string, ImGuiMenuColumns> m_MenuColumns = {};
-
   HBUI::beginTaskBar("HorizontalTaskBar", {0, 0});
-  HBUI::textButton("Button1");
-  HBUI::textButton("Button2");
-  HBUI::endTaskBar();
-  ImGui::Begin("ImGuiData", nullptr, ImGuiWindowFlags_MenuBar);
-  {
-    m_MenuColumns["MenuColumns_0"] = ImGui::GetCurrentWindow()->DC.MenuColumns;
-    ImGui::BeginMenuBar();
-    {
-      m_MenuColumns["MenuColumns_1"] = ImGui::GetCurrentWindow()->DC.MenuColumns;
-      if (ImGui::BeginMenu("File")) {
-        if (ImGui::MenuItem("Open", "Ctrl+O")) {
 
+    if (showTextButtons) {
+      for (const auto &label: textButtonLabels) {
+        if (HBUI::textButton(label)) {
+          textButtonLabels.erase(std::remove(textButtonLabels.begin(), textButtonLabels.end(), label), textButtonLabels.end());
         }
-        if (ImGui::MenuItem("Save", "Ctrl+S")) {
-
-        }
-        if (ImGui::MenuItem("Close", "Ctrl+W")) {
-        }
-        ImGui::EndMenu();
-      }
-      if (ImGui::BeginMenu("Edit")) {
-        m_MenuColumns["MenuColumns_2"] = ImGui::GetCurrentWindow()->DC.MenuColumns;
-        if (ImGui::MenuItem("Undo", "Ctrl+Z")) {
-          }
-        if (ImGui::MenuItem("Redo", "Ctrl+Y", false, false)) {
-          // Do stuff
-        }
-        ImGui::EndMenu();
-      }
-      if (ImGui::BeginMenu("View")) {
-        if (ImGui::MenuItem("Show Demo Window", "", &showDemoWindow)) {
-          // Do stuff
-        }
-        if (ImGui::MenuItem("Show HBUI Debug Widgets", "", &showHBUIDebugWidgets)) {
-          // Do stuff
-        }
-        ImGui::EndMenu();
-      }
-      if (ImGui::BeginMenu("Help")) {
-        if (ImGui::MenuItem("About", "")) {
-          // Do stuff
-        }
-        ImGui::EndMenu();
       }
     }
-    ImGui::EndMenuBar();
-  }
+    if (showIconButtons) {
+      for(int i = 0; i < iconButtonCount; ++i) {
+        int count = HBUI::getDefaultIconNames().size() - 1;
+        int rand =  std::rand() % count;
+        if (HBUI::iconButton(HBUI::getIcon(HBUI::getDefaultIconNames()[rand]))) {
+        }
+      }
+    }
+    HBUI::endTaskBar();
 
-  for (auto &menuColumn : m_MenuColumns) {
-    ImGui::SeparatorText( menuColumn.first.c_str());
 
-    ImGui::Text("NextTotalWidth %u", menuColumn.second.NextTotalWidth);
-    ImGui::Text("Spacing %u", menuColumn.second.Spacing);
-    ImGui::Text("OffsetIcon %u", menuColumn.second.OffsetIcon);         // Always zero for now
-    ImGui::Text("OffsetLabel %u", menuColumn.second.OffsetLabel);        // Offsets are locked in Update()
-    ImGui::Text("OffsetShortcut %u", menuColumn.second.OffsetShortcut);
-    ImGui::Text("OffsetMark %u", menuColumn.second.OffsetMark);
+  if (showHUIDemoWindow) {
+    ImGui::Begin("DemoWindow", &showHUIDemoWindow);
 
-    for (int i = 0; i < 4; i++)
-      ImGui::Text("Widths %i = %u", i, menuColumn.second.Widths[i]);
-  }
-  ImGui::End();
-
-  ImGui::Begin("HBUI Settings");
-  {
-    if (ImGui::CollapsingHeader("Native window")) {
-      ImGui::ColorEdit3("Native Window Clear Color 1", &HBUI::getNativeWindowClearColor().Value.x);
+    ImGui::Text("This is a simple demo of the library.");
+    if (ImGui::CollapsingHeader("IMGUI Help")) {
+      ImGui::SeparatorText("ABOUT THIS DEMO:");
+      ImGui::BulletText("Sections below are demonstrating many aspects of the library.");
+      ImGui::SeparatorText("IMGUI USER GUIDE:");
+      ImGui::ShowUserGuide();
     }
 
-    if (ImGui::CollapsingHeader("HBUI Widgets")) {
-      if (ImGui::CollapsingHeader("TaskBars")) {
-        if (ImGui::TreeNode("Horizontal TaskBar")) {
-          ImGui::SliderFloat("Horizontal Bar Height", &m_HorizontalBarHeight, 0, 100);
-          ImGui::ColorEdit3("Color Horizontal Bar", &m_ColorHorizontalBar.x);
-          ImGui::TreePop();
+    if (ImGui::CollapsingHeader("HBUI Help")) {
+      ImGui::SeparatorText("ABOUT HBUI:");
+      ImGui::BulletText("HBUI is a wrapper around IMGUI to make it easier to use.");
+      ImGui::BulletText("It has a lot of features and is easy to use.");
+      ImGui::BulletText("It is still in development and is not yet stable.");
+      ImGui::BulletText("It is not recommended to use it in production.");
+    }
+
+    if (ImGui::CollapsingHeader("HBUI Debug")) {
+      ImGui::Checkbox("Show HBUI Debug Widgets", &showHBUIDebugWidgets);
+    }
+
+    if (ImGui::CollapsingHeader("Menu Bar Items")) {
+      ImGui::SeparatorText("Text Buttons");
+      ImGui::Checkbox("Show Text Buttons", &showTextButtons);
+      if (ImGui::InputInt("Text Button Count", &textButtonCount)) {
+        if (textButtonCount < 0) {
+          textButtonCount = 0;
         }
-        if (ImGui::TreeNode("Vertical TaskBar")) {
-          ImGui::SliderFloat("Vertical Bar Width", &m_VerticalBarWidth, 0, 100);
-          ImGui::ColorEdit3("Color Vertical Bar", &m_ColorVerticalBar.x);
-          ImGui::TreePop();
+        if (textButtonCount > textButtonLabels.size()) {
+          addTextButton();
+        } else if (textButtonCount < textButtonLabels.size()) {
+          removeTextButton();
+        }
+      }
+      if (ImGui::InputInt("Text Button Text Length", &textButtonTextLength)) {
+        if (textButtonTextLength <= 1) {
+          textButtonTextLength = 2;
+        }
+        for (auto &label: textButtonLabels) {
+          label = GEN_RANDOM_TEXT(textButtonTextLength);
+        }
+      }
+
+      ImGui::SeparatorText("Icon Buttons");
+      ImGui::Checkbox("Show Icon Buttons", &showIconButtons);
+      if (ImGui::InputInt("Icon Button Count", &iconButtonCount)) {
+        if (iconButtonCount < 0) {
+          iconButtonCount = 0;
+        }
+        if (iconButtonCount > iconButtons.size()) {
+          addIconButton();
+        } else if (iconButtonCount < iconButtons.size()) {
+          removeIconButton();
         }
       }
     }
 
-    if (ImGui::CollapsingHeader("ImGui Widgets")) {
-      if (ImGui::TreeNode("Style")) {
+    if (ImGui::CollapsingHeader("Style")) {
+      ImGui::SetCursorPosX(40);
+
+      ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
+      if (ImGui::CollapsingHeader("HBUI Style Editor")) {
+        ImGui::SetCursorPosX(40);
+        ImGui::Button("test");
+      }
+      ImGui::SetCursorPosX(40);
+      ImGui::SetNextItemWidth(ImGui::GetWindowWidth() * 0.5f);
+      if (ImGui::CollapsingHeader("ImGui Style Editor")) {
+        ImGui::SetCursorPosX(40);
+        ImGui::BeginChild("ImGuiStyleEditor", {0, 0}, true);
         ImGui::ShowStyleEditor();
-        ImGui::TreePop();
+        ImGui::EndChild();
       }
-    }
-
-
-    if (ImGui::CollapsingHeader("Test Widgets")) {
-      ImGui::Text("textt");
-      ImGui::Button("button");
-      ImGui::SliderFloat2("button size", &m_ButtonSize.x, 0, 100);
-      ImGui::Button("button2", m_ButtonSize);
-      ImGui::Button("Button With Elipsis", m_ButtonSize);
     }
 
     ImGui::End();
   }
-
-  ImGui::ShowDemoWindow(&showDemoWindow);
-  HBUI::showWidgetDebugWindow(&showHBUIDebugWidgets);
 
   HBUI::endFrame();
 }

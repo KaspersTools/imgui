@@ -39,11 +39,11 @@ void HBContext::initialize() {
 }
 
 void HBContext::afterBackendInitialized() {
-  animManager = new HBUI::Animation::HBAnimManager();
+  style = new HBStyle();
 
+  animManager    = new HBUI::Animation::HBAnimManager();
   widgetDebugger = new HBUI::Debuggers::HBWidgetDebugger();
-
-  mainWindow = new HBUI::Windows::HBWindow(
+  mainWindow     = new HBUI::Windows::HBWindow(
       HBUI::Backend::getLabel(),
       ImGuiID(99999),
       mainWindowFlags,
@@ -55,15 +55,14 @@ void HBContext::afterBackendInitialized() {
       mainWindowStyleFlags,
       nullptr,
       HBUIType_Window);
-
   currentAppingWindow = mainWindow;
 
+  fontLoader  = new HBUI::Fonts::FontLoader(true);
   initialized = true;
 }
 
 void HBContext::startFrame() {
   IM_ASSERT(initialized && "HBContext::startFrame() called before HBContext::initialize()");
-
   //todo: do this in the backend
   io.mousePos     = ImGui::GetIO().MousePos;
   io.mouseDown[0] = ImGui::GetIO().MouseDown[0];
@@ -76,6 +75,11 @@ void HBContext::startFrame() {
   mainWindow->m_HasSetSize = true;
 
   mainWindow->begin();
+
+  if (!firstFrameCalled) {
+    firstFrameCalled = true;
+  }
+
   animManager->startFrame();
 }
 
@@ -105,9 +109,9 @@ HBUI::Windows::HBWindow &HBContext::getMainWindow() const {
   IM_ASSERT(widget != nullptr && "Widget is nullptr");
   IM_ASSERT(!widget->hasBegun() && "Widget has already been begun");
   widget->p_ParentWidget = currentAppingWindow;
-
-  currentAppingWindow = widget;
+  currentAppingWindow    = widget;
   widget->begin();
+  addOrUpdateWidgetDebugData(widget);
 }
 
 //[[maybe_unused]] void
@@ -118,13 +122,12 @@ HBUI::Windows::HBWindow &HBContext::getMainWindow() const {
 
   auto windowBackup = currentAppingWindow;
   currentAppingWindow->end();
-
   if (currentAppingWindow->p_ParentWidget == nullptr) {
     currentAppingWindow = mainWindow;
   } else {
     currentAppingWindow = currentAppingWindow->p_ParentWidget;
   }
-
+  addOrUpdateWidgetDebugData(windowBackup);
   delete windowBackup;
 }
 
@@ -163,7 +166,6 @@ namespace HBUI {
 
   void afterBackendInitialized() {
     g_HBUICTX->afterBackendInitialized();
-    g_HBUICTX->fontLoader = new HBUI::Fonts::FontLoader(true);
     HBTime::init();
   }
 
@@ -296,7 +298,8 @@ namespace HBUI {
 
   ImVec2 getContentRegionAvailMainWindow() {
     IM_ASSERT(getCurrentContext() != nullptr && "Main window is nullptr");
-    return getCurrentContext()->getMainWindow().calculateSize() - getMainWindowCursorPos();
+    return getCurrentContext()->getMainWindow().getSizeWithChildren()
+           - getMainWindowCursorPos();
   }
 
   //todo:  ImVec2 getContentRegionAvail(ImGuiViewport *viewport);
@@ -349,21 +352,6 @@ namespace HBUI {
     HBTime::endFrame();
   }
 
-  //  void beginMainWindow() {
-  //    HBContext *ctx = getCurrentContext();
-  //    IM_ASSERT(ctx != nullptr && "Current Context is nullptr");
-  //
-  //    ctx->currentAppingWindow = ctx->mainWindow;
-  //    ctx->mainWindow->begin();
-  //  }
-
-  //  void endMainWindow() {
-  //    HBContext *ctx = getCurrentContext();
-  //    IM_ASSERT(ctx != nullptr && "Current Context is nullptr");
-  //    IM_ASSERT(ctx->mainWindow != nullptr && "Main window is nullptr");
-  //    ctx->mainWindow->end();
-  //  }
-
   bool wantToClose() {
     return Backend::getWindowShouldCloseBackend();
   }
@@ -374,8 +362,51 @@ namespace HBUI {
     g_HBUICTX = nullptr;
   }
 
-  ImFont *getBigFont() {
+  Fonts::HBFont *getBigFont() {
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    IM_ASSERT(g_HBUICTX->fontLoader != nullptr && "Font loader is nullptr");
+
     return g_HBUICTX->fontLoader->getBigFont();
+  }
+
+  Fonts::HBFont *getDefaultFont() {
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    IM_ASSERT(g_HBUICTX->fontLoader != nullptr && "Font loader is nullptr");
+
+    return g_HBUICTX->fontLoader->getDefaultFont();
+  }
+
+  Fonts::HBFont *getSmallFont() {
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    IM_ASSERT(g_HBUICTX->fontLoader != nullptr && "Font loader is nullptr");
+
+    return g_HBUICTX->fontLoader->getActiveFont();
+  }
+
+  Fonts::HBFont *getFont(){
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    IM_ASSERT(g_HBUICTX->fontLoader != nullptr && "Font loader is nullptr");
+
+    return g_HBUICTX->fontLoader->getActiveFont();
+  }
+
+  Fonts::HBFont *getFont(float fontSize, HBLoadFontFlags flags) {
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    IM_ASSERT(g_HBUICTX->fontLoader != nullptr && "Font loader is nullptr");
+
+    return g_HBUICTX->fontLoader->getFont(fontSize, flags);
+  }
+
+  std::vector<std::string> getDefaultIconNames() {
+    return Fonts::HBFont::getDefaultIconNames();
+  }
+
+  Fonts::HBIcon *getIcon(const std::string &iconName) {
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    IM_ASSERT(g_HBUICTX->fontLoader != nullptr && "Font loader is nullptr");
+    auto font = g_HBUICTX->fontLoader->getActiveFont();
+    IM_ASSERT(font != nullptr && "Active font is nullptr");
+    return font->getIcon(iconName);
   }
 
   bool isFlagSet(int *flags, int flag) {
@@ -390,6 +421,7 @@ namespace HBUI {
 
     return *g_HBUICTX->style;
   }
+
 
   //-------------------------------------
   // [SECTION] Fonts
@@ -406,6 +438,18 @@ namespace HBUI {
     return Backend::getWindowScaleFactor();
   }
 
+  void activateFont(Fonts::HBFont* font){
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    IM_ASSERT(g_HBUICTX->fontLoader != nullptr && "Font loader is nullptr");
+
+    g_HBUICTX->fontLoader->activateFont(font);
+  }
+  void activateFontSize(float fontSize) {
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    IM_ASSERT(g_HBUICTX->fontLoader != nullptr && "Font loader is nullptr");
+
+    g_HBUICTX->fontLoader->activateFontSize(fontSize);
+  }
   //-------------------------------------
   //[SECTION] Helper functions
   //-------------------------------------
@@ -421,6 +465,7 @@ namespace HBUI {
   bool containsPoint(const ImVec2 &min, const ImVec2 &max, const ImVec2 &point) {
     return (point.x > min.x && point.x < max.x) && (point.y > min.y && point.y < max.y);
   }
+
 
   /**
    * @brief Get the centered position for an element

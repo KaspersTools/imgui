@@ -93,7 +93,7 @@ namespace HBUI {
   // [SECTION] Debugger
   //---------------------------------------------------------------------------------
   HBUI_API void showWidgetDebugWindow(bool *p_open);
-  HBUI_API void addWidgetToDebugList(HBIWidget *widget, ImGuiID parentID = -1);
+  HBUI_API void addOrUpdateWidgetDebugData(HBIWidget *widget);
 
   //---------------------------------------------------------------------------------
   // [SECTION] Widgets
@@ -154,6 +154,11 @@ namespace HBUI {
                                      const ImVec2   &localPos       = {0, 0},
                                      HBMouseButtons_ interactButton = HBMouseButtons_Left);
 
+  HBUI_API HBButtonState_ iconButton(Fonts::HBIcon  *icon,
+                                     const ImVec2   &size           = {0, 0},//this uses the HBStyle.IconSize as default
+                                     const ImVec2   &localPos       = {0, 0},
+                                     HBMouseButtons_ interactButton = HBMouseButtons_Left);
+
   HBUI_API void           setButtonState(ImGuiID id, HBButtonState_ state);
   HBUI_API HBButtonState_ getButtonState(ImGuiID id);
   //---------------------------------------------------------------------------------
@@ -192,9 +197,22 @@ namespace HBUI {
   //---------------------------------------------------------------------------------
   // [SECTION] Fonts
   //---------------------------------------------------------------------------------
-  HBUI_API float   getWindowSizeDpiScaleFactor();
-  HBUI_API float   getFontSizeIncreaseFactor();
-  HBUI_API ImVec2  getWindowScaleFactor();
-  HBUI_API ImFont *getBigFont();
+  HBUI_API float  getWindowSizeDpiScaleFactor();
+  HBUI_API float  getFontSizeIncreaseFactor();
+  HBUI_API ImVec2 getWindowScaleFactor();
 
+  namespace Fonts {
+    struct HBFont;
+    struct HBIcon;
+  }// namespace Fonts
+  HBUI_API Fonts::HBFont *getFont();
+  HBUI_API Fonts::HBFont *getFont(float fontSize, HBLoadFontFlags flags);
+  HBUI_API Fonts::HBFont *getDefaultFont();
+  HBUI_API Fonts::HBFont *getBigFont();
+
+  HBUI_API Fonts::HBIcon *getIcon(const std::string &iconName);
+  HBUI_API std::vector<std::string> getDefaultIconNames();
+
+  HBUI_API void           activateFontSize(float fontSize);
+  HBUI_API void           activateFont(Fonts::HBFont* font);
 }// namespace HBUI

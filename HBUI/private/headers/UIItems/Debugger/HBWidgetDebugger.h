@@ -4,7 +4,6 @@
 
 #ifndef IMGUI_HBWIDGETDEBUGGER_H
 #define IMGUI_HBWIDGETDEBUGGER_H
-#include <map>
 
 namespace HBUI {
   class HBIWidget;
@@ -18,15 +17,11 @@ namespace HBUI {
 
 
       template<typename T>
-      void addWidget(T* widget, ImGuiID parentID);
+      void addWidget(T* widget);
     private:
-      void addToParent(ImGuiID parentID, const widgetDebugData &data);
-      void drawWidgetData(const widgetDebugData& data);
-
+      static void drawWidgetData(const widgetDebugData& data);
     private:
-      std::map<ImGuiID, widgetDebugData> m_Widgets;
-      ImVec2 mousePos;
-//      std::map<ImGuiID, buttonDebugData> m_Buttons;
+      std::unordered_map<ImGuiID, widgetDebugData> m_Widgets;
     };
 
   }// namespace Debuggers

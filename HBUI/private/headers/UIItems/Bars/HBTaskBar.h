@@ -36,10 +36,8 @@ namespace HBUI::Bars {
   protected:
     bool beforeBegin() override;
 
-    void draw() override {
-      ImVec2 size   = calculateSize();
-      float  width  = size.x;
-      float  height = size.y;
+    void draw(const ImVec2 &size, const ImVec2 &screenPos) override {
+//      getDrawList()->AddRectFilled(screenPos, ImVec2(screenPos.x + size.x, screenPos.y + size.y), ImColor(255,0,0,255));
     }
 
     bool afterEnd() override;

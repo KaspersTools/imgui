@@ -13,9 +13,6 @@ namespace HBUI {
 #include <UIItems/Interfaces/HBIWidget.h>
 
 namespace HBUI::Debuggers {
-  void widgetDebugData::addChild(ImGuiID parentID, const HBUI::Debuggers::widgetDebugData &child) {
-    m_Children[parentID] = child;
-  }
 
   void HBWidgetDebugger::draw(bool *p_open) {
     ImGui::Begin("Widget Debugger", p_open);
@@ -29,7 +26,10 @@ namespace HBUI::Debuggers {
   }
 
   void HBWidgetDebugger::drawWidgetData(const widgetDebugData &data) {
-    if (ImGui::TreeNode((void *) (intptr_t) data.c_ID, "ID: %d", data.c_ID)) {
+    const std::string lbl = ("ID: " + std::to_string(data.c_ID) + " | Label: " + data.c_Label + " | Type: " +
+                             magic_enum::enum_name(data.c_Type).data());
+
+    if (ImGui::TreeNode((void *) (intptr_t) data.c_ID, "%s", lbl.c_str())) {
       ImGui::Text("ID: %d", data.c_ID);
       ImGui::Text("Parent ID: %d", data.m_ParentID);
 
@@ -59,49 +59,44 @@ namespace HBUI::Debuggers {
         }
       }
 
-      for (auto &child: data.m_Children) {
-        drawWidgetData(child.second);
-      }
-
       ImGui::TreePop();
     }
   }
 
-  void HBWidgetDebugger::addToParent(ImGuiID parentID, const HBUI::Debuggers::widgetDebugData &data) {
-    auto it = m_Widgets.find(parentID);
-    if (it != m_Widgets.end()) {
-      it->second.addChild(parentID, data);
-    } else {
-      m_Widgets[parentID] = widgetDebugData();
-    }
-  }
-
   template<typename T>
-  void HBWidgetDebugger::addWidget(T *widget, ImGuiID parentID) {}
+  void HBWidgetDebugger::addWidget(T *widget) {}
 
 
   template<>
-  void HBWidgetDebugger::addWidget(HBIWidget *widget, ImGuiID parentID) {
+  void HBWidgetDebugger::addWidget(HBIWidget *widget) {
     widgetDebugData data;
 
-    data.c_Type                 = widget->c_Type;
-    data.c_ID                   = widget->c_ID;
-    data.c_CanBeOwnParent       = widget->c_CanBeOwnParent;
-    data.c_InputSize            = widget->m_InputSize;
-    data.c_Label                = widget->c_Label;
-    data.m_Pos                  = widget->m_Pos;
-    data.m_StartCursorPos       = widget->m_StartCursorPos;
-    data.m_CursorPos            = widget->m_CursorPos;
-    data.m_Direction            = widget->m_Direction;
-    data.m_BottomToTopCursorPos = widget->m_BottomToTopCursorPos;
+    data.c_ID    = widget->c_ID;
+    data.c_Label = widget->c_Label;
+    data.c_Type  = widget->c_Type;
+
+    data.c_CanBeOwnParent = widget->c_CanBeOwnParent;
+
+    data.m_HasBegun = widget->m_HasBegun;
+    data.m_IsEnded  = widget->m_IsEnded;
+
+    data.m_StyleFlags = widget->m_StyleFlags;
+
+    data.c_InputSize = widget->m_InputSize;
+
+    data.m_Pos       = widget->m_Pos;
+    data.m_ScreenPos = widget->getScreenPos();
+
+    data.m_Direction      = widget->m_Direction;
+    data.m_StartCursorPos = widget->m_StartCursorPos;
+    data.m_CursorPos      = widget->m_CursorPos;
+
     data.m_TopToBottomCursorPos = widget->m_TopToBottomCursorPos;
     data.m_LeftToRightCursorPos = widget->m_LeftToRightCursorPos;
+    data.m_BottomToTopCursorPos = widget->m_BottomToTopCursorPos;
     data.m_RightToLeftCursorPos = widget->m_RightToLeftCursorPos;
-    data.m_HasBegun             = widget->m_HasBegun;
-    data.m_IsEnded              = widget->m_IsEnded;
-    data.m_StyleFlags           = widget->m_StyleFlags;
-    data.m_ScreenPos            = widget->getScreenPos();
-    data.m_ParentID             = parentID;
+
+    data.m_ParentID = widget->p_ParentWidget == nullptr ? 0 : widget->p_ParentWidget->c_ID;
 
     m_Widgets[widget->c_ID] = data;
   }

@@ -68,8 +68,8 @@ HBUI::HBIWidget::HBIWidget(
   if (getStyleFlags() & HBStyleFlags_StretchVertical) {
     IM_ASSERT(getInputSize().y == 0 && "Stretch vertical is set but also a size is set on the y axis");
   }
-  m_StartCursorPos.x += 4;
-  m_StartCursorPos.y += 4;
+
+  m_StartCursorPos += HBUI::getStyle().getFramePadding();
   m_CursorPos = m_StartCursorPos;
   IM_ASSERT(p_ColorProperties != nullptr && "Color properties cannot be null");
   if (parentWindow == nullptr) {
@@ -82,57 +82,69 @@ HBUI::HBIWidget::HBIWidget(
 
 
 ImVec2 HBUI::HBIWidget::appendChild(HBUI::HBIWidget *child) {
+  ImVec2 childSize            = child->calculateSize_impl();
+  ImVec2 childSizeWithPadding = child->calculateSizeWithPadding();
+  childSizeWithPadding.x += 4;
+  childSizeWithPadding.y += 4;
 
-  ImVec2 childSize = child->calculateSize();
+  switch (m_Direction) {
+    case HBDirection_LeftToRight: {
+      m_LeftToRightCursorPos += ImVec2(childSizeWithPadding.x, 0) + ImVec2(4, 0);
+      m_CursorPos = m_LeftToRightCursorPos;
+      if ((m_TopToBottomCursorPos + ImVec2(0, childSizeWithPadding.y)).y > m_CursorPos.y) {
+        m_TopToBottomCursorPos.y += childSizeWithPadding.y;
+      }
+      break;
+    }
+    case HBDirection_RightToLeft: {
+      m_RightToLeftCursorPos -= ImVec2(childSizeWithPadding.x, 0) - ImVec2(4, 0);
+      m_CursorPos = m_RightToLeftCursorPos;
+      if ((m_TopToBottomCursorPos + ImVec2(0, childSizeWithPadding.y)).y > m_CursorPos.y) {
+        m_TopToBottomCursorPos.y += childSizeWithPadding.y;
+      }
+      break;
+    }
+    case HBDirection_BottomToTop:
+      m_BottomToTopCursorPos -= ImVec2(0, childSizeWithPadding.y);
+      m_CursorPos = m_BottomToTopCursorPos;
+      if ((m_LeftToRightCursorPos + ImVec2(childSizeWithPadding.x, 0)).x > m_CursorPos.x) {
+        m_LeftToRightCursorPos.x += childSizeWithPadding.x;
+      }
+      break;
+    case HBDirection_TopToBottom:
+      m_TopToBottomCursorPos += ImVec2(0, childSizeWithPadding.y);
+      m_CursorPos = m_TopToBottomCursorPos;
+      if ((m_LeftToRightCursorPos + ImVec2(childSizeWithPadding.x, 0)).x > m_CursorPos.x) {
+        m_LeftToRightCursorPos.x += childSizeWithPadding.x + 4;
+      }
+      break;
+  }
+
+  m_SizeWithChildren = ImVec2(
+      std::max(m_SizeWithChildren.x, childSizeWithPadding.x),
+      std::max(m_SizeWithChildren.y, childSizeWithPadding.y));
+
+  ImGui::SetCursorPos(m_CursorPos);
+
 
   if (child->hasSetPos()) {
     return child->getPos();
   }
 
-  switch (m_Direction) {
-    case HBDirection_LeftToRight: {
-      m_LeftToRightCursorPos += ImVec2(childSize.x, 0) + ImVec2(4, 0);
-      m_CursorPos = m_LeftToRightCursorPos;
-
-      if ((m_TopToBottomCursorPos + ImVec2(0, childSize.y)).y > m_CursorPos.y) {
-        m_TopToBottomCursorPos.y += childSize.y;
-      }
-      break;
-    }
-    case HBDirection_RightToLeft: {
-      m_RightToLeftCursorPos -= ImVec2(childSize.x, 0) - ImVec2(4, 0);
-      m_CursorPos = m_RightToLeftCursorPos;
-
-
-      if ((m_TopToBottomCursorPos + ImVec2(0, childSize.y)).y > m_CursorPos.y) {
-        m_TopToBottomCursorPos.y += childSize.y;
-      }
-      break;
-    }
-    case HBDirection_BottomToTop:
-      m_BottomToTopCursorPos -= ImVec2(0, childSize.y);
-      m_CursorPos = m_BottomToTopCursorPos;
-
-      if ((m_LeftToRightCursorPos + ImVec2(childSize.x, 0)).x > m_CursorPos.x) {
-        m_LeftToRightCursorPos.x += childSize.x;
-      }
-      break;
-    case HBDirection_TopToBottom:
-      m_TopToBottomCursorPos += ImVec2(0, childSize.y);
-      m_CursorPos = m_TopToBottomCursorPos;
-
-      if ((m_LeftToRightCursorPos + ImVec2(childSize.x, 0)).x > m_CursorPos.x) {
-        m_LeftToRightCursorPos.x += childSize.x + 4;
-      }
-      break;
-  }
-
-  ImGui::SetCursorPos(m_CursorPos);
   return getCursorPos();
 }
 
-ImVec2 HBUI::HBIWidget::calculateSize() const { // NOLINT(*-no-recursion)
-  if(m_HasSetSize){
+ImVec2 HBUI::HBIWidget::calculateSizeWithPadding() {
+  auto style = HBUI::getStyle();
+
+  ImVec2 pad  = style.getFramePadding();
+  ImVec2 size = calculateSize_impl();
+
+  return size + pad;
+}
+
+ImVec2 HBUI::HBIWidget::calculateSize_impl() {// NOLINT(*-no-recursion)
+  if (m_HasSetSize) {
     return m_InputSize;
   }
 
@@ -140,17 +152,13 @@ ImVec2 HBUI::HBIWidget::calculateSize() const { // NOLINT(*-no-recursion)
   float totalHeight = 0;
 
   if (getInputSize().x == 0) {//only has set on the x axis
-    float xMin = 0;
-    float xMax = 0;
-    xMin       = getPos().x;
-    xMax       = getPos().x + getCursorPos(HBDirection_LeftToRight).x;
+    float xMin = getPos().x;
+    float xMax = getPos().x + m_SizeWithChildren.x;
     totalWidth = xMax - xMin;
   }
   if (getInputSize().y == 0) {//only has set on the y axis
-    float yMin  = 0;
-    float yMax  = 0;
-    yMin        = getPos().y;
-    yMax        = getPos().y + getCursorPos(HBDirection_TopToBottom).y;
+    float yMin  = getPos().y;
+    float yMax  = getPos().y + m_SizeWithChildren.y;
     totalHeight = yMax - yMin;
   }
 
@@ -166,14 +174,14 @@ ImVec2 HBUI::HBIWidget::calculateSize() const { // NOLINT(*-no-recursion)
     if (p_ParentWidget == nullptr) {
       totalWidth = HBUI::Backend::getWindowSize().x - m_Pos.x;
     } else {
-      totalWidth = p_ParentWidget->calculateSize().x - m_Pos.x;
+      totalWidth = p_ParentWidget->calculateSizeWithPadding().x - m_Pos.x;
     }
   }
   if (m_StyleFlags & HBStyleFlags_StretchVertical) {
     if (p_ParentWidget == nullptr) {
       totalHeight = HBUI::Backend::getWindowSize().y - m_Pos.y;
     } else {
-      totalWidth = p_ParentWidget->calculateSize().x - m_Pos.x;
+      totalWidth = p_ParentWidget->calculateSizeWithPadding().x - m_Pos.x;
     }
   }
 
@@ -192,14 +200,17 @@ ImVec2 HBUI::HBIWidget::getScreenPos() const {
 
 bool HBUI::HBIWidget::begin() {
   IM_ASSERT(!m_HasBegun && "Widget has already been begun");
-  m_IsEnded  = false;
-  m_HasBegun = true;
+  if(!canBeOwnParent()){
+    IM_ASSERT(p_ParentWidget != nullptr && "Widget cannot be its own parent");
+  }
+    m_CursorPos            = m_StartCursorPos;
+    m_LeftToRightCursorPos = m_StartCursorPos;
+    m_RightToLeftCursorPos = m_StartCursorPos;
+    m_TopToBottomCursorPos = m_StartCursorPos;
+    m_BottomToTopCursorPos = m_StartCursorPos;
 
-  m_CursorPos            = m_StartCursorPos;
-  m_LeftToRightCursorPos = m_StartCursorPos;
-  m_RightToLeftCursorPos = m_StartCursorPos;
-  m_TopToBottomCursorPos = m_StartCursorPos;
-  m_BottomToTopCursorPos = m_StartCursorPos;
+    m_HasBegun             = true;
+    m_IsEnded              = false;
 
   if (!hasSetPos()) {
     if (p_ParentWidget != nullptr) {
@@ -212,17 +223,10 @@ bool HBUI::HBIWidget::begin() {
     }
   }
 
-  if (p_DrawList == nullptr) {
-    if (p_ParentWidget != nullptr) {
-      p_DrawList = p_ParentWidget->getDrawList();
-    } else {
-      p_DrawList = ImGui::GetWindowDrawList();
-    }
-  }
-  IM_ASSERT(p_DrawList != nullptr && "No p_DrawList found to draw on");
   if (!beforeBegin()) {
     return false;
   }
+
 
   return afterBegin();
 }
@@ -233,9 +237,13 @@ bool HBUI::HBIWidget::end() {
     return false;
   }
 
+  ImVec2 calculateSize = calculateSize_impl();
   if (beforeDraw()) {
     p_ColorProperties->pushColorProperties();
-    draw();
+    drawChecks();
+    ImVec2 size = calculateSize_impl();
+    ImVec2 screenPos = getScreenPos();
+    draw(size,screenPos);
     p_ColorProperties->popColorProperties();
     afterDraw();
   } else {
@@ -249,9 +257,6 @@ bool HBUI::HBIWidget::end() {
   m_HasBegun  = false;
   m_IsEnded   = true;
   bool result = afterEnd();
-
-  ImGuiID parentID = p_ParentWidget == nullptr ? -1 : p_ParentWidget->c_ID;
-  addWidgetToDebugList(this, parentID);
-
+  reset();
   return result;
 }
