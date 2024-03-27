@@ -42,6 +42,7 @@ void MainWindow::removeIconButton() {
 }
 
 void MainWindow::init() {
+  HBUI::addDefaultIcon("NF_ICON_github", NF_ICON_github);
   HBUI::initialize("Hello, World!", 1280, 720);
 
   for (int i = 0; i < textButtonCount; i++) {
@@ -74,14 +75,14 @@ void MainWindow::render() {
         }
       }
     }
+
     if (showIconButtons) {
       for(int i = 0; i < iconButtonCount; ++i) {
-        int count = HBUI::getDefaultIconNames().size() - 1;
-        int rand =  std::rand() % count;
-        if (HBUI::iconButton(HBUI::getIcon(HBUI::getDefaultIconNames()[rand]))) {
+        if (HBUI::iconButton(HBUI::getIcon("NF_ICON_github"))) {
         }
       }
     }
+
     HBUI::endTaskBar();
 
 

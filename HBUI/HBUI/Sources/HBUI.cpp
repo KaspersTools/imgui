@@ -298,8 +298,7 @@ namespace HBUI {
 
   ImVec2 getContentRegionAvailMainWindow() {
     IM_ASSERT(getCurrentContext() != nullptr && "Main window is nullptr");
-    return getCurrentContext()->getMainWindow().getSizeWithChildren()
-           - getMainWindowCursorPos();
+    return getCurrentContext()->getMainWindow().getSizeWithChildren() - getMainWindowCursorPos();
   }
 
   //todo:  ImVec2 getContentRegionAvail(ImGuiViewport *viewport);
@@ -383,7 +382,7 @@ namespace HBUI {
     return g_HBUICTX->fontLoader->getActiveFont();
   }
 
-  Fonts::HBFont *getFont(){
+  Fonts::HBFont *getFont() {
     IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
     IM_ASSERT(g_HBUICTX->fontLoader != nullptr && "Font loader is nullptr");
 
@@ -395,10 +394,6 @@ namespace HBUI {
     IM_ASSERT(g_HBUICTX->fontLoader != nullptr && "Font loader is nullptr");
 
     return g_HBUICTX->fontLoader->getFont(fontSize, flags);
-  }
-
-  std::vector<std::string> getDefaultIconNames() {
-    return Fonts::HBFont::getDefaultIconNames();
   }
 
   Fonts::HBIcon *getIcon(const std::string &iconName) {
@@ -438,12 +433,21 @@ namespace HBUI {
     return Backend::getWindowScaleFactor();
   }
 
-  void activateFont(Fonts::HBFont* font){
+  Fonts::HBIcon *addDefaultIcon(const std::string &name, ImWchar glyph) {
+    if(g_HBUICTX != nullptr) {
+      IM_ASSERT(g_HBUICTX->fontLoader == nullptr && "Font loader is already initialized");
+    }
+
+    return Fonts::FontLoader::addIcon(name, glyph);
+  }
+
+  void activateFont(Fonts::HBFont *font) {
     IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
     IM_ASSERT(g_HBUICTX->fontLoader != nullptr && "Font loader is nullptr");
 
     g_HBUICTX->fontLoader->activateFont(font);
   }
+
   void activateFontSize(float fontSize) {
     IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
     IM_ASSERT(g_HBUICTX->fontLoader != nullptr && "Font loader is nullptr");

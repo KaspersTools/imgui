@@ -205,14 +205,15 @@ namespace HBUI {
     struct HBFont;
     struct HBIcon;
   }// namespace Fonts
+
+  HBUI_API Fonts::HBIcon *addDefaultIcon(const std::string& name, ImWchar glyph);
   HBUI_API Fonts::HBFont *getFont();
   HBUI_API Fonts::HBFont *getFont(float fontSize, HBLoadFontFlags flags);
   HBUI_API Fonts::HBFont *getDefaultFont();
   HBUI_API Fonts::HBFont *getBigFont();
 
   HBUI_API Fonts::HBIcon *getIcon(const std::string &iconName);
-  HBUI_API std::vector<std::string> getDefaultIconNames();
 
-  HBUI_API void           activateFontSize(float fontSize);
-  HBUI_API void           activateFont(Fonts::HBFont* font);
+  HBUI_API void activateFontSize(float fontSize);
+  HBUI_API void activateFont(Fonts::HBFont *font);
 }// namespace HBUI

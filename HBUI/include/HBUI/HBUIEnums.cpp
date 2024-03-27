@@ -479,3 +479,8 @@ public:
 
   void update() {}
 };
+
+struct HBIcon {
+  std::string name;
+  std::string clazz;
+};

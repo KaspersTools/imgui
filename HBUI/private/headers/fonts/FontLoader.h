@@ -35,13 +35,11 @@ namespace HBUI::Fonts {
     LoadFontData data;
 
     explicit HBFont(ImFont *font, LoadFontData data) : font(font), data(std::move(data)) {}
-    static HBIcon *getIcon(const std::string &name);
+    HBIcon *getIcon(const std::string &name);
 
-    static std::vector<HBIcon>  DEFAULT_ICONS;
-    static std::vector<ImWchar> DEFAULT_TEXT_GLYPHS;
-
-    static std::vector<std::string> getDefaultIconNames();
+    std::vector<HBIcon> icons = {};
   };
+
   class FontLoader {
   public:
     explicit FontLoader(bool loadDefaultFonts = true);
@@ -83,6 +81,12 @@ namespace HBUI::Fonts {
       if (fontSize == m_BigFont->data.size)
         return m_BigFont;
     }
+
+    static HBIcon *addIcon(const std::string& name, ImWchar glyph);
+
+  public:
+    static std::vector<HBIcon>  DEFAULT_ICONS;
+    static std::vector<ImWchar> DEFAULT_TEXT_GLYPHS;
 
   private:
     std::map<ImGuiID, HBFont *> m_LoadedFonts = std::map<ImGuiID, HBFont *>();// Map of loaded fonts

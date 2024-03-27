@@ -11,51 +11,23 @@ namespace HBUI::Fonts {
   //----------------------------------------------------------------------------------------------------------------------
   // HBFont
   //----------------------------------------------------------------------------------------------------------------------
-  std::vector<HBIcon> HBFont::DEFAULT_ICONS = {
-      HBIcon("NF_ICON_github", NF_ICON_github),
-      HBIcon("NF_ICON_git_merge", NF_ICON_git_merge),
-      HBIcon("NF_ICON_git_pull_request_create", NF_ICON_git_pull_request_create),
-      HBIcon("NF_ICON_facebook", NF_ICON_facebook),
-      HBIcon("NF_ICON_github1", NF_ICON_github1),
-      HBIcon("NF_ICON_unlock1", NF_ICON_unlock1),
-      HBIcon("NF_ICON_credit_card1", NF_ICON_credit_card1),
-      HBIcon("NF_ICON_github", NF_ICON_github),
-      HBIcon("NF_ICON_git_merge", NF_ICON_git_merge),
-      HBIcon("NF_ICON_git_pull_request_create", NF_ICON_git_pull_request_create),
-      HBIcon("NF_ICON_facebook", NF_ICON_facebook),
-      HBIcon("NF_ICON_github1", NF_ICON_github1),
-      HBIcon("NF_ICON_unlock1", NF_ICON_unlock1),
-      HBIcon("NF_ICON_credit_card1", NF_ICON_credit_card1),
-      HBIcon("NF_ICON_github", NF_ICON_github),
-      HBIcon("NF_ICON_git_merge", NF_ICON_git_merge),
-      HBIcon("NF_ICON_git_pull_request_create", NF_ICON_git_pull_request_create),
-      HBIcon("NF_ICON_facebook", NF_ICON_facebook),
-      HBIcon("NF_ICON_github1", NF_ICON_github1),
-      HBIcon("NF_ICON_unlock1", NF_ICON_unlock1),
-      HBIcon("NF_ICON_credit_card1", NF_ICON_credit_card1),
-      HBIcon("NF_ICON_github", NF_ICON_github),
-      HBIcon("NF_ICON_git_merge", NF_ICON_git_merge),
-      HBIcon("NF_ICON_git_pull_request_create", NF_ICON_git_pull_request_create),
-      HBIcon("NF_ICON_facebook", NF_ICON_facebook),
-      HBIcon("NF_ICON_github1", NF_ICON_github1),
-      HBIcon("NF_ICON_unlock1", NF_ICON_unlock1),
-      HBIcon("NF_ICON_credit_card1", NF_ICON_credit_card1),
-      HBIcon("NF_ICON_github", NF_ICON_github),
-      HBIcon("NF_ICON_git_merge", NF_ICON_git_merge),
-      HBIcon("NF_ICON_git_pull_request_create", NF_ICON_git_pull_request_create),
-      HBIcon("NF_ICON_facebook", NF_ICON_facebook),
-      HBIcon("NF_ICON_github1", NF_ICON_github1),
-      HBIcon("NF_ICON_unlock1", NF_ICON_unlock1),
-      HBIcon("NF_ICON_credit_card1", NF_ICON_credit_card1),
-      HBIcon("NF_ICON_rss1", NF_ICON_rss1)};
-  std::vector<std::string> HBFont::getDefaultIconNames() {
-    std::vector<std::string> names;
-    for (auto &icon: DEFAULT_ICONS) {
-      names.push_back(icon.name);
-    }
-    return names;
-  }
-  std::vector<ImWchar> HBFont::DEFAULT_TEXT_GLYPHS = {
+  //      HBIcon("NF_ICON_github", NF_ICON_github),
+  std::vector<HBIcon> FontLoader::DEFAULT_ICONS = {
+//      HBIcon("NF_ICON_git_merge", NF_ICON_git_merge),
+//      HBIcon("NF_ICON_git_pull_request_create", NF_ICON_git_pull_request_create),
+//      HBIcon("NF_ICON_facebook", NF_ICON_facebook),
+//      HBIcon("NF_ICON_github1", NF_ICON_github1),
+  };
+
+  //  std::vector<std::string> FontLoader::getDefaultIconNames() {
+  //    std::vector<std::string> names;
+  //    for (auto &icon: DEFAULT_ICONS) {
+  //      names.push_back(icon.name);
+  //    }
+  //    return names;
+  //  }
+
+  std::vector<ImWchar> FontLoader::DEFAULT_TEXT_GLYPHS = {
       NF_ICON_space,         //NF_ICON_space,
       NF_ICON_exclam,        //NF_ICON_exclam,
       NF_ICON_quotedbl,      //NF_ICON_quotedbl,
@@ -250,7 +222,7 @@ namespace HBUI::Fonts {
   };
 
   [[maybe_unused]] HBIcon *HBFont::getIcon(const std::string &name) {
-    for (auto &icon: DEFAULT_ICONS) {
+    for (auto &icon: icons) {
       if (icon.name == name)
         return &icon;
     }
@@ -344,13 +316,15 @@ namespace HBUI::Fonts {
     ImGuiIO &io   = ImGui::GetIO();
 
     std::vector<ImWchar> combinedGlyphRanges = std::vector<ImWchar>();
-    for (const ImWchar &defaultTextGlyphs: HBFont::DEFAULT_TEXT_GLYPHS) {
+    for (const ImWchar &defaultTextGlyphs: FontLoader::DEFAULT_TEXT_GLYPHS) {
       combinedGlyphRanges.push_back(defaultTextGlyphs);
     }
-    for (const HBIcon &icon: HBFont::DEFAULT_ICONS) {
+
+    for (const HBIcon &icon: FontLoader::DEFAULT_ICONS) {
       combinedGlyphRanges.push_back(icon.glyph);
       combinedGlyphRanges.push_back(icon.glyph);
     }
+
     combinedGlyphRanges.push_back(0);
 
     auto *_defaultTextRange = new ImWchar[combinedGlyphRanges.size()];
@@ -379,11 +353,15 @@ namespace HBUI::Fonts {
     ImFont *added = io.Fonts->AddFontFromFileTTF(data.path.c_str(), baseFontSize,
                                                  &baseConfig, icon);
     io.Fonts->Build();
-    auto font = new HBFont{added, data};
+    auto font   = new HBFont{added, data};
+    font->icons = DEFAULT_ICONS;
 
     m_LoadedFonts[id] = font;
+
     if (data.flags & HBLoadFontFlags_ActivateFont)
       activateFont(data.size, data.name, HBActivateFontFlags_None);
+
+
     return font;
   }
 
@@ -428,6 +406,12 @@ namespace HBUI::Fonts {
 
     m_LoadedFonts[getId(font->data.name, font->data.size)] = font;
     return font;
+  }
+
+  HBIcon *FontLoader::addIcon(const std::string &name, ImWchar glyph) {
+    auto icon = new HBIcon(name, glyph);
+    DEFAULT_ICONS.push_back(*icon);
+    return icon;
   }
 
 }// namespace HBUI::Fonts
