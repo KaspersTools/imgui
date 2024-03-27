@@ -80,10 +80,12 @@ namespace HBUI {
   HBButtonState_ iconButton(Fonts::HBIcon* icon, const ImVec2 &size, const ImVec2 &localPos, HBMouseButtons_ interactButton) {
     auto *button  = new HBUI::Buttons::HBButton(icon, interactButton,
                                                 localPos, size);
+
     setCurrentAppendingWidget(button);
+    auto buttonState = button->getCurrentState();
     getCurrentContext()->endCurrentWidget();
 
-    return HBButtonState_None;
+    return buttonState;
   }
 
   bool beginFullScreenWindow(std::string              label,

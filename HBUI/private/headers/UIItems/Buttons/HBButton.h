@@ -211,7 +211,7 @@ namespace HBUI::Buttons {
       return c_ButtonType;
     }
 
-  private:
+  public:
     [[nodiscard]] HBButtonState_ getCurrentState() {
       auto *ctx = HBUI::getCurrentContext();
 
@@ -225,10 +225,13 @@ namespace HBUI::Buttons {
       bool mouseDown = HBUI::isMouseButtonDown(HBMouseButtons_Left);
       if (isHovered) {
         if (mouseDown) {
+//          std::cout << "Clicked" << std::endl;
           return HBButtonState_Clicked;
         }
+//        std::cout << "Hover" << std::endl;
         return HBButtonState_Hovered;
       }
+//      std::cout << "None" << std::endl;
       return HBButtonState_None;
     }
 
