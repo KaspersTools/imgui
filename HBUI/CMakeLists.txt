@@ -45,6 +45,10 @@ option(HBUI_GLFW_VULKAN "Use VULKAN WITH GLFW" ON)
 ###############################################################################
 set(HBUI_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(HBUI SHARED
+        private/headers/logging/Log.cpp
+        private/headers/logging/Log.h
+        private/headers/UIItems/Windows/LogWindow/LogWindow.cpp
+        private/headers/UIItems/Windows/LogWindow/LogWindow.h
 )
 
 list(APPEND HBUI_SOURCES

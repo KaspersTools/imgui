@@ -1,3 +1,9 @@
 [submodule "HBUI/vendor/magic_enum"]
 	path = HBUI/vendor/magic_enum
 	url = git@github.com:Neargye/magic_enum.git
+[submodule "HBUI/vendor/spdlog"]
+	path = HBUI/vendor/spdlog
+	url = git@github.com:kasperhbo/spdlog.git
+[submodule "HBUI/vendor/fmt"]
+	path = HBUI/vendor/fmt
+	url = https://github.com/kasperhbo/fmt.git

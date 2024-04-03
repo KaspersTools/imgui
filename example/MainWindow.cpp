@@ -57,6 +57,14 @@ void MainWindow::init() {
 }
 
 bool MainWindow::run() {
+
+  for(int i =0; i < 10; i++) {
+     HBUI::log("Hello, Log!");
+     HBUI::error("Hello, Error!");
+     HBUI::warn("Hello, Warn! ");
+     HBUI::debug("Hello, Debug!");
+  }
+
   while (!HBUI::wantToClose()) {
     render();
   }
@@ -88,6 +96,9 @@ void MainWindow::render() {
     HBUI::beginWindow("kaspers window");
     ImGui::Text("kasper123");
     HBUI::endWindow();
+    bool* p_open = nullptr;
+    p_open = new bool(true);
+    HBUI::showLogWindow(p_open);
 
     ImGui::ShowDemoWindow();
   if (showHUIDemoWindow) {
@@ -169,7 +180,6 @@ void MainWindow::render() {
 
     ImGui::End();
   }
-
   HBUI::endFrame();
 }
 

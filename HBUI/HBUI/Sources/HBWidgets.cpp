@@ -9,6 +9,9 @@
 #include <UIItems/Bars/HBTaskBar.h>
 #include <UIItems/Buttons/HBButton.h>
 #include <UIItems/Debugger/HBWidgetDebugger.h>
+#include <UIItems/Windows/LogWindow/LogWindow.h>
+#include <logging/Log.h>
+#include <UIItems/Windows/LogWindow/LogWindow.h>
 
 
 // clang-format on
@@ -68,8 +71,8 @@ namespace HBUI {
   }
 
   HBButtonState_ textButton(std::string label, const ImVec2 &size, const ImVec2 &localPos, HBMouseButtons_ interactButton) {
-    auto *button  = new HBUI::Buttons::HBButton(std::move(label), HBButtonType_Text, interactButton,
-                                                localPos, size);
+    auto *button = new HBUI::Buttons::HBButton(std::move(label), HBButtonType_Text, interactButton,
+                                               localPos, size);
 
     setCurrentAppendingWidget(button);
     getCurrentContext()->endCurrentWidget();
@@ -77,9 +80,9 @@ namespace HBUI {
     return HBButtonState_None;
   }
 
-  HBButtonState_ iconButton(Fonts::HBIcon* icon, const ImVec2 &size, const ImVec2 &localPos, HBMouseButtons_ interactButton) {
-    auto *button  = new HBUI::Buttons::HBButton(icon, interactButton,
-                                                localPos, size);
+  HBButtonState_ iconButton(Fonts::HBIcon *icon, const ImVec2 &size, const ImVec2 &localPos, HBMouseButtons_ interactButton) {
+    auto *button = new HBUI::Buttons::HBButton(icon, interactButton,
+                                               localPos, size);
 
     setCurrentAppendingWidget(button);
     auto buttonState = button->getCurrentState();
@@ -180,5 +183,22 @@ namespace HBUI {
 
   void endWindow() {
     getCurrentContext()->endCurrentWidget();
+  }
+
+  void showLogWindow(bool *p_open) {
+    getCurrentContext()->showLog(p_open);
+  }
+
+  void log(const std::string &message) {
+    spdlog::info(message);
+  }
+  void warn(const std::string &message) {
+    spdlog::warn(message);
+  }
+  void error(const std::string &message) {
+    spdlog::error(message);
+  }
+  void debug(const std::string &message) {
+    spdlog::debug(message);
   }
 }// namespace HBUI

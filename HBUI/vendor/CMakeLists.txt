@@ -14,19 +14,33 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE PATH "Single Di
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin CACHE PATH "Single Directory for all Libraries")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib CACHE PATH "Single Directory for all static libraries.")
 
-if((CMAKE_CXX_COMPILER_ID MATCHES "GNU") OR (CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
+if ((CMAKE_CXX_COMPILER_ID MATCHES "GNU") OR (CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
     set(OPTIONS -Wall -Wextra -pedantic-errors -Werror)
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(OPTIONS /W4 /WX)
-    if(HAS_PERMISSIVE_FLAG)
+    if (HAS_PERMISSIVE_FLAG)
         set(OPTIONS ${OPTIONS} /permissive-)
-    endif()
-endif()
+    endif ()
+endif ()
 add_subdirectory(magic_enum)
 
 add_library(HBUI_VENDOR INTERFACE)
 target_link_libraries(HBUI_VENDOR INTERFACE magic_enum::magic_enum)
 target_include_directories(HBUI_VENDOR INTERFACE vendor/magic_enum/include)
+
+
+#fmt
+#message(STATUS "fmt folder found")
+add_subdirectory(fmt)
+target_link_libraries(HBUI_VENDOR INTERFACE fmt::fmt-header-only)
+target_compile_definitions(HBUI_VENDOR INTERFACE FMT_HEADER_ONLY)
+
+#spdlog
+message(STATUS "spdlog folder found")
+add_subdirectory(spdlog)
+target_link_libraries(HBUI_VENDOR INTERFACE spdlog::spdlog)
+target_compile_definitions(HBUI_VENDOR INTERFACE SPDLOG_FMT_EXTERNAL)
+
 
 message(STATUS "HBUI_VENDOR: ${CMAKE_PROJECT_NAME}")
 message(STATUS "HBUI_VENDOR: ${CMAKE_PROJECT_NAME} ${CMAKE_PROJECT_VERSION}")

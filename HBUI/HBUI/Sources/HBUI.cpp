@@ -19,6 +19,8 @@
 #include <Animation/Animations.h>
 #include <Animation/Animation.h>
 
+#include <UIItems/Windows/LogWindow/LogWindow.h>
+
 #ifndef g_HBUICTX
 HBContext *g_HBUICTX = nullptr;
 #endif
@@ -58,6 +60,9 @@ void HBContext::afterBackendInitialized() {
   currentAppingWindow = mainWindow;
 
   fontLoader  = new HBUI::Fonts::FontLoader(true);
+
+  loggerWindow = logWindow();
+
   initialized = true;
 }
 
@@ -129,6 +134,9 @@ HBUI::Windows::HBWindow &HBContext::getMainWindow() const {
   }
   addOrUpdateWidgetDebugData(windowBackup);
   delete windowBackup;
+}
+void HBContext::showLog(bool *p_Open) {
+  loggerWindow->drawImgui(p_Open);
 }
 
 //-------------------------------------

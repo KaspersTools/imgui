@@ -222,4 +222,15 @@ namespace HBUI {
   //---------------------------------------------------------------------------------
   // [SECTION] Windows
   //---------------------------------------------------------------------------------
+  HBUI_API void showLogWindow(bool *p_open);
+
+  //---------------------------------------------------------------------------------
+  // [SECTION] Logging
+  //---------------------------------------------------------------------------------
+  HBUI_API void log(const std::string &message);
+  HBUI_API void warn(const std::string &message);
+  HBUI_API void debug(const std::string &message);
+  HBUI_API void error(const std::string &message);
+
+
 }// namespace HBUI

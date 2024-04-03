@@ -7,6 +7,15 @@
 #include <unordered_map>
 #include <vector>
 
+namespace HBUI{
+  namespace Logging{
+    template<typename Mutex>
+    class LogWindow;
+  }
+}
+typedef std::shared_ptr<HBUI::Logging::LogWindow<std::mutex>> logWindow_t;
+logWindow_t                                             logWindow();
+
 //forward declartions
 struct ImGuiWindow;
 //-----------------------------------------------------------------------------
@@ -454,12 +463,9 @@ public:
       | ImGuiWindowFlags_NoResize
       | ImGuiWindowFlags_NoMove
       | ImGuiWindowFlags_NoBringToFrontOnFocus
-      | ImGuiWindowFlags_NoNavFocus
-      //
-      ;
-  // clang-format on
-
+      | ImGuiWindowFlags_NoNavFocus;
 private:
+  logWindow_t loggerWindow = nullptr;
   HBUI::Windows::HBWindow *mainWindow = nullptr;//used as fallback window is the same size as the native window worksize
 
 public:
@@ -481,6 +487,8 @@ public:
 
   [[maybe_unused]] void startWidget(HBUI::HBIWidget *widget);
   [[maybe_unused]] void endCurrentWidget();
+
+  [[maybe_unused]] void showLog(bool* p_Open);
 
   void update() {}
 };
