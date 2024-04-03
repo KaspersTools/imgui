@@ -2,7 +2,7 @@
 // Created by Kasper de bruin on 08/03/2024.
 //
 
-#include "HBWindow.h"
+#include "HBUI/HBWindow.h"
 #include <UIItems/Bars/HBTaskBar.h>
 
 namespace HBUI {

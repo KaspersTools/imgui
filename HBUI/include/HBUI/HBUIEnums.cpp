@@ -370,9 +370,9 @@ namespace HBUI {
 
 namespace HBUI {
   class HBIWidget;
-  namespace Windows {
-    class HBWindow;
-  }// namespace Windows
+//  namespace Windows {
+//    class HBWindow;
+//  }// namespace Windows
 }// namespace HBUI
 
 
@@ -402,7 +402,12 @@ private:
 //-----------------------------------------------------------------------------
 // [SECTION] Context
 //-----------------------------------------------------------------------------
+namespace HBUI::Windows {
+  class HBWindow;
+}
+
 struct HBContext {
+
   friend class HBUI::Windows::HBWindow;
 
 public:

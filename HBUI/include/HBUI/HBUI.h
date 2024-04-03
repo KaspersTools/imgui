@@ -46,6 +46,7 @@ namespace HBUI {
   HBUI_API const ImVec2 &getMainWindowPos();
   HBUI_API const ImVec2 &getMainWindowDpiScaleFactor();
   HBUI_API float         getMainWindowDpiScale();
+  HBUI_API std::string   getMonitorName();
 
   //(backend) Window
   //(backend) Window
@@ -104,7 +105,7 @@ namespace HBUI {
       HBStyleFlags       styleFlags  = HBStyleFlags_None,
       Windows::HBWindow *window      = nullptr);
   HBUI_API bool beginWindow(std::string        label,
-                            ImGuiID            id               = -1,
+                            ImGuiID            id,
                             HBUIWindowFlags    flags            = HBUIWindowFlags_None,
                             ImGuiWindowFlags   imguiWindowFlags = ImGuiWindowFlags_None,
                             const ImVec2      &size             = {0, 0},
@@ -125,6 +126,7 @@ namespace HBUI {
                             ImGuiID            id               = -1,
                             Windows::HBWindow *window           = nullptr);
 
+  HBUI_API void endWindow();
 
   HBUI_API bool beginFullScreenDockSpaceWindow(const std::string &id,
                                                const ImVec2      &position  = {0, 0},
@@ -206,7 +208,7 @@ namespace HBUI {
     struct HBIcon;
   }// namespace Fonts
 
-  HBUI_API Fonts::HBIcon *addDefaultIcon(const std::string& name, ImWchar glyph);
+  HBUI_API Fonts::HBIcon *addDefaultIcon(const std::string &name, ImWchar glyph);
   HBUI_API Fonts::HBFont *getFont();
   HBUI_API Fonts::HBFont *getFont(float fontSize, HBLoadFontFlags flags);
   HBUI_API Fonts::HBFont *getDefaultFont();
@@ -216,4 +218,8 @@ namespace HBUI {
 
   HBUI_API void activateFontSize(float fontSize);
   HBUI_API void activateFont(Fonts::HBFont *font);
+
+  //---------------------------------------------------------------------------------
+  // [SECTION] Windows
+  //---------------------------------------------------------------------------------
 }// namespace HBUI

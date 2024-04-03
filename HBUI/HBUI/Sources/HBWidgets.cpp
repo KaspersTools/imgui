@@ -5,7 +5,7 @@
 // clang-format off
 #include <HBUI/HBUI.h>
 #include <UIItems/Interfaces/HBIWidget.h>
-#include <UIItems/Windows/HBWindow.h>
+#include "HBUI/HBWindow.h"
 #include <UIItems/Bars/HBTaskBar.h>
 #include <UIItems/Buttons/HBButton.h>
 #include <UIItems/Debugger/HBWidgetDebugger.h>
@@ -159,7 +159,9 @@ namespace HBUI {
     auto *colorBuilder = new Builder::HBWidgetColorPropertiesBuilder();
     colorBuilder->fromImGuiStyle(HBUIType_Window);
     colorBuilder->setBackgroundColor(ImVec4(255, 0, 0, 255));
+
     auto *colorProperties = colorBuilder->build();
+
     window = new HBUI::Windows::HBWindow(std::move(label),
                                          id == -1 ? ImGui::GetID(label.c_str()) : id,
                                          windowFlags,
@@ -174,5 +176,9 @@ namespace HBUI {
 
     setCurrentAppendingWidget(window);
     return true;
+  }
+
+  void endWindow() {
+    getCurrentContext()->endCurrentWidget();
   }
 }// namespace HBUI

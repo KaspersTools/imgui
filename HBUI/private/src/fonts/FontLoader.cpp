@@ -245,6 +245,7 @@ namespace HBUI::Fonts {
   //----------------------------------------------------------------------------------------------------------------------
   FontLoader::FontLoader(const bool _loadDefaultFonts) {
     HBIO &hbio                   = HBUI::getIO();
+    auto displayName = HBUI::getMonitorName();
     hbio.dpiWindowSizeFactor     = HBUI::getWindowSizeDpiScaleFactor();
     float fontSizeIncreaseFactor = 1.f;
 

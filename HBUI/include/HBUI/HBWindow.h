@@ -4,7 +4,6 @@
 
 #ifndef IMGUI_HBWINDOW_H
 #define IMGUI_HBWINDOW_H
-
 #include <UIItems/Interfaces/HBIWidget.h>
 
 #pragma clang diagnostic push

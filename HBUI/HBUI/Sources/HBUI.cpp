@@ -6,7 +6,7 @@
 #include <codecvt>
 #include <locale>
 
-#include <UIItems/Windows/HBWindow.h>
+#include "HBUI/HBWindow.h"
 #include <UIItems/Windows/HBMainWindow.h>
 #include <UIItems/Interfaces/HBIWidget.h>
 #include <UIItems/Debugger/HBWidgetDebugger.h>
@@ -250,6 +250,10 @@ namespace HBUI {
     return Backend::getWindowPosition();
   }
 
+  std::string getMonitorName() {
+      return Backend::getMonitorName();
+  }
+
   ImColor &getNativeWindowClearColor() {
     return HBUI::getCurrentContext()->windowData.ClearColor;
   }
@@ -469,6 +473,7 @@ namespace HBUI {
   bool containsPoint(const ImVec2 &min, const ImVec2 &max, const ImVec2 &point) {
     return (point.x > min.x && point.x < max.x) && (point.y > min.y && point.y < max.y);
   }
+
 
 
   /**

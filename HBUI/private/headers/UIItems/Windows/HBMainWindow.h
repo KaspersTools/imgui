@@ -5,8 +5,7 @@
 #ifndef IMGUI_HBMAINWINDOW_H
 #define IMGUI_HBMAINWINDOW_H
 
-#include "HBWindow.h"
-
+#include "HBUI/HBWindow.h"
 
 namespace HBUI::Windows {
 

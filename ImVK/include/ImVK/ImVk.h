@@ -30,6 +30,8 @@ namespace HBUI {
 		IMVK_IMPL_API ImVec2 getWindowFrameSize();
 		IMVK_IMPL_API float getMonitorHeight();
 		IMVK_IMPL_API float getMonitorWidth();
+		IMVK_IMPL_API std::string getMonitorName();
+
 		IMVK_IMPL_API void setBackendWindowFlags(HBBackendWindowFlags flags);
 		IMVK_IMPL_API float getWindowSizeDPIScaleFactor();
 		IMVK_IMPL_API float getFontSizeIncreaseFactor();

@@ -85,7 +85,11 @@ void MainWindow::render() {
 
     HBUI::endTaskBar();
 
+    HBUI::beginWindow("kaspers window");
+    ImGui::Text("kasper123");
+    HBUI::endWindow();
 
+    ImGui::ShowDemoWindow();
   if (showHUIDemoWindow) {
     ImGui::Begin("DemoWindow", &showHUIDemoWindow);
 

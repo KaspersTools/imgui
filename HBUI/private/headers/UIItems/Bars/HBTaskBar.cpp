@@ -4,7 +4,7 @@
 
 #include "HBTaskBar.h"
 
-#include <UIItems/Windows/HBWindow.h>
+#include "HBUI/HBWindow.h"
 namespace HBUI::Bars {
   bool HBTaskBar::beforeBegin() {
     auto *parentWindow = reinterpret_cast<Windows::HBWindow *>(getParent());
