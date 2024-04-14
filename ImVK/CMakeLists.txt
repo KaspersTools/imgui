@@ -100,15 +100,15 @@ list(APPEND ${ImVk_PRIVATE_INCLUDE_DIRS} ${GLFW_DIR}/deps)
 # ImVk
 ###############################################################################
 set(ImVk_SOURCES
-        backends/imgui_impl_glfw.cpp
-        backends/imgui_impl_vulkan.cpp
-        private/src/ImVk.cpp
-        private/src/Image.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/private/src/ImVk.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/private/src/Image.cpp
 )
 
 set(ImVK_Headers
-        include/ImVK/ImVk.h
-        include/ImVK/Image.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/ImVK/ImVk.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/ImVK/Image.h
 )
 
 target_sources(ImVk PUBLIC
