@@ -2,9 +2,9 @@
 // Created by Kasper de Bruin on 24/02/2024.
 //
 
-#include <HBUI/HBUI.h>
-#include <fonts/FontLoader.h>
-#include <imgui.h>
+#include "FontLoader.h"
+#include "HBUI/HBUI.h"
+#include "imgui/imgui.h"
 #include <iterator>
 
 namespace HBUI::Fonts {
@@ -13,10 +13,10 @@ namespace HBUI::Fonts {
   //----------------------------------------------------------------------------------------------------------------------
   //      HBIcon("NF_ICON_github", NF_ICON_github),
   std::vector<HBIcon> FontLoader::DEFAULT_ICONS = {
-//      HBIcon("NF_ICON_git_merge", NF_ICON_git_merge),
-//      HBIcon("NF_ICON_git_pull_request_create", NF_ICON_git_pull_request_create),
-//      HBIcon("NF_ICON_facebook", NF_ICON_facebook),
-//      HBIcon("NF_ICON_github1", NF_ICON_github1),
+      //      HBIcon("NF_ICON_git_merge", NF_ICON_git_merge),
+      //      HBIcon("NF_ICON_git_pull_request_create", NF_ICON_git_pull_request_create),
+      //      HBIcon("NF_ICON_facebook", NF_ICON_facebook),
+      //      HBIcon("NF_ICON_github1", NF_ICON_github1),
   };
 
   //  std::vector<std::string> FontLoader::getDefaultIconNames() {
@@ -364,6 +364,13 @@ namespace HBUI::Fonts {
 
 
     return font;
+  }
+
+  void FontLoader::updateFontsToNewDPI() {
+    for (auto &font: m_LoadedFonts) {
+      LoadFontData data = font.second->data;
+      loadFont(data);
+    }
   }
 
   HBFont *FontLoader::activateBigFont() {

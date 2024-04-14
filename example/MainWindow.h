@@ -49,6 +49,9 @@ private:
 
   std::vector<std::string> iconButtons      = {};
   std::vector<std::string> textButtonLabels = {};
+
+  logger_t customLogger = nullptr;
+  HBUI::Windows::Logging::LogWindow* logWindow = nullptr;
 };
 
 

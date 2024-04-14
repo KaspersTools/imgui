@@ -45,10 +45,12 @@ option(HBUI_GLFW_VULKAN "Use VULKAN WITH GLFW" ON)
 ###############################################################################
 set(HBUI_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(HBUI SHARED
-        private/headers/logging/Log.cpp
-        private/headers/logging/Log.h
         private/headers/UIItems/Windows/LogWindow/LogWindow.cpp
         private/headers/UIItems/Windows/LogWindow/LogWindow.h
+        private/headers/logging/Logger.cpp
+        private/headers/logging/Logger.h
+        private/headers/logging/LogManager.cpp
+        private/headers/logging/LogManager.h
 )
 
 list(APPEND HBUI_SOURCES
@@ -83,8 +85,7 @@ set(GENERATED_SOURCES
 
 message(STATUS "GENERATED_SOURCES: ${GENERATED_SOURCES}")
 target_sources(HBUI PRIVATE
-        ${HBUI_DIR}/private/src/fonts/FontLoader.cpp
-        ${HBUI_DIR}/private/src/UIItems/HBUIItemBase.cpp
+        ${HBUI_DIR}/private/headers/fonts/FontLoader.cpp
 
         ${HBUI_DIR}/private/headers/UIItems/Interfaces/HBIWidget.cpp
         ${HBUI_DIR}/private/headers/UIItems/Windows/HBWindow.cpp
@@ -95,8 +96,6 @@ target_sources(HBUI PRIVATE
 
         ${HBUI_DIR}/private/headers/UIItems/Bars/HBTaskBar.cpp
         ${HBUI_DIR}/private/headers/UIItems/Buttons/HBButton.cpp
-
-        ${HBUI_DIR}/private/src/HBDebugWidget.cpp
 )
 
 

@@ -19,6 +19,7 @@
 #include <Animation/Animations.h>
 #include <Animation/Animation.h>
 
+#include <logging/Logger.h>
 #include <UIItems/Windows/LogWindow/LogWindow.h>
 
 #ifndef g_HBUICTX
@@ -28,18 +29,27 @@ HBContext *g_HBUICTX = nullptr;
 
 // clang-format on
 //-------------------------------------
-// [SECTION] HBContext
+// [SECTION] CONTEXT -- HBContext
 //-------------------------------------
-
 HBContext::~HBContext() {
   delete animManager;
   delete mainWindow;
+  delete style;
+  delete widgetDebugger;
+  delete fontLoader;
+
+  for (auto &logWindow: logWindows) {
+    delete logWindow.second;
+  }
 }
 
+
+//-------------------------------------
+// [SECTION] CONTEXT -- Initialization
+//-------------------------------------
 void HBContext::initialize() {
   IM_ASSERT(!initialized && "HBContext::initialize() called twice");
 }
-
 void HBContext::afterBackendInitialized() {
   style = new HBStyle();
 
@@ -59,13 +69,16 @@ void HBContext::afterBackendInitialized() {
       HBUIType_Window);
   currentAppingWindow = mainWindow;
 
-  fontLoader  = new HBUI::Fonts::FontLoader(true);
+  fontLoader = new HBUI::Fonts::FontLoader(true);
 
-  loggerWindow = logWindow();
+  mainLogger = createLogger("HBUI __MainLogger__ CORE", true);
 
   initialized = true;
 }
 
+//-------------------------------------
+// [SECTION] CONTEXT -- FrameRendering
+//-------------------------------------
 void HBContext::startFrame() {
   IM_ASSERT(initialized && "HBContext::startFrame() called before HBContext::initialize()");
   //todo: do this in the backend
@@ -87,20 +100,36 @@ void HBContext::startFrame() {
 
   animManager->startFrame();
 }
-
 void HBContext::endFrame() {
   IM_ASSERT(initialized && "HBContext::endFrame() called before HBContext::initialize()");
   animManager->endFrame();
   mainWindow->end();
   buttonStates.clear();
 }
+void HBContext::update() {
+  IM_ASSERT(initialized && "HBContext::update() called before HBContext::initialize()");
+  //check for dpi change
+  auto dpiWinSizFact  = io.dpiWindowSizeFactor;
+  auto dpiFontSizFact = io.fontRenderingScale;
 
+  if (dpiWinSizFact != HBUI::getWindowSizeDpiScaleFactor() || dpiFontSizFact != HBUI::getFontSizeIncreaseFactor()) {
+//    mainLogger->addMessage(spdlog::details::log_msg("HBUI", spdlog::level::warn, "DPI changed"));
+    mainLogger->info("DPI changed");
+    io.dpiWindowSizeFactor = HBUI::getWindowSizeDpiScaleFactor();
+    io.fontRenderingScale  = HBUI::getFontSizeIncreaseFactor();
+
+//    fontLoader->updateFontsToNewDPI();
+  }
+}
+
+//-------------------------------------
+// [SECTION] CONTEXT -- Widgets
+//-------------------------------------
 HBButtonState_ HBContext::getButtonState(ImGuiID id) {
   IM_ASSERT(initialized && "HBContext::getCurrentState() called before HBContext::initialize()");
   HBButtonState_ state = buttonStates[id];
   return state;
 }
-
 HBUI::Windows::HBWindow &HBContext::getMainWindow() const {
   IM_ASSERT(mainWindow != nullptr && "Main window is nullptr");
   return *mainWindow;
@@ -109,7 +138,6 @@ HBUI::Windows::HBWindow &HBContext::getMainWindow() const {
 [[maybe_unused]] void HBContext::setMainWindowAsCurrent() {
   currentAppingWindow = mainWindow;
 }
-
 [[maybe_unused]] void HBContext::startWidget(HBUI::HBIWidget *widget) {
   IM_ASSERT(widget != nullptr && "Widget is nullptr");
   IM_ASSERT(!widget->hasBegun() && "Widget has already been begun");
@@ -118,8 +146,6 @@ HBUI::Windows::HBWindow &HBContext::getMainWindow() const {
   widget->begin();
   addOrUpdateWidgetDebugData(widget);
 }
-
-//[[maybe_unused]] void
 [[maybe_unused]] void HBContext::endCurrentWidget() {
   IM_ASSERT(currentAppingWindow != nullptr && "Current appending window is nullptr");
   IM_ASSERT(currentAppingWindow != mainWindow && "Cannot end main window");
@@ -135,8 +161,64 @@ HBUI::Windows::HBWindow &HBContext::getMainWindow() const {
   addOrUpdateWidgetDebugData(windowBackup);
   delete windowBackup;
 }
-void HBContext::showLog(bool *p_Open) {
-  loggerWindow->drawImgui(p_Open);
+
+
+//-------------------------------------
+// [SECTION] CONTEXT -- Logging
+//-------------------------------------
+logger_t HBContext::getLogger(const std::string &name, bool createIfNotExists) {
+  if (loggers.find(name) == loggers.end()) {
+    if (createIfNotExists) {
+      return loggers[name] = createLogger(name, false);
+    }
+    return nullptr;
+  }
+  return loggers[name];
+}
+logger_t HBContext::addLogger(const std::string &name) {
+  if (loggers.find(name) == loggers.end()) {
+    loggers[name] = createLogger(name, false);
+  }
+  return loggers[name];
+}
+
+logger_t HBContext::getMainLogger() {
+  return mainLogger;
+}
+
+void HBContext::showMainLogWindow() {
+  if (logWindowOpen) {
+    if (mainLogWindow == nullptr) {
+      std::shared_ptr<HBUI::Logging::Logger<std::mutex>> logger = std::dynamic_pointer_cast<HBUI::Logging::Logger<std::mutex>>(mainLogger->sinks()[0]);
+      mainLogWindow = new HBUI::Windows::Logging::LogWindow(logger);
+    }
+
+    mainLogWindow->draw(&logWindowOpen);
+  }
+}
+HBUI::Windows::Logging::LogWindow *HBContext::getMainLogWindow() {
+  return mainLogWindow;
+}
+
+HBUI::Windows::Logging::LogWindow *HBContext::getLogWindow(const logger_t &logger, bool createIfNotExists) {
+  if (logWindows.find(logger) == logWindows.end()) {
+    if (createIfNotExists) {
+      return createLogWindow(logger);
+    }
+    return nullptr;
+  }
+  return logWindows[logger];
+}
+
+HBUI::Windows::Logging::LogWindow *HBContext::createLogWindow(const logger_t &logger) {
+  HBUI::Windows::Logging::LogWindow *foundLogWindow = logWindows[logger];
+
+  if (foundLogWindow != nullptr) {
+    HBUI::warn("Log window already exists, not creating a new one for logger: " + logger->name());
+    return logWindows[logger];
+  }
+  std::shared_ptr<HBUI::Logging::Logger<std::mutex>> found = std::dynamic_pointer_cast<HBUI::Logging::Logger<std::mutex>>(logger->sinks()[0]);
+  return logWindows[logger] = new HBUI::Windows::Logging::LogWindow(found);
 }
 
 //-------------------------------------
@@ -259,7 +341,7 @@ namespace HBUI {
   }
 
   std::string getMonitorName() {
-      return Backend::getMonitorName();
+    return Backend::getMonitorName();
   }
 
   ImColor &getNativeWindowClearColor() {
@@ -348,6 +430,8 @@ namespace HBUI {
     Backend::startRenderBackend();
 
     g_HBUICTX->startFrame();
+
+    g_HBUICTX->update();
   }
 
   void endFrame() {
@@ -433,20 +517,24 @@ namespace HBUI {
   //-------------------------------------
   // [SECTION] Fonts
   //-------------------------------------
-  float getWindowSizeDpiScaleFactor() {
-    return Backend::getWindowSizeDPIScaleFactor();
+  static bool firstTimegetWindowSizeDpiScaleFactor = true;
+  float       getWindowSizeDpiScaleFactor() {
+   return Backend::getWindowSizeDPIScaleFactor();
   }
 
-  float getFontSizeIncreaseFactor() {
+  static bool firstgetFontSizeIncreaseFactor = true;
+  float       getFontSizeIncreaseFactor() {
     return Backend::getFontSizeIncreaseFactor();
   }
 
-  ImVec2 getWindowScaleFactor() {
+  static bool firstgetFontScaleFactor = true;
+  ImVec2      getWindowScaleFactor() {
+
     return Backend::getWindowScaleFactor();
   }
 
   Fonts::HBIcon *addDefaultIcon(const std::string &name, ImWchar glyph) {
-    if(g_HBUICTX != nullptr) {
+    if (g_HBUICTX != nullptr) {
       IM_ASSERT(g_HBUICTX->fontLoader == nullptr && "Font loader is already initialized");
     }
 
@@ -456,16 +544,72 @@ namespace HBUI {
   void activateFont(Fonts::HBFont *font) {
     IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
     IM_ASSERT(g_HBUICTX->fontLoader != nullptr && "Font loader is nullptr");
-
     g_HBUICTX->fontLoader->activateFont(font);
   }
 
   void activateFontSize(float fontSize) {
     IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
     IM_ASSERT(g_HBUICTX->fontLoader != nullptr && "Font loader is nullptr");
-
     g_HBUICTX->fontLoader->activateFontSize(fontSize);
   }
+
+  //-------------------------------------
+  // [SECTION] Logging
+  //-------------------------------------
+
+  void log(const std::string &message) {
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    g_HBUICTX->getMainLogger()->info(message);
+  }
+  void warn(const std::string &message) {
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    g_HBUICTX->getMainLogger()->warn(message);
+  }
+  void error(const std::string &message) {
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    g_HBUICTX->getMainLogger()->error(message);
+  }
+  void debug(const std::string &message) {
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    g_HBUICTX->getMainLogger()->debug(message);
+  }
+
+  void log(const std::string &message, const logger_t &logger) {
+    logger->info(message);
+  }
+  void warn(const std::string &message, const logger_t &logger) {
+    spdlog::details::log_msg msg = spdlog::details::log_msg(logger->name(), spdlog::level::warn, message);
+    logger->warn(message);
+  }
+  void debug(const std::string &message, const logger_t &logger) {
+    logger->debug(message);
+  }
+  void error(const std::string &message, const logger_t &logger) {
+    logger->error(message);
+  }
+
+  logger_t createLogger(const std::string &name) {
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    return g_HBUICTX->addLogger(name);
+  }
+
+  logger_t getLogger(const std::string &name) {
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    auto logger = g_HBUICTX->getLogger(name);
+    return logger;
+  }
+
+  Windows::Logging::LogWindow *getLogWindow(const logger_t &logger) {
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    return g_HBUICTX->getLogWindow(logger);
+  }
+
+  Windows::Logging::LogWindow *createLogWindow(const logger_t &logger) {
+    IM_ASSERT(g_HBUICTX != nullptr && "Current Context is nullptr");
+    return g_HBUICTX->createLogWindow(logger);
+  }
+
+
   //-------------------------------------
   //[SECTION] Helper functions
   //-------------------------------------
@@ -481,7 +625,6 @@ namespace HBUI {
   bool containsPoint(const ImVec2 &min, const ImVec2 &max, const ImVec2 &point) {
     return (point.x > min.x && point.x < max.x) && (point.y > min.y && point.y < max.y);
   }
-
 
 
   /**

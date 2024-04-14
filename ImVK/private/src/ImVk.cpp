@@ -746,9 +746,6 @@ namespace HBUI::Backend {
 #if __APPLE__
 #import <AppKit/NSScreen.h>
 #import <Foundation/Foundation.h>
-#include <TargetConditionals.h>
-#include <iostream>
-
 float HBUI::Backend::getFontSizeIncreaseFactor() {
   auto screens = NSScreen.screens;
   if (screens.count == 0) {

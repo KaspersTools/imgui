@@ -1,20 +1,33 @@
 //
 // Created by Kasper de Bruin on 01/03/2024.
 //
+
 #include "imgui.h"
 #include <map>
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <memory>
+#include <mutex>
 
-namespace HBUI{
-  namespace Logging{
-    template<typename Mutex>
-    class LogWindow;
-  }
+//-----------------------------------------------------------------------------
+// [SECTION] Logging
+//-----------------------------------------------------------------------------
+namespace HBUI::Logging {
+  template<typename Mutex>
+  class Logger;
 }
-typedef std::shared_ptr<HBUI::Logging::LogWindow<std::mutex>> logWindow_t;
-logWindow_t                                             logWindow();
+namespace spdlog {
+  class logger;
+}
+typedef std::shared_ptr<spdlog::logger> logger_t;
+logger_t                                createLogger(const std::string &name, bool isDefault);
+
+
+namespace HBUI::Windows::Logging {
+  class LogWindow;
+}
+
 
 //forward declartions
 struct ImGuiWindow;
@@ -335,9 +348,11 @@ struct HBIO {
   bool   mouseDown[HBMouseButtons_COUNT] = {false, false, false};
 };
 
+//-----------------------------------------------------------------------------
+// [SECTION] Context
+//-----------------------------------------------------------------------------
 template<typename T>
 struct HBAnimProps;
-
 namespace HBUI {
   class HBWidgetManager;
   namespace Debuggers {
@@ -370,18 +385,17 @@ namespace HBUI {
   namespace Fonts {
     class FontLoader;
     struct HBIcon;
-  }
+  }// namespace Fonts
 
   namespace Animation {
     class HBAnimManager;
   }
 }// namespace HBUI
-
 namespace HBUI {
   class HBIWidget;
-//  namespace Windows {
-//    class HBWindow;
-//  }// namespace Windows
+  //  namespace Windows {
+  //    class HBWindow;
+  //  }// namespace Windows
 }// namespace HBUI
 
 
@@ -392,7 +406,7 @@ namespace HBUI {
 //  HBCol_Count
 //};
 struct HBStyle {
-//  ImVec2 FramePadding = getFramePadding();
+  //  ImVec2 FramePadding = getFramePadding();
 
   ImVec2 IconSize        = ImVec2(16, 16);
   ImVec2 TaskBarIconSize = ImVec2(55, 55);
@@ -403,9 +417,9 @@ struct HBStyle {
     ImGuiStyle *style = &ImGui::GetStyle();
     return {style->FramePadding.x, style->FramePadding.y};
   }
-private:
-//  ImVec2 _framePadding = ImVec2(0, 0);
 
+private:
+  //  ImVec2 _framePadding = ImVec2(0, 0);
 };
 
 //-----------------------------------------------------------------------------
@@ -464,9 +478,18 @@ public:
       | ImGuiWindowFlags_NoMove
       | ImGuiWindowFlags_NoBringToFrontOnFocus
       | ImGuiWindowFlags_NoNavFocus;
+  // clang-format on
+
 private:
-  logWindow_t loggerWindow = nullptr;
   HBUI::Windows::HBWindow *mainWindow = nullptr;//used as fallback window is the same size as the native window worksize
+
+  //Logging
+  bool logWindowOpen = true;
+
+  logger_t                                                mainLogger    = nullptr;
+  HBUI::Windows::Logging::LogWindow                      *mainLogWindow = nullptr;
+  std::map<std::string, logger_t>                         loggers       = {};
+  std::map<logger_t, HBUI::Windows::Logging::LogWindow *> logWindows    = {};
 
 public:
   //Debugger
@@ -479,7 +502,9 @@ public:
 
   void startFrame();
   void endFrame();
+  void update();
 
+  //Widgets
   HBButtonState_ getButtonState(ImGuiID id);
 
   [[nodiscard]] HBUI::Windows::HBWindow &getMainWindow() const;
@@ -488,12 +513,14 @@ public:
   [[maybe_unused]] void startWidget(HBUI::HBIWidget *widget);
   [[maybe_unused]] void endCurrentWidget();
 
-  [[maybe_unused]] void showLog(bool* p_Open);
+  //Logging
+  logger_t                           getMainLogger();
+  void                               showMainLogWindow();
+  HBUI::Windows::Logging::LogWindow *getMainLogWindow();
 
-  void update() {}
-};
+  logger_t getLogger(const std::string &name, bool createIfNotFound = true);
+  logger_t addLogger(const std::string &name);
 
-struct HBIcon {
-  std::string name;
-  std::string clazz;
+  HBUI::Windows::Logging::LogWindow *getLogWindow(const logger_t &_logger, bool createIfNotFound = true);
+  HBUI::Windows::Logging::LogWindow *createLogWindow(const logger_t &logger);
 };

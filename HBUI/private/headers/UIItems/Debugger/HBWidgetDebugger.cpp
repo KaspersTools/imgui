@@ -4,11 +4,6 @@
 #include <HBUI/HBUI.h>
 #include <magic_enum.hpp>
 
-namespace HBUI {
-  namespace Debuggers {
-  };// namespace Debuggers
-};  // namespace HBUI
-
 #include "HBWidgetDebugger.h"
 #include <UIItems/Interfaces/HBIWidget.h>
 
@@ -22,7 +17,6 @@ namespace HBUI::Debuggers {
     }
 
     ImGui::End();
-    m_Widgets.clear();
   }
 
   void HBWidgetDebugger::drawWidgetData(const widgetDebugData &data) {
@@ -71,10 +65,9 @@ namespace HBUI::Debuggers {
   void HBWidgetDebugger::addWidget(HBIWidget *widget) {
     widgetDebugData data;
 
-    data.c_ID    = widget->c_ID;
-    data.c_Label = widget->c_Label;
-    data.c_Type  = widget->c_Type;
-
+    data.c_ID             = widget->c_ID;
+    data.c_Label          = widget->c_Label;
+    data.c_Type           = widget->c_Type;
     data.c_CanBeOwnParent = widget->c_CanBeOwnParent;
 
     data.m_HasBegun = widget->m_HasBegun;

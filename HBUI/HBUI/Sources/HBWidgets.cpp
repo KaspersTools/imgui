@@ -9,8 +9,8 @@
 #include <UIItems/Bars/HBTaskBar.h>
 #include <UIItems/Buttons/HBButton.h>
 #include <UIItems/Debugger/HBWidgetDebugger.h>
+#include <logging/Logger.h>
 #include <UIItems/Windows/LogWindow/LogWindow.h>
-#include <logging/Log.h>
 #include <UIItems/Windows/LogWindow/LogWindow.h>
 
 
@@ -185,20 +185,19 @@ namespace HBUI {
     getCurrentContext()->endCurrentWidget();
   }
 
-  void showLogWindow(bool *p_open) {
-    getCurrentContext()->showLog(p_open);
+  void showContextLogWindow() {
+    auto *ctx = getCurrentContext();
+    IM_ASSERT(ctx != nullptr && "Context is nullptr");
+    ctx->showMainLogWindow();
   }
 
-  void log(const std::string &message) {
-    spdlog::info(message);
+  void showLogWindow(const logger_t &logger){
+    showLogWindow(nullptr, logger);
   }
-  void warn(const std::string &message) {
-    spdlog::warn(message);
+  void showLogWindow(bool *p_open, const logger_t &logger){
+    auto *ctx = getCurrentContext();
+    IM_ASSERT(ctx != nullptr && "Context is nullptr");
+    HBUI::getLogWindow(logger)->draw(p_open);
   }
-  void error(const std::string &message) {
-    spdlog::error(message);
-  }
-  void debug(const std::string &message) {
-    spdlog::debug(message);
-  }
+
 }// namespace HBUI

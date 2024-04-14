@@ -46,7 +46,7 @@ namespace HBUI {
   HBUI_API const ImVec2 &getMainWindowPos();
   HBUI_API const ImVec2 &getMainWindowDpiScaleFactor();
   HBUI_API float         getMainWindowDpiScale();
-  HBUI_API std::string   getMonitorName();
+  HBUI_API std::string getMonitorName();
 
   //(backend) Window
   //(backend) Window
@@ -222,6 +222,7 @@ namespace HBUI {
   //---------------------------------------------------------------------------------
   // [SECTION] Windows
   //---------------------------------------------------------------------------------
+  HBUI_API void showContextLogWindow();
   HBUI_API void showLogWindow(bool *p_open);
 
   //---------------------------------------------------------------------------------
@@ -232,5 +233,16 @@ namespace HBUI {
   HBUI_API void debug(const std::string &message);
   HBUI_API void error(const std::string &message);
 
+  HBUI_API void log(const std::string &message, const logger_t &logger);
+  HBUI_API void warn(const std::string &message, const logger_t &logger);
+  HBUI_API void debug(const std::string &message, const logger_t &logger);
+  HBUI_API void error(const std::string &message, const logger_t &logger);
 
+  HBUI_API logger_t createLogger(const std::string &name);
+  HBUI_API logger_t getLogger(const std::string &name);
+
+  HBUI_API void showLogWindow(const logger_t &logger);
+  HBUI_API void showLogWindow(bool *p_open, const logger_t &logger);
+  HBUI_API Windows::Logging::LogWindow *createLogWindow(const logger_t &logger);
+  HBUI_API Windows::Logging::LogWindow *getLogWindow(const logger_t &logger);
 }// namespace HBUI

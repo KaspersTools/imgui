@@ -4,6 +4,7 @@
 
 #ifndef IMGUI_FONTLOADER_H
 #define IMGUI_FONTLOADER_H
+#include <HBUI/HBUI.h>
 #include <array>
 #include <set>
 #include <utility>
@@ -44,12 +45,12 @@ namespace HBUI::Fonts {
   public:
     explicit FontLoader(bool loadDefaultFonts = true);
     ~FontLoader();
-
+    void    updateFontsToNewDPI();
     void    loadDefaultFonts();
     HBFont *loadFont(const LoadFontData &data);
 
     HBFont *activateFont(float fontSize, const std::string &fontName, HBActivateFontFlags flags);
-    HBFont *activateFont(HBFont* font);
+    HBFont *activateFont(HBFont *font);
 
     HBFont *activateBigFont();
     HBFont *activateDefaultFont();
@@ -82,7 +83,7 @@ namespace HBUI::Fonts {
         return m_BigFont;
     }
 
-    static HBIcon *addIcon(const std::string& name, ImWchar glyph);
+    static HBIcon *addIcon(const std::string &name, ImWchar glyph);
 
   public:
     static std::vector<HBIcon>  DEFAULT_ICONS;

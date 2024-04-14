@@ -107,8 +107,8 @@ set(ImVk_SOURCES
 )
 
 set(ImVK_Headers
-        include/ImVk/ImVk.h
-        include/ImVk/Image.h
+        include/ImVK/ImVk.h
+        include/ImVK/Image.h
 )
 
 target_sources(ImVk PUBLIC

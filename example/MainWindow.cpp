@@ -57,14 +57,19 @@ void MainWindow::init() {
 }
 
 bool MainWindow::run() {
+  customLogger = HBUI::getLogger("CustomLogger");
+  logWindow = HBUI::getLogWindow(customLogger);
 
-  for(int i =0; i < 10; i++) {
-     HBUI::log("Hello, Log!");
-     HBUI::error("Hello, Error!");
-     HBUI::warn("Hello, Warn! ");
-     HBUI::debug("Hello, Debug!");
+  for (int i = 0; i < 10; i++) {
+    HBUI::log("Main Logger ---Hello, Log---");
+    HBUI::error("Main Logger ---Hello, Error---");
+    HBUI::warn("Main Logger ---Hello, Warn!---");
+    HBUI::debug("Main Logger ---Hello, Debug---");
+    HBUI::error("CUSTOM LOGGER ---Hello, Error---", customLogger);
+    HBUI::warn("CUSTOM LOGGER ---Hello, Warn!---", customLogger);
+    HBUI::debug("CUSTOM LOGGER ---Hello, Debug---", customLogger);
+    HBUI::log("CUSTOM LOGGER ---Hello, Log---", customLogger);
   }
-
   while (!HBUI::wantToClose()) {
     render();
   }
@@ -75,7 +80,7 @@ void MainWindow::render() {
   HBUI::startFrame();
 
   HBUI::beginTaskBar("HorizontalTaskBar", {0, 0});
-
+  {
     if (showTextButtons) {
       for (const auto &label: textButtonLabels) {
         if (HBUI::textButton(label)) {
@@ -85,22 +90,23 @@ void MainWindow::render() {
     }
 
     if (showIconButtons) {
-      for(int i = 0; i < iconButtonCount; ++i) {
+      for (int i = 0; i < iconButtonCount; ++i) {
         if (HBUI::iconButton(HBUI::getIcon("NF_ICON_github"))) {
         }
       }
     }
+  }
+  HBUI::endTaskBar();
 
-    HBUI::endTaskBar();
+  HBUI::showLogWindow(customLogger);
 
-    HBUI::beginWindow("kaspers window");
-    ImGui::Text("kasper123");
-    HBUI::endWindow();
-    bool* p_open = nullptr;
-    p_open = new bool(true);
-    HBUI::showLogWindow(p_open);
+  HBUI::beginWindow("kaspers window");
+  ImGui::Text("kasper123");
+  HBUI::endWindow();
 
-    ImGui::ShowDemoWindow();
+  HBUI::showContextLogWindow();
+
+  ImGui::ShowDemoWindow();
   if (showHUIDemoWindow) {
     ImGui::Begin("DemoWindow", &showHUIDemoWindow);
 
