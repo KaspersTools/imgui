@@ -223,7 +223,6 @@ namespace HBUI {
   // [SECTION] Windows
   //---------------------------------------------------------------------------------
   HBUI_API void showContextLogWindow();
-  HBUI_API void showLogWindow(bool *p_open);
 
   //---------------------------------------------------------------------------------
   // [SECTION] Logging
