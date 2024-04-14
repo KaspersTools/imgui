@@ -3,7 +3,6 @@
 //
 
 #include "HBIWidget.h"
-#include <ImVk/ImVk.h>
 
 HBUI::HBIWidget::HBIWidget(std::string label,
 
@@ -172,14 +171,14 @@ ImVec2 HBUI::HBIWidget::calculateSize_impl() {// NOLINT(*-no-recursion)
 
   if (m_StyleFlags & HBStyleFlags_StretchHorizontal) {
     if (p_ParentWidget == nullptr) {
-      totalWidth = HBUI::Backend::getWindowSize().x - m_Pos.x;
+      totalWidth = HBUI::getNativeWindowSize().x - m_Pos.x;
     } else {
       totalWidth = p_ParentWidget->calculateSizeWithPadding().x - m_Pos.x;
     }
   }
   if (m_StyleFlags & HBStyleFlags_StretchVertical) {
     if (p_ParentWidget == nullptr) {
-      totalHeight = HBUI::Backend::getWindowSize().y - m_Pos.y;
+      totalHeight = HBUI::getNativeWindowSize().y - m_Pos.y;
     } else {
       totalWidth = p_ParentWidget->calculateSizeWithPadding().x - m_Pos.x;
     }
