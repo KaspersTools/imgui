@@ -15,6 +15,8 @@ namespace HBUI::Fonts {
   struct HBIcon {
     std::string name;
     ImWchar     glyph;
+
+    HBIcon(std::string name, ImWchar glyph) : name(std::move(name)), glyph(glyph) {}
   };
 
   struct LoadFontData {
