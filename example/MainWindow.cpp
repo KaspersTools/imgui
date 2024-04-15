@@ -84,7 +84,8 @@ void MainWindow::render() {
     if (showTextButtons) {
       for (const auto &label: textButtonLabels) {
         if (HBUI::textButton(label)) {
-          textButtonLabels.erase(std::remove(textButtonLabels.begin(), textButtonLabels.end(), label), textButtonLabels.end());
+          //textButtonLabels.erase(std::remove(
+          //std                           textButtonLabels.begin(), textButtonLabels.end()), textButtonLabels.end());
         }
       }
     }
